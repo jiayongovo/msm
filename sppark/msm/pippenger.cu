@@ -37,8 +37,15 @@ __global__
 void pre_compute(affine_t* pre_points, size_t npoints);
 
 __global__
+void jy_pre_compute(affine_t* pre_points, size_t npoints);
+
+
+__global__
 void process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
                       uint32_t* d_scalar_map, uint32_t* point_idx, size_t npoints);
+__global__
+void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
+                         uint32_t* point_idx, uint32_t* sign, size_t npoints);
 
 __global__
 void process_scalar_2(uint32_t* scalar_tuple_out,
@@ -254,7 +261,7 @@ void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
         for (int j = i + npoints; j < NWINS * npoints; j += npoints) {
             // 获取下一个呗
             cur_scalar_ptr += 1;
-            uint16_t cur_scalar == *cur_scalar_ptr;
+            uint16_t cur_scalar = *cur_scalar_ptr;
             // 获得之前处理的最低位
             cur_scalar += (sign[j - npoints] & 1);
             uint32_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
@@ -904,7 +911,7 @@ public:
 
         CUDA_OK(cudaSetDevice(device));
         launch_coop(jy_pre_compute, NWINS * config.N, NTHREADS, stream,
-                    d_points, config.npoints);
+                    d_pre_points, config.npoints);
     }
     // conversion of the sub-scalars (table lookups).
     // d_scalars_sn 标量地址
@@ -933,9 +940,9 @@ public:
                                  cudaStream_t s = nullptr) {
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         uint16_t* d_scalars = (uint16_t*)d_scalar_ptrs[d_scalars_sn];
-        uint32_t* d_scalar_tuple = jy_d_scalar_tuples_sn[jy_d_scalar_tuples_sn];
+        uint32_t* d_scalar_tuple = jy_d_scalar_tuple_ptrs[jy_d_scalar_tuples_sn];
         uint32_t* d_point_idx = jy_d_point_idx_ptrs[jy_d_point_idx_sn];
-        uint32_t* d_sign = jy_d_sign_sn[jy_d_sign_sn];
+        uint32_t* d_sign = jy_d_sign_ptrs[jy_d_sign_sn];
 
         CUDA_OK(cudaSetDevice(device));
         launch_coop(jy_process_scalar_1, NWINS * config.N, NTHREADS, stream,
