@@ -196,28 +196,73 @@ void jy_pre_compute(affine_t* pre_points, size_t npoints) {
     }
 }
 
-
+// 把输进来的scalar看作是u16
 __global__
 void process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
                       uint32_t* d_scalar_map, uint32_t* point_idx, size_t npoints) {
 
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
-
+    // 每个线程分配到一个标量的划分
     for (int i = tid; i < npoints; i += tnum) {
+        // 因为把他看作是u16 因此偏移需要加 2^16 * i
+        // 当前线程处理的起始标量 ki0
         uint16_t* cur_scalar_ptr = scalar + (i << 4);
+        // 获得标量值
         uint32_t cur_scalar = (uint32_t)(*cur_scalar_ptr);  // uint32_t instead of uint16_t, specifically for 0x10000
+        // 根据 ki0 查找获得浮点形式 kij
+        //
         scalar_tuple[i] = d_scalar_map[cur_scalar];
 
         point_idx[i] = i;
-
+        // j 放进去
         for (int j = i + npoints; j < NWINS * npoints; j += npoints) {
+            // 获取下一个呗
             cur_scalar_ptr += 1;
             cur_scalar = (uint32_t)(*(cur_scalar_ptr));
+            // 获得之前处理的最低位
             cur_scalar += (scalar_tuple[j - npoints] & 1);
             scalar_tuple[j] = d_scalar_map[cur_scalar];
 
             point_idx[j] = i;
+        }
+    }
+
+}
+// 把输进来的scalar看作是u16
+// 只支持窗口大小为 16 的...
+__global__
+void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
+                      uint32_t* point_idx, uint32_t* sign, size_t npoints) {
+
+    const uint32_t tnum = blockDim.x * gridDim.x;
+    const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
+    // 每个线程分配到一个标量的划分
+    for (int i = tid; i < npoints; i += tnum) {
+        // 因为把他看作是u16 因此偏移需要加 2^16 * i
+        // 当前线程处理的起始标量 ki0
+        uint16_t* cur_scalar_ptr = scalar + (i << 4);
+        // 获得标量值
+        uint16_t cur_scalar = *cur_scalar_ptr;  // uint32_t instead of uint16_t, specifically for 0x10000
+        uint32_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
+        cur_scalar = cur_sign == 1 ? 1<<WBITS - cur_scalar : cur_scalar;
+        sign[i] = cur_sign;
+        scalar_tuple[i] = cur_scalar;
+
+        point_idx[i] = i;
+        // j 放进去
+        for (int j = i + npoints; j < NWINS * npoints; j += npoints) {
+            // 获取下一个呗
+            cur_scalar_ptr += 1;
+            uint16_t cur_scalar == *cur_scalar_ptr;
+            // 获得之前处理的最低位
+            cur_scalar += (sign[j - npoints] & 1);
+            uint32_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
+            cur_scalar = cur_sign == 1 ? 1<<WBITS - cur_scalar : cur_scalar;
+            sign[j] = cur_sign;
+            point_idx[j] = i;
+            scalar_tuple[j] = cur_scalar;
+
         }
     }
 
@@ -581,6 +626,12 @@ public:
     device_ptr_list_t<uint32_t> d_scalar_map;
     device_ptr_list_t<uint32_t> d_scalar_tuple_ptrs;
     device_ptr_list_t<uint32_t> d_point_idx_ptrs;
+    // 符号变换
+    device_ptr_list_t<uint32_t> jy_d_scalar_tuple_ptrs;
+    device_ptr_list_t<uint32_t> jy_d_point_idx_ptrs;
+    device_ptr_list_t<uint32_t> jy_d_sign_ptrs;
+
+
     device_ptr_list_t<uint16_t> d_bucket_idx_ptrs;
     device_ptr_list_t<unsigned char> d_cub_ptrs;
 
@@ -660,17 +711,22 @@ public:
     size_t get_size_bucket_idx_pre_offset(MSMConfig& config) {  // v1.2
         return sizeof(uint32_t) * config.N * NTHREADS * NWINS;
     }
+    // 窗口数 * 桶大小
     size_t get_size_res() {
         return sizeof(bucket_t) * NWINS;
     }
-
+    // (2^c + 1) * kij 的组合形式
     size_t get_size_scalar_map() {
         return ((1 << 16) + 1) * sizeof(uint32_t);
     }
+    // scalar tuple 存放 kij  uint32 * NWINS * 点数
     size_t get_size_scalar_tuple(MSMConfig& config) {
         return config.n * sizeof(uint32_t) * NWINS;
     }
     size_t get_size_point_idx(MSMConfig& config) {
+        return config.n * sizeof(uint32_t) * NWINS;
+    }
+    size_t get_size_sign(MSMConfig& config) {
         return config.n * sizeof(uint32_t) * NWINS;
     }
     size_t get_size_bucket_idx(MSMConfig& config) {
@@ -735,6 +791,26 @@ public:
     size_t allocate_d_scalar_map() {
         return d_scalar_map.allocate(get_size_scalar_map());
     }
+
+    size_t allocate_jy_d_scalar_tuple(MSMConfig& config) {
+        return jy_d_scalar_tuple_ptrs.allocate(get_size_scalar_tuple(config));
+    }
+    size_t allocate_jy_d_scalar_tuple_out(MSMConfig& config) {
+        return jy_d_scalar_tuple_ptrs.allocate(get_size_scalar_tuple(config));
+    }
+    size_t allocate_jy_d_point_idx(MSMConfig& config) {
+        return jy_d_point_idx_ptrs.allocate(get_size_point_idx(config));
+    }
+    size_t allocate_jy_d_point_idx_out(MSMConfig& config) {
+        return jy_d_point_idx_ptrs.allocate(get_size_point_idx(config));
+    }
+    size_t allocate_jy_d_sign(MSMConfig& config) {
+        return jy_d_sign_ptrs.allocate(get_size_sign_idx(config));
+    }
+    size_t allocate_jy_d_sign_out(MSMConfig& config) {
+        return jy_d_sign_ptrs.allocate(get_size_sign_idx(config));
+    }
+
 
     size_t allocate_d_scalar_tuple(MSMConfig& config) {
         return d_scalar_tuple_ptrs.allocate(get_size_scalar_tuple(config));
@@ -830,7 +906,11 @@ public:
         launch_coop(jy_pre_compute, NWINS * config.N, NTHREADS, stream,
                     d_points, config.npoints);
     }
-
+    // conversion of the sub-scalars (table lookups).
+    // d_scalars_sn 标量地址
+    // d_scalar_tuples_sn 标量元组地址
+    // 查找表地址
+    // 点索引地址
     void launch_process_scalar_1(MSMConfig& config,
                                  size_t d_scalars_sn, size_t d_scalar_tuples_sn,
                                  size_t d_scalar_map_sn, size_t d_point_idx_sn,
@@ -845,6 +925,23 @@ public:
         launch_coop(process_scalar_1, NWINS * config.N, NTHREADS, stream,
                     d_scalars, d_scalar_tuple, d_smap, d_point_idx, config.npoints);
     }
+
+    void launch_jy_process_scalar_1(MSMConfig& config,
+                                 size_t d_scalars_sn, size_t jy_d_scalar_tuples_sn,
+                                 size_t jy_d_point_idx_sn,
+                                 size_t jy_d_sign_sn,
+                                 cudaStream_t s = nullptr) {
+        cudaStream_t stream = (s == nullptr) ? default_stream : s;
+        uint16_t* d_scalars = (uint16_t*)d_scalar_ptrs[d_scalars_sn];
+        uint32_t* d_scalar_tuple = jy_d_scalar_tuples_sn[jy_d_scalar_tuples_sn];
+        uint32_t* d_point_idx = jy_d_point_idx_ptrs[jy_d_point_idx_sn];
+        uint32_t* d_sign = jy_d_sign_sn[jy_d_sign_sn];
+
+        CUDA_OK(cudaSetDevice(device));
+        launch_coop(jy_process_scalar_1, NWINS * config.N, NTHREADS, stream,
+                    d_scalars, d_scalar_tuple, d_point_idx, d_sign, config.npoints);
+    }
+
 
     void launch_process_scalar_2(MSMConfig& config,
                                  size_t d_scalar_tuples_out_sn, size_t d_bucket_idx_sn,
