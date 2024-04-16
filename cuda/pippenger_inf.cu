@@ -330,6 +330,7 @@ struct Context {
     size_t d_scalars_sn[NUM_BATCH_THREADS];
     size_t d_scalar_map_sn;
     size_t d_buckets_sn;
+    size_t d_pre_points_sn;
 
     size_t d_buckets_pre_sn;
     size_t d_bucket_idx_pre_vector_sn;
@@ -373,6 +374,8 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
 
         // Allocate GPU storage
         ctx->d_points_sn = ctx->pipp.allocate_d_bases(ctx->config);
+        // 分配预计算点空间
+        ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
         for (size_t i = 0; i < NUM_BATCH_THREADS; i++) {
             ctx->d_scalars_sn[i] = ctx->pipp.allocate_d_scalars(ctx->config);
         }
@@ -399,8 +402,14 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
         
         ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_points_sn, points,
                                            ffi_affine_sz);
+        // 传输到预计算点那组
+        ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn, points,
+                                           ffi_affine_sz);
+
 
 	ctx->pipp.launch_kernel_init(ctx->config, ctx->d_points_sn);
+    // 窗口预计算
+    ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn);
 
         // Copy into pinned memory
         memcpy(ctx->h_scalar_map, scalar_map, ctx->pipp.get_size_scalar_map());

@@ -177,6 +177,27 @@ void pre_compute(affine_t* pre_points, size_t npoints) {
 }
 
 __global__
+void jy_pre_compute(affine_t* pre_points, size_t npoints) {
+    const uint32_t tnum = blockDim.x * gridDim.x;
+    const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t num = (NWINS % 2 ==0 ? NWINS - 2 : NWINS - 1) / 2 ;
+
+    bucket_t Pi_xyzz;
+    for (uint32_t i = tid; i < npoints; i += tnum) {
+        affine_t* Pi = pre_points + i;
+        Pi_xyzz = *Pi;
+        for (int j = 1; j < num; j++) {
+            uint32_t pow = 2 * j * WBITS;
+            Pi = Pi + npoints;
+             for(uint32_t k=0;k<pow;k++)
+                Pi_xyzz.dbl();
+            Pi_xyzz.xyzz_to_affine(*Pi);
+        }
+    }
+}
+
+
+__global__
 void process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
                       uint32_t* d_scalar_map, uint32_t* point_idx, size_t npoints) {
 
@@ -536,6 +557,8 @@ private:
     size_t sm_count;
     bool init_done = false;
     device_ptr_list_t<affine_t> d_base_ptrs;
+    // 预计算点
+    device_ptr_list_t<affine_t> d_pre_points_ptrs;
     device_ptr_list_t<scalar_t> d_scalar_ptrs;
     device_ptr_list_t<bucket_t> d_bucket_ptrs;
 
@@ -674,8 +697,15 @@ public:
 
     // Allocate storage for bases on device. Throws cuda_error on error.
     // Returns index of the allocated base storage.
+    // 7 是 原 points + 预计算的 六 组点
     size_t allocate_d_bases(MSMConfig& config) {
         return d_base_ptrs.allocate(7 * get_size_bases(config));
+    }
+
+    size_t allocate_d_pre_points(MSMConfig& config) {
+        // 11 个窗口 => 2^2c  2^4c 2^6c 2^8c 2&10c  + 原来那组
+        size_t num = (NWINS % 2 ==0 ? NWINS - 2 : NWINS - 1) / 2 + 1;
+        return d_pre_points_ptrs.allocate( num * get_size_bases(config));
     }
 
     size_t allocate_d_scalars(MSMConfig& config) {
@@ -788,6 +818,16 @@ public:
 
         CUDA_OK(cudaSetDevice(device));
         launch_coop(pre_compute, NWINS * config.N, NTHREADS, stream,
+                    d_points, config.npoints);
+    }
+
+    void launch_kernel_pre_compute_init(MSMConfig& config,
+                                        size_t d_pre_points_sn, cudaStream_t s = nullptr) {
+        cudaStream_t stream = (s == nullptr) ? default_stream : s;
+        affine_t *d_pre_points = d_pre_points_ptrs[d_pre_points_sn];
+
+        CUDA_OK(cudaSetDevice(device));
+        launch_coop(jy_pre_compute, NWINS * config.N, NTHREADS, stream,
                     d_points, config.npoints);
     }
 
