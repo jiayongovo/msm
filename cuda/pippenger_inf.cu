@@ -374,19 +374,22 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
 {
     context->context = new Context<bucket_t, affine_t, scalar_t>();
     Context<bucket_t, affine_t, scalar_t> *ctx = context->context;
-
+    printf("[Begin init pippenger]");
     ctx->ffi_affine_sz = ffi_affine_sz;
     try {
         ctx->config = ctx->pipp.init_msm_faster(npoints);
 
         // Allocate GPU storage
+        printf("[Begin Allocate GPU storage]");
         ctx->d_points_sn = ctx->pipp.allocate_d_bases(ctx->config);
-        // 分配预计算点空间
+        // jy分配预计算点空间
         ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
+        //
         for (size_t i = 0; i < NUM_BATCH_THREADS; i++) {
             ctx->d_scalars_sn[i] = ctx->pipp.allocate_d_scalars(ctx->config);
         }
         ctx->d_scalar_map_sn = ctx->pipp.allocate_d_scalar_map();
+        // 分配桶空间
         ctx->d_buckets_sn = ctx->pipp.allocate_d_buckets();
         ctx->d_buckets_pre_sn = ctx->pipp.allocate_d_buckets_pre(ctx->config);
         ctx->d_bucket_idx_pre_vector_sn = ctx->pipp.allocate_d_bucket_idx_pre_vector(ctx->config);
@@ -407,30 +410,34 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
         ctx->d_scalar_tuples_out_sn = ctx->pipp.allocate_d_scalar_tuple_out(ctx->config);
         ctx->d_point_idx_sn = ctx->pipp.allocate_d_point_idx(ctx->config);
         ctx->d_point_idx_out_sn = ctx->pipp.allocate_d_point_idx_out(ctx->config);
+        // 分配桶索引空间
         ctx->d_bucket_idx_sn = ctx->pipp.allocate_d_bucket_idx(ctx->config);
-
+        // CUB 排序
         ctx->d_cub_sort_idx = ctx->pipp.allocate_d_cub_sort_faster(ctx->config);
 
 
         // Allocate pinned memory on host
         // 在主机端分配空间、scalars空间和scalar_map空间
+
         CUDA_OK(cudaMallocHost(&ctx->h_scalars, ctx->pipp.get_size_scalars(ctx->config)));
         CUDA_OK(cudaMallocHost(&ctx->h_scalar_map, ctx->pipp.get_size_scalar_map()));
         
         ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_points_sn, points,
                                            ffi_affine_sz);
+        printf("[Begin transfer bases]");
         // 传输到预计算点那组
         ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn, points,
                                            ffi_affine_sz);
 
-
-	ctx->pipp.launch_kernel_init(ctx->config, ctx->d_points_sn);
+        printf("[Begin init kernel complete pre compute!]");
+        ctx->pipp.launch_kernel_init(ctx->config, ctx->d_points_sn);
     // 窗口预计算
     ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn);
 
         // Copy into pinned memory
         // 复制预先计算好的scalar_map 到 host 内存中
         // 然后传送到设备内存中
+        printf("[Begin transfer scalars_map to host to device]");
         memcpy(ctx->h_scalar_map, scalar_map, ctx->pipp.get_size_scalar_map());
         ctx->pipp.transfer_scalar_map_to_device(ctx->d_scalar_map_sn, ctx->h_scalar_map);
         
@@ -509,7 +516,7 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
                 uint32_t* d_point_idx = ctx->pipp.d_point_idx_ptrs[ctx->d_point_idx_sn];
                 uint32_t* d_point_idx_out = ctx->pipp.d_point_idx_ptrs[ctx->d_point_idx_out_sn];
                 uint32_t nscalars = npoints;
-
+                // 主要是为了获取空间大小
                 void *d_temp = NULL;
                 size_t temp_sort_size = 0;
                 cub::DeviceRadixSort::SortPairs(d_temp, temp_sort_size,
@@ -517,7 +524,8 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
                                                 d_point_idx, d_point_idx_out, nscalars, 0, 31, stream);
                 void *d_cub_sort = (void *)ctx->pipp.d_cub_ptrs[ctx->d_cub_sort_idx];
 
-		// printf("sort_size: %d\n", temp_sort_size);
+		        // printf("sort_size: %d\n", temp_sort_size);
+                // 在每个窗口内进行排序
                 for(size_t k = 0; k < NWINS; k++)
                 {
                     size_t ptr = k * nscalars;
@@ -528,7 +536,7 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
 
                 ctx->pipp.launch_process_scalar_2(ctx->config,
                                                   ctx->d_scalar_tuples_out_sn, ctx->d_bucket_idx_sn);
-
+                // accumulate parts of the buckets into static buffers.
                 ctx->pipp.launch_bucket_acc(ctx->config, ctx->d_scalar_tuples_out_sn,
                                             ctx->d_bucket_idx_sn, ctx->d_point_idx_out_sn,
                                             ctx->d_points_sn, ctx->d_buckets_sn,
