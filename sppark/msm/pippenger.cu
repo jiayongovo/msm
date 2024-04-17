@@ -167,7 +167,7 @@ static __device__ void mul(bucket_t& res, const bucket_t& base, uint32_t scalar)
 
 __global__
 void pre_compute(affine_t* pre_points, size_t npoints) {
-    printf("begin pre_compute");
+    // NWINS * config.N  NTHREADS
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -689,7 +689,7 @@ public:
 
     // Initialize instance. Throws cuda_error on error.
     void init() {
-        printf("[Initialize GPU instance.]");
+        printf("[Initialize GPU instance.]\n");
         if (!init_done) {
             CUDA_OK(cudaSetDevice(device));
             cudaDeviceProp prop;
@@ -711,7 +711,7 @@ public:
 
     // Initialize parameters for a specific size MSM. Throws cuda_error on error.
     MSMConfig init_msm_faster(size_t npoints) {
-        printf("[Begin init MSMConfig parameters]");
+        printf("[Begin init MSMConfig parameters]\n");
         init();
 
         MSMConfig config;
@@ -721,7 +721,7 @@ public:
         config.N = (sm_count*256) / (NTHREADS*NWINS);
         size_t delta = ((npoints+(config.N)-1)/(config.N)+WARP_SZ-1) & (0U-WARP_SZ);
         config.N = (npoints+delta-1) / delta;
-        printf("[MSMConfig] [npoints] [%d] [config.n] [%d] [delta] [%d] [Config.N] [%d]", npoints, config.n, delta, config.N);
+        printf("[MSMConfig] [npoints] [%d] [config.n] [%d] [delta] [%d] [Config.N] [%d]\n", npoints, config.n, delta, config.N);
 
         //        if(config.N % 2 == 1) config.N -= 1;
         return config;
@@ -794,7 +794,7 @@ public:
     // Returns index of the allocated base storage.
     // 7 是 原 points + 预计算的 六 组点
     size_t allocate_d_bases(MSMConfig& config) {
-        printf("[Allocate d_bases] 7 * config.n * sizeof(affine_t) [%d]",7 * get_size_bases(config));
+        printf("[Allocate d_bases] 7 * config.n * sizeof(affine_t) [%d]\n",7 * get_size_bases(config));
         return d_base_ptrs.allocate(7 * get_size_bases(config));
     }
 
@@ -805,38 +805,38 @@ public:
     }
 
     size_t allocate_d_scalars(MSMConfig& config) {
-        printf("[Allocate d_scalars] config.n * sizeof(scalar_t) [%d]",get_size_scalars(config));
+        printf("[Allocate d_scalars] config.n * sizeof(scalar_t) [%d]\n",get_size_scalars(config));
         return d_scalar_ptrs.allocate(get_size_scalars(config));
     }
 
     size_t allocate_d_buckets() {
-        printf("[Allocate d_buckets] sizeof(bucket_t) * NWINS * (1 << (WBITS - 2)) [%d]",get_size_buckets());
+        printf("[Allocate d_buckets] sizeof(bucket_t) * NWINS * (1 << (WBITS - 2)) [%d]\n",get_size_buckets());
         return d_bucket_ptrs.allocate(get_size_buckets());
     }
     size_t allocate_d_buckets_pre(MSMConfig& config) {  // v1.1
-        printf("[Allocate d_buckets_pre] sizeof(bucket_t) * NWINS * (config.N * NTHREADS + (1 << (WBITS - 2))) [%d]",get_size_buckets_pre(config));
+        printf("[Allocate d_buckets_pre] sizeof(bucket_t) * NWINS * (config.N * NTHREADS + (1 << (WBITS - 2))) [%d]\n",get_size_buckets_pre(config));
         return d_bucket_pre_ptrs.allocate(get_size_buckets_pre(config));
     }
     size_t allocate_d_bucket_idx_pre_vector(MSMConfig& config) {  // v1.1
-        printf("[Allocate d_bucket_idx_pre_vector] sizeof(uint16_t) * NWINS * (config.N * NTHREADS + (1 << (WBITS - 2))) [%d]",get_size_bucket_idx_pre_vector(config));
+        printf("[Allocate d_bucket_idx_pre_vector] sizeof(uint16_t) * NWINS * (config.N * NTHREADS + (1 << (WBITS - 2))) [%d]\n",get_size_bucket_idx_pre_vector(config));
         return d_bucket_idx_pre_ptrs.allocate(get_size_bucket_idx_pre_vector(config));
     }
     size_t allocate_d_bucket_idx_pre_used(MSMConfig& config) {  // v1.1
-        printf("[Allocate d_bucket_idx_pre_used] sizeof(uint16_t) * config.N * NTHREADS * NWINS [%d]",get_size_bucket_idx_pre_used(config));
+        printf("[Allocate d_bucket_idx_pre_used] sizeof(uint16_t) * config.N * NTHREADS * NWINS [%d]\n",get_size_bucket_idx_pre_used(config));
         return d_bucket_idx_pre_ptrs.allocate(get_size_bucket_idx_pre_used(config));
     }
     size_t allocate_d_bucket_idx_pre_offset(MSMConfig& config) {  // v1.2
-        printf("[Allocate d_bucket_idx_pre_offset] sizeof(uint32_t) * config.N * NTHREADS * NWINS [%d]",get_size_bucket_idx_pre_offset(config));
+        printf("[Allocate d_bucket_idx_pre_offset] sizeof(uint32_t) * config.N * NTHREADS * NWINS [%d]\n",get_size_bucket_idx_pre_offset(config));
         return d_bucket_idx_pre2_ptrs.allocate(get_size_bucket_idx_pre_offset(config));
     }
 
     size_t allocate_d_res() {
-        printf("[Allocate d_res] sizeof(bucket_t) * NWINS [%d]",get_size_res());
+        printf("[Allocate d_res] sizeof(bucket_t) * NWINS [%d]\n",get_size_res());
         return d_res_ptrs.allocate(get_size_res());
     }
 
     size_t allocate_d_scalar_map() {
-        printf("[Allocate d_scalar_map] ((1 << 16) + 1) * sizeof(uint32_t) [%d]",get_size_scalar_map());
+        printf("[Allocate d_scalar_map] ((1 << 16) + 1) * sizeof(uint32_t) [%d]\n",get_size_scalar_map());
         return d_scalar_map.allocate(get_size_scalar_map());
     }
 
@@ -861,31 +861,31 @@ public:
 
 
     size_t allocate_d_scalar_tuple(MSMConfig& config) {
-        printf("[Allocate d_scalar_tuple] config.n * sizeof(uint32_t) * NWINS [%d]",get_size_scalar_tuple(config));
+        printf("[Allocate d_scalar_tuple] config.n * sizeof(uint32_t) * NWINS [%d]\n",get_size_scalar_tuple(config));
         return d_scalar_tuple_ptrs.allocate(get_size_scalar_tuple(config));
     }
     size_t allocate_d_scalar_tuple_out(MSMConfig& config) {
-        printf("[Allocate d_scalar_tuple_out] config.n * sizeof(uint32_t) * NWINS [%d]",get_size_scalar_tuple(config));
+        printf("[Allocate d_scalar_tuple_out] config.n * sizeof(uint32_t) * NWINS [%d]\n",get_size_scalar_tuple(config));
         return d_scalar_tuple_ptrs.allocate(get_size_scalar_tuple(config));
     }
 
     size_t allocate_d_point_idx(MSMConfig& config) {
-        printf("[Allocate d_point_idx] config.n * sizeof(uint32_t) * NWINS [%d]",get_size_point_idx(config));
+        printf("[Allocate d_point_idx] config.n * sizeof(uint32_t) * NWINS [%d]\n",get_size_point_idx(config));
         return d_point_idx_ptrs.allocate(get_size_point_idx(config));
 //        return d_point_idx_ptrs.allocate(config.n * sizeof(uint32_t));
     }
     size_t allocate_d_point_idx_out(MSMConfig& config) {
-        printf("[Allocate d_point_idx_out] config.n * sizeof(uint32_t) * NWINS [%d]",get_size_point_idx(config));
+        printf("[Allocate d_point_idx_out] config.n * sizeof(uint32_t) * NWINS [%d]\n",get_size_point_idx(config));
         return d_point_idx_ptrs.allocate(get_size_point_idx(config));
     }
     // 分配桶索引空间
     size_t allocate_d_bucket_idx(MSMConfig& config) {
-        printf("[Allocate d_bucket_idx] config.n * sizeof(uint16_t) * NWINS [%d]",get_size_bucket_idx(config));
+        printf("[Allocate d_bucket_idx] config.n * sizeof(uint16_t) * NWINS [%d]\n",get_size_bucket_idx(config));
         return d_bucket_idx_ptrs.allocate(get_size_bucket_idx(config));
     }
 
     size_t allocate_d_cub_sort_faster(MSMConfig& config) {
-        printf("[Allocate d_cub_sort_faster WARN Change] config.n * sizeof(uint16_t) * NWINS [%d]",get_size_cub_sort_faster(config));
+        printf("[Allocate d_cub_sort_faster WARN Change] config.n * sizeof(uint16_t) * NWINS [%d]\n",get_size_cub_sort_faster(config));
         return d_cub_ptrs.allocate(get_size_cub_sort_faster(config));
     }
 
@@ -947,7 +947,7 @@ public:
         affine_t *d_points = d_base_ptrs[d_points_sn];
 
         CUDA_OK(cudaSetDevice(device));
-        printf("[pre_compute] NWINS * config.N  NTHREADS ");
+        printf("[pre_compute] NWINS * config.N  NTHREADS \n");
         launch_coop(pre_compute, NWINS * config.N, NTHREADS, stream,
                     d_points, config.npoints);
     }

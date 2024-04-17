@@ -374,13 +374,13 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
 {
     context->context = new Context<bucket_t, affine_t, scalar_t>();
     Context<bucket_t, affine_t, scalar_t> *ctx = context->context;
-    printf("[Begin init pippenger]");
+    printf("[Begin init pippenger]\n");
     ctx->ffi_affine_sz = ffi_affine_sz;
     try {
         ctx->config = ctx->pipp.init_msm_faster(npoints);
 
         // Allocate GPU storage
-        printf("[Begin Allocate GPU storage]");
+        printf("[Begin Allocate GPU storage]\n");
         ctx->d_points_sn = ctx->pipp.allocate_d_bases(ctx->config);
         // jy分配预计算点空间
         ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
@@ -424,12 +424,12 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
         
         ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_points_sn, points,
                                            ffi_affine_sz);
-        printf("[Begin transfer bases]");
+        printf("[Begin transfer bases]\n");
         // 传输到预计算点那组
         ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn, points,
                                            ffi_affine_sz);
 
-        printf("[Begin init kernel complete pre compute!]");
+        printf("[Begin init kernel complete pre compute!]\n");
         ctx->pipp.launch_kernel_init(ctx->config, ctx->d_points_sn);
     // 窗口预计算
     ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn);
@@ -437,7 +437,7 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
         // Copy into pinned memory
         // 复制预先计算好的scalar_map 到 host 内存中
         // 然后传送到设备内存中
-        printf("[Begin transfer scalars_map to host to device]");
+        printf("[Begin transfer scalars_map to host to device]\n");
         memcpy(ctx->h_scalar_map, scalar_map, ctx->pipp.get_size_scalar_map());
         ctx->pipp.transfer_scalar_map_to_device(ctx->d_scalar_map_sn, ctx->h_scalar_map);
         
