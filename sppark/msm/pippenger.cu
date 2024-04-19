@@ -45,7 +45,7 @@ void process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
                       uint32_t* d_scalar_map, uint32_t* point_idx, size_t npoints);
 __global__
 void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
-                         uint32_t* point_idx, uint32_t* sign, size_t npoints);
+                         uint32_t* point_idx, size_t npoints);
 
 __global__
 void process_scalar_2(uint32_t* scalar_tuple_out,
@@ -168,6 +168,9 @@ static __device__ void mul(bucket_t& res, const bucket_t& base, uint32_t scalar)
 __global__
 void pre_compute(affine_t* pre_points, size_t npoints) {
     // NWINS * config.N  NTHREADS
+    // blockDim.x 表示每个线程块中的线程数量
+    // gridDim.x 表示网格中线程块的数量
+    // blockIdx.x 表示当前线程块的索引，blockDim.x 表示每个线程块中的线程数量，threadIdx.x 表示当前线程在其线程块中的索引。
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -184,6 +187,7 @@ void pre_compute(affine_t* pre_points, size_t npoints) {
     }
 }
 
+// jy_msm 点预计算
 __global__
 void jy_pre_compute(affine_t* pre_points, size_t npoints) {
     const uint32_t tnum = blockDim.x * gridDim.x;
@@ -194,7 +198,7 @@ void jy_pre_compute(affine_t* pre_points, size_t npoints) {
     for (uint32_t i = tid; i < npoints; i += tnum) {
         affine_t* Pi = pre_points + i;
         Pi_xyzz = *Pi;
-        for (int j = 1; j < num; j++) {
+        for (int j = 1; j <= num; j++) {
             uint32_t pow = 2 * j * WBITS;
             Pi = Pi + npoints;
              for(uint32_t k=0;k<pow;k++)
@@ -212,6 +216,7 @@ void process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     // 每个线程分配到一个标量的划分
+    // 第 i 个标量
     for (int i = tid; i < npoints; i += tnum) {
         // 因为把他看作是u16 因此偏移需要加 2^16 * i
         // 当前线程处理的起始标量 ki0
@@ -241,7 +246,7 @@ void process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
 // 只支持窗口大小为 16 的...
 __global__
 void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
-                      uint32_t* point_idx, uint32_t* sign, size_t npoints) {
+                      uint32_t* point_idx, size_t npoints) {
 
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
@@ -254,8 +259,7 @@ void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
         uint16_t cur_scalar = *cur_scalar_ptr;  // uint32_t instead of uint16_t, specifically for 0x10000
         uint32_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
         cur_scalar = cur_sign == 1 ? 1<<WBITS - cur_scalar : cur_scalar;
-        sign[i] = cur_sign;
-        scalar_tuple[i] = cur_scalar;
+        scalar_tuple[i] = cur_scalar << 1 | cur_sign;
 
         point_idx[i] = i;
         // j 放进去
@@ -264,21 +268,20 @@ void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
             cur_scalar_ptr += 1;
             uint16_t cur_scalar = *cur_scalar_ptr;
             // 获得之前处理的最低位
-            cur_scalar += (sign[j - npoints] & 1);
+            cur_scalar += (scalar_tuple[j - npoints] & 1);
             uint32_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
             cur_scalar = cur_sign == 1 ? 1<<WBITS - cur_scalar : cur_scalar;
-            sign[j] = cur_sign;
             point_idx[j] = i;
-            scalar_tuple[j] = cur_scalar;
-
+            scalar_tuple[i] = cur_scalar << 1 | cur_sign;
         }
     }
 
 }
-
+// bucket_idx_ptr 第i个窗口第j个值对应的就是排序后scalar的值
 __global__
 void process_scalar_2(uint32_t* scalar_tuple_out,
                       uint16_t* bucket_idx, size_t npoints) {
+    // dim3(NWINS, config.N), NTHREADS
     // 线程总数
     // blockDim.x 每个 block 中的线程数量 NTHREADS
     // gridDim.y  grid 在 y 维度上的大小 config.N
@@ -300,6 +303,7 @@ void process_scalar_2(uint32_t* scalar_tuple_out,
     for (uint32_t i = tid; i < npoints; i += tnum) {
         // 取前 16 位
         // 桶索引对应的值是相应的scalar的前16位
+        // 反正就是
         bucket_idx_ptr[i] = scalar_tuple_out_ptr[i] >> 16;
     }
 }
@@ -332,9 +336,9 @@ void bucket_acc(uint32_t* scalar_tuple_out, uint16_t* bucket_idx, uint32_t* poin
     const uint32_t tid_inner = threadIdx.x;
     // 当前窗口的第 tid 个线程
     const uint32_t tid = blockIdx.y * blockDim.x + tid_inner;
-    // 第 bid 个窗口
+    // 第 bid 个窗口 0 to NWINS - 1
     const uint32_t bid = blockIdx.x;
-    // 每个子任务的 buffer 长度
+    // tnum + 2 ^(WBITS-2)
     const uint32_t buffer_len = tnum + (1 << (WBITS - 2));
     // 第 bid 个窗口对应的scalar标量
     uint32_t* scalar_tuple_out_ptr = scalar_tuple_out + npoints * bid;
@@ -343,9 +347,15 @@ void bucket_acc(uint32_t* scalar_tuple_out, uint16_t* bucket_idx, uint32_t* poin
     // 第 bid 个窗口对应的 点索引
     uint32_t* point_idx_out_ptr = point_idx_out + npoints * bid;
     // 和负载平衡相关
+    // 只使用一个config.N * NTHREADS 个线程 处理每个窗口
+    // 很明显，每个窗口分配的buffer是 buffer_len
+    // 第 bid 个窗口对应的 bucket_pre
     bucket_t* buckets_pre_ptr = buckets_pre + buffer_len * bid;
+    // 第 bid 个窗口对应的 bucket_index
     uint16_t* bucket_idx_pre_vector_ptr = bucket_idx_pre_vector + buffer_len * bid;
+    // 第 bid 个窗口对应的 bucket_used
     uint16_t* bucket_idx_pre_used_ptr = bucket_idx_pre_used + tnum * bid;
+    // 第 bid 个窗口对应的 bucket_offset
     uint32_t* bucket_idx_pre_offset_ptr = bucket_idx_pre_offset + tnum * bid;
 
     // 每个线程分配的任务 总数是tnum
@@ -361,29 +371,39 @@ void bucket_acc(uint32_t* scalar_tuple_out, uint16_t* bucket_idx, uint32_t* poin
     if (e >= npoints) e = npoints;
 
     uint16_t pre_bucket_idx = 0x8000;   // not exist
-    bucket_acc_smem[tid_inner * 2 + 1].inf();
+    // 线程块内部共享内存
+    bucket_acc_smem[tid_inner * 2 + 1].inf(); // 设置为inf
 
     // 根据 scalar 值获得 offset
+    // 第 s 个 bucket_idx 其实就是scalar i,j_bar
+    // salar 是 odd 因此它对应的桶是 + 1 / 2
     uint32_t offset = tid + ((bucket_idx_ptr[s] + 1) >> 1);
     bucket_idx_pre_offset_ptr[tid] = offset;
     uint32_t unique_num = 0;
+    // 每个线程在每个窗口下处理的点
     // process [s, e)
     for (uint32_t i = s; i < e; i++) {
+        // todo 感觉就是在格式里面嵌入了新东西
+        // 获得指数和剩余dbl次数
         uint32_t power_of_2 = (scalar_tuple_out_ptr[i] >> 8) & 0x0f;
         uint32_t dbl_time = (scalar_tuple_out_ptr[i] >> 12) & 0x0f;
 
+        // 当前桶索引 其实就是 ai.ODD
         uint16_t cur_bucket_idx = bucket_idx_ptr[i];
 
         if (cur_bucket_idx != pre_bucket_idx && (unique_num++)) {
+            // 因为unique_num ++ 了 索引就是 i != s 的时候 ,unique_num 起步等于2
             buckets_pre_ptr[offset + unique_num - 2] = bucket_acc_smem[tid_inner * 2 + 1];
             bucket_idx_pre_vector_ptr[offset + unique_num - 2] = (pre_bucket_idx + 1) >> 1;
             bucket_acc_smem[tid_inner * 2 + 1].inf();
         }
         pre_bucket_idx = cur_bucket_idx;
+        // 查预计算表获得点值
         bucket_acc_smem[tid_inner * 2] = pre_points[point_idx_out_ptr[i] + power_of_2 * npoints];
         for (uint32_t j = 0; j < dbl_time; j++) {
             bucket_acc_smem[tid_inner * 2].dbl();
         }
+        // 根据scalar的符号判断是否需要进行取反
         if (scalar_tuple_out_ptr[i] & 0x01) {
             bucket_acc_smem[tid_inner * 2].neg(true);
         }
@@ -396,6 +416,7 @@ void bucket_acc(uint32_t* scalar_tuple_out, uint16_t* bucket_idx, uint32_t* poin
 }
 
 // v1.1 (2^{14} THREADS)
+// 利用二分搜索去找相应的buffer点进行聚合到相应桶里
 __global__
 void bucket_acc_2(bucket_t *buckets_pre, uint16_t* bucket_idx_pre_vector, uint16_t* bucket_idx_pre_used,
                   uint32_t* bucket_idx_pre_offset, bucket_t *buckets, uint32_t upper_tnum, size_t npoints) {
@@ -403,13 +424,15 @@ void bucket_acc_2(bucket_t *buckets_pre, uint16_t* bucket_idx_pre_vector, uint16
     const uint32_t tid = blockIdx.y * blockDim.x + tid_inner;
     const uint32_t bid = blockIdx.x;
     const uint32_t buffer_len = upper_tnum + (1 << (WBITS - 2));
-
+    // dim3(NWINS, (1 << (WBITS - 2)) / NTHREADS), NTHREADS 不能直接求tnum了
+    // upper_tnum = (uint32_t)(config.N * NTHREADS)
     bucket_t* buckets_pre_ptr = buckets_pre + buffer_len * bid;
     uint16_t* bucket_idx_pre_vector_ptr = bucket_idx_pre_vector + buffer_len * bid;
     uint16_t* bucket_idx_pre_used_ptr = bucket_idx_pre_used + upper_tnum * bid;
     uint32_t* bucket_idx_pre_offset_ptr = bucket_idx_pre_offset + upper_tnum * bid;
     bucket_t* buckets_ptr = buckets + (1 << (WBITS - 2)) * bid;
 
+    // 在每个窗口内查线程总数干的东西
     int left = 0, right = upper_tnum - 1;
     bool not_inf = false;
     uint32_t start_pos = 0;
@@ -445,27 +468,33 @@ void bucket_acc_2(bucket_t *buckets_pre, uint16_t* bucket_idx_pre_vector, uint16
     bucket_acc_smem[tid_inner].inf();
     while (not_inf && start_pos < upper_tnum) {
         not_inf = false;
+        // 找到对应的buffer了
         uint16_t vector_used = bucket_idx_pre_used_ptr[start_pos];
         uint32_t vector_ptr = bucket_idx_pre_offset_ptr[start_pos];
         for (uint32_t i = vector_ptr; i < vector_ptr + vector_used; i++) {
             if (bucket_idx_pre_vector_ptr[i] == (tid + 1)) {
                 not_inf = true;
+                // 把找到的点累加起来
                 bucket_acc_smem[tid_inner].add(buckets_pre_ptr[i]);
                 break;
             }
         }
+        // 然后往前找
 	    start_pos++;
     }
+    // 最后存到相应的全局内存里
     buckets_ptr[tid] = bucket_acc_smem[tid_inner];  // can omit kerner `bucket_inf`
 
 }
 
 __global__
 void bucket_agg_1(bucket_t *buckets) {
+    // dim3(NWINS, config.N), NTHREADS
     const uint32_t tnum = blockDim.x * gridDim.y;
     const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
     const uint32_t bid = blockIdx.x;
 
+    // 第 i 个窗口对应的桶值
     bucket_t* buckets_ptr = buckets + (1 << (WBITS - 2)) * bid;
 
     for (uint32_t j = tid; j < (1 << (WBITS - 5)); j += tnum) {
@@ -501,6 +530,8 @@ void bucket_agg_2(bucket_t *buckets) {
 
 __global__
 void recursive_sum(bucket_t *buckets, bucket_t *res) {
+    // dim3(NWINS, config.N), NTHREADS
+    // res 为每个窗口对应的桶和 即算Qj
     const uint32_t tnum = blockDim.x * gridDim.y;
     const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
     const uint32_t bid = blockIdx.x;
@@ -534,8 +565,11 @@ void recursive_sum(bucket_t *buckets, bucket_t *res) {
         buckets_ptr[tid].add(buckets_ptr[tid + 1]);
     }
     if (tid == 0) {
+        // 2Qj
         buckets_ptr->dbl();
+        // -B1
         res[bid].neg(true);
+        // 2Qj-B1
         res[bid].add(*buckets_ptr);
     }
 
@@ -662,7 +696,6 @@ public:
     // 符号变换
     device_ptr_list_t<uint32_t> jy_d_scalar_tuple_ptrs;
     device_ptr_list_t<uint32_t> jy_d_point_idx_ptrs;
-    device_ptr_list_t<uint32_t> jy_d_sign_ptrs;
 
 
     device_ptr_list_t<uint16_t> d_bucket_idx_ptrs;
@@ -764,9 +797,6 @@ public:
     size_t get_size_point_idx(MSMConfig& config) {
         return config.n * sizeof(uint32_t) * NWINS;
     }
-    size_t get_size_sign(MSMConfig& config) {
-        return config.n * sizeof(uint32_t) * NWINS;
-    }
     // 桶索引大小 点数 * 窗口数 * 窗口内桶索引
     size_t get_size_bucket_idx(MSMConfig& config) {
         return config.n * sizeof(uint16_t) * NWINS;
@@ -813,18 +843,22 @@ public:
         printf("[Allocate d_buckets] sizeof(bucket_t) * NWINS * (1 << (WBITS - 2)) [%d]\n",get_size_buckets());
         return d_bucket_ptrs.allocate(get_size_buckets());
     }
+    // 静态 bucket
     size_t allocate_d_buckets_pre(MSMConfig& config) {  // v1.1
         printf("[Allocate d_buckets_pre] sizeof(bucket_t) * NWINS * (config.N * NTHREADS + (1 << (WBITS - 2))) [%d]\n",get_size_buckets_pre(config));
         return d_bucket_pre_ptrs.allocate(get_size_buckets_pre(config));
     }
+    // buffer_index
     size_t allocate_d_bucket_idx_pre_vector(MSMConfig& config) {  // v1.1
         printf("[Allocate d_bucket_idx_pre_vector] sizeof(uint16_t) * NWINS * (config.N * NTHREADS + (1 << (WBITS - 2))) [%d]\n",get_size_bucket_idx_pre_vector(config));
         return d_bucket_idx_pre_ptrs.allocate(get_size_bucket_idx_pre_vector(config));
     }
+    // buffer_used
     size_t allocate_d_bucket_idx_pre_used(MSMConfig& config) {  // v1.1
         printf("[Allocate d_bucket_idx_pre_used] sizeof(uint16_t) * config.N * NTHREADS * NWINS [%d]\n",get_size_bucket_idx_pre_used(config));
         return d_bucket_idx_pre_ptrs.allocate(get_size_bucket_idx_pre_used(config));
     }
+    // buffer_offset
     size_t allocate_d_bucket_idx_pre_offset(MSMConfig& config) {  // v1.2
         printf("[Allocate d_bucket_idx_pre_offset] sizeof(uint32_t) * config.N * NTHREADS * NWINS [%d]\n",get_size_bucket_idx_pre_offset(config));
         return d_bucket_idx_pre2_ptrs.allocate(get_size_bucket_idx_pre_offset(config));
@@ -852,14 +886,6 @@ public:
     size_t allocate_jy_d_point_idx_out(MSMConfig& config) {
         return jy_d_point_idx_ptrs.allocate(get_size_point_idx(config));
     }
-    size_t allocate_jy_d_sign(MSMConfig& config) {
-        return jy_d_sign_ptrs.allocate(get_size_sign(config));
-    }
-    size_t allocate_jy_d_sign_out(MSMConfig& config) {
-        return jy_d_sign_ptrs.allocate(get_size_sign(config));
-    }
-
-
     size_t allocate_d_scalar_tuple(MSMConfig& config) {
         printf("[Allocate d_scalar_tuple] config.n * sizeof(uint32_t) * NWINS [%d]\n",get_size_scalar_tuple(config));
         return d_scalar_tuple_ptrs.allocate(get_size_scalar_tuple(config));
@@ -984,17 +1010,15 @@ public:
     void launch_jy_process_scalar_1(MSMConfig& config,
                                  size_t d_scalars_sn, size_t jy_d_scalar_tuples_sn,
                                  size_t jy_d_point_idx_sn,
-                                 size_t jy_d_sign_sn,
                                  cudaStream_t s = nullptr) {
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         uint16_t* d_scalars = (uint16_t*)d_scalar_ptrs[d_scalars_sn];
         uint32_t* d_scalar_tuple = jy_d_scalar_tuple_ptrs[jy_d_scalar_tuples_sn];
         uint32_t* d_point_idx = jy_d_point_idx_ptrs[jy_d_point_idx_sn];
-        uint32_t* d_sign = jy_d_sign_ptrs[jy_d_sign_sn];
 
         CUDA_OK(cudaSetDevice(device));
         launch_coop(jy_process_scalar_1, NWINS * config.N, NTHREADS, stream,
-                    d_scalars, d_scalar_tuple, d_point_idx, d_sign, config.npoints);
+                    d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
     }
 
     // 根据排序后的scalar元组，获得桶idx

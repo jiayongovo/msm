@@ -334,10 +334,8 @@ struct Context {
     // 用于标量变换
     size_t jy_d_scalar_tuples_sn;
     size_t jy_d_point_idx_sn;
-    size_t jy_d_sign_sn;
     size_t jy_d_scalar_tuples_out_sn;
     size_t jy_d_point_idx_out_sn;
-    size_t jy_d_sign_out_sn;
 
     size_t d_buckets_pre_sn;
     size_t d_bucket_idx_pre_vector_sn;
@@ -391,9 +389,13 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
         ctx->d_scalar_map_sn = ctx->pipp.allocate_d_scalar_map();
         // 分配桶空间
         ctx->d_buckets_sn = ctx->pipp.allocate_d_buckets();
+        // 静态 bucket
         ctx->d_buckets_pre_sn = ctx->pipp.allocate_d_buckets_pre(ctx->config);
+        // buffer_index
         ctx->d_bucket_idx_pre_vector_sn = ctx->pipp.allocate_d_bucket_idx_pre_vector(ctx->config);
+        // buffer_used
         ctx->d_bucket_idx_pre_used_sn = ctx->pipp.allocate_d_bucket_idx_pre_used(ctx->config);
+        // buffer_offset
         ctx->d_bucket_idx_pre_offset_sn = ctx->pipp.allocate_d_bucket_idx_pre_offset(ctx->config);
 
         // 返回值 NWIN * bucket 
@@ -401,10 +403,8 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
         // 分配符号变换空间
         ctx->jy_d_scalar_tuples_sn = ctx->pipp.allocate_jy_d_scalar_tuple(ctx->config);
         ctx->jy_d_point_idx_sn = ctx->pipp.allocate_jy_d_point_idx(ctx->config);
-        ctx->jy_d_sign_sn = ctx->pipp.allocate_jy_d_sign(ctx->config);
         ctx->jy_d_scalar_tuples_out_sn = ctx->pipp.allocate_jy_d_scalar_tuple_out(ctx->config);
         ctx->jy_d_point_idx_out_sn = ctx->pipp.allocate_jy_d_point_idx(ctx->config);
-        ctx->jy_d_sign_out_sn = ctx->pipp.allocate_jy_d_sign_out(ctx->config);
         // 存kij
         ctx->d_scalar_tuples_sn = ctx->pipp.allocate_d_scalar_tuple(ctx->config);
         ctx->d_scalar_tuples_out_sn = ctx->pipp.allocate_d_scalar_tuple_out(ctx->config);
@@ -508,8 +508,8 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
 
                 ctx->pipp.launch_jy_process_scalar_1(ctx->config, d_scalars_compute,
                                                   ctx->jy_d_scalar_tuples_sn,
-                                                  ctx->jy_d_point_idx_sn,
-                                                  ctx->jy_d_sign_sn);
+                                                  ctx->jy_d_point_idx_sn
+                                                  );
 
                 uint32_t* d_scalar_tuple = ctx->pipp.d_scalar_tuple_ptrs[ctx->d_scalar_tuples_sn];
                 uint32_t* d_scalar_tuple_out = ctx->pipp.d_scalar_tuple_ptrs[ctx->d_scalar_tuples_out_sn];
