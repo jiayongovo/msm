@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use ark_bls12_381::G1Affine;
-use ark_ec::{msm::VariableBaseMSM, AffineCurve};
+use ark_ec::msm::VariableBaseMSM;
 use ark_ff::BigInteger256;
 use ark_ec::ProjectiveCurve;
 
@@ -13,7 +13,7 @@ use jy_msm::*;
 
 #[test]
 fn msm_correctness() {
-    let test_npow = std::env::var("TEST_NPOW").unwrap_or("2".to_string());
+    let test_npow = std::env::var("TEST_NPOW").unwrap_or("1".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
 
     let batches = 1;

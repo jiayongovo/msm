@@ -63,7 +63,13 @@ public:
         X = a.X;
         Y = a.Y;
         // this works as long as |a| was confirmed to be non-infinity
-        ZZZ = ZZ = field_t::one();
+        // todo 
+        if (X.is_zero() & Y.is_zero()) {
+            this->inf();
+        } else {
+            ZZZ = ZZ = field_t::one();
+        }
+        //ZZZ = ZZ = field_t::one();
         return *this;
     }
 

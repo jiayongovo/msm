@@ -64,11 +64,6 @@ void bucket_agg_1(bucket_t *buckets);
 __global__
 void bucket_agg_2(bucket_t *buckets,bucket_t* res,bucket_t* st,bucket_t* sos);
 
-__global__
-    void res_sum(bucket_t *d_buckets,bucket_t* d_res);
-
-__global__
-void print_res(bucket_t * res);
 
 #ifdef __CUDA_ARCH__
 
@@ -493,54 +488,6 @@ void bucket_agg_2(bucket_t *buckets,bucket_t* res,bucket_t* st,bucket_t* sos) {
 }
 
 
-__global__
-void res_sum(bucket_t* buckets,bucket_t * res) {
-        // uint32_t bucket_num = 1<< (WBITS - 1);
-        // bucket_t* win_0 = buckets;
-        // bucket_t* win_1 = buckets + bucket_num;
-        // res[0].inf();
-        // res[1].inf();
-        // for (uint32_t i = 0; i < bucket_num; i++)
-        // {
-        //     for (uint32_t j = 0; j < i; j++)
-        //     {   
-        //         win_0[i].xyzz_print();
-        //         win_1[i].xyzz_print();
-        //         d_res[0].add(win_0[i]);
-        //         d_res[1].add(win_1[i]);
-        //     }
-        // }
-        // d_res[0].xyzz_print();
-        // d_res[1].xyzz_print();
-    const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
-    const uint32_t bid = blockIdx.x;
-    // 两个窗口
-    bucket_t* buckets_ptr = buckets + (1 << (WBITS - 1)) * bid;
-    uint32_t bucket_num = 1<< (WBITS - 1);
-    if (tid == 0) {
-        res[bid].inf();
-        for (uint32_t i = bucket_num - 1; i >=0; i--)
-        {
-            for (uint32_t j = bucket_num-1;j>=i;j--){
-                //printf("bid %d i = %d\n",bid,i);
-                res[bid].add(buckets_ptr[j]);
-            }
-        }
-    }
- }
-
-__global__
-void print_res(bucket_t * res) {
-    const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
-    const uint32_t bid = blockIdx.x;
-    if (tid == 0) {
-        printf("print res %d",bid);
-        res[bid].xyzz_print();
-    }
- }
-
-
-
 
 #else
 
@@ -675,7 +622,6 @@ public:
 
     // Initialize instance. Throws cuda_error on error.
     void init() {
-        printf("[Initialize GPU instance.]\n");
         if (!init_done) {
             CUDA_OK(cudaSetDevice(device));
             cudaDeviceProp prop;
@@ -697,7 +643,6 @@ public:
 
     // Initialize parameters for a specific size MSM. Throws cuda_error on error.
     MSMConfig init_msm_faster(size_t npoints) {
-        printf("[Begin init MSMConfig parameters]\n");
         init();
 
         MSMConfig config;
@@ -707,7 +652,6 @@ public:
         config.N = (sm_count*256) / (NTHREADS*NWINS);
         size_t delta = ((npoints+(config.N)-1)/(config.N)+WARP_SZ-1) & (0U-WARP_SZ);
         config.N = (npoints+delta-1) / delta;
-        printf("[MSMConfig] [npoints] [%d] [config.n] [%d] [delta] [%d] [Config.N] [%d]\n", npoints, config.n, delta, config.N);
 
         //        if(config.N % 2 == 1) config.N -= 1;
         return config;
@@ -776,32 +720,26 @@ public:
     }
 
     size_t allocate_d_scalars(MSMConfig& config) {
-        printf("[Allocate d_scalars] config.n * sizeof(scalar_t) [%d]\n",get_size_scalars(config));
         return d_scalar_ptrs.allocate(get_size_scalars(config));
     }
 
     size_t allocate_d_buckets() {
-        printf("[Allocate d_buckets] sizeof(bucket_t) * NWINS * (1 << (WBITS - 1)) [%d]\n",get_size_buckets());
         return d_bucket_ptrs.allocate(get_size_buckets());
     }
     // 静态 bucket
     size_t allocate_d_buckets_pre(MSMConfig& config) {  // v1.1
-        printf("[Allocate d_buckets_pre] sizeof(bucket_t) * NWINS * (config.N * NTHREADS + (1 << (WBITS - 1))) [%d]\n",get_size_buckets_pre(config));
         return d_bucket_pre_ptrs.allocate(get_size_buckets_pre(config));
     }
     // buffer_index
     size_t allocate_d_bucket_idx_pre_vector(MSMConfig& config) {  // v1.1
-        printf("[Allocate d_bucket_idx_pre_vector] sizeof(uint16_t) * NWINS * (config.N * NTHREADS + (1 << (WBITS - 1))) [%d]\n",get_size_bucket_idx_pre_vector(config));
         return d_bucket_idx_pre_ptrs.allocate(get_size_bucket_idx_pre_vector(config));
     }
     // buffer_used
     size_t allocate_d_bucket_idx_pre_used(MSMConfig& config) {  // v1.1
-        printf("[Allocate d_bucket_idx_pre_used] sizeof(uint16_t) * config.N * NTHREADS * NWINS [%d]\n",get_size_bucket_idx_pre_used(config));
         return d_bucket_idx_pre_ptrs.allocate(get_size_bucket_idx_pre_used(config));
     }
     // buffer_offset
     size_t allocate_d_bucket_idx_pre_offset(MSMConfig& config) {  // v1.2
-        printf("[Allocate d_bucket_idx_pre_offset] sizeof(uint32_t) * config.N * NTHREADS * NWINS [%d]\n",get_size_bucket_idx_pre_offset(config));
         return d_bucket_idx_pre2_ptrs.allocate(get_size_bucket_idx_pre_offset(config));
     }
 
@@ -813,7 +751,6 @@ public:
         return d_st_ptrs.allocate(2 * NTHREADS * config.N);
     }
     size_t allocate_d_res() {
-        printf("[Allocate d_res] sizeof(bucket_t) * NWINS [%d]\n",get_size_res());
         return d_res_ptrs.allocate(get_size_res());
     }
 
@@ -831,12 +768,10 @@ public:
     }
     // 分配桶索引空间
     size_t allocate_d_bucket_idx(MSMConfig& config) {
-        printf("[Allocate d_bucket_idx] config.n * sizeof(uint16_t) * NWINS [%d]\n",get_size_bucket_idx(config));
         return d_bucket_idx_ptrs.allocate(get_size_bucket_idx(config));
     }
 
     size_t allocate_d_cub_sort_faster(MSMConfig& config) {
-        printf("[Allocate d_cub_sort_faster WARN Change] config.n * sizeof(uint16_t) * NWINS [%d]\n",get_size_cub_sort_faster(config));
         return d_cub_ptrs.allocate(get_size_cub_sort_faster(config));
     }
 
@@ -984,23 +919,6 @@ public:
         bucket_t* sost = d_st_ptrs[d_sost_sn];
         CUDA_OK(cudaSetDevice(device));
         launch_coop(bucket_agg_2, dim3(2, config.N), NTHREADS, stream, d_buckets, d_res,st,sost);
-    }
-
-    void launch_res_sum(MSMConfig& config,size_t d_buckets_sn,size_t d_res_sn, cudaStream_t s = nullptr) {
-        cudaStream_t stream = (s == nullptr) ? default_stream : s;
-        bucket_t* d_buckets = d_bucket_ptrs[d_buckets_sn];
-        bucket_t* d_res = d_res_ptrs[d_res_sn];
-        
-        CUDA_OK(cudaSetDevice(device));
-        launch_coop(res_sum, dim3(2, config.N),NTHREADS, stream, d_buckets, d_res);
-    }
-
-        void launch_print_res(MSMConfig& config,size_t d_res_sn, cudaStream_t s = nullptr) {
-        cudaStream_t stream = (s == nullptr) ? default_stream : s;
-        bucket_t* d_res = d_res_ptrs[d_res_sn];
-        printf("begin print res!\n");
-        CUDA_OK(cudaSetDevice(device));
-        launch_coop(print_res, dim3(2, config.N),NTHREADS, stream, d_res);
     }
 
 
