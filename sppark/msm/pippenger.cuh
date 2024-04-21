@@ -210,7 +210,7 @@ void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
         cur_scalar = cur_sign == 1 ? ((1 << WBITS) - cur_scalar ): cur_scalar;
         // 将 scalar 和 sign进行拼接
         scalar_tuple[i] = cur_scalar << 1 | cur_sign;
-        printf("windows 0 k%d 0  = %d .. %d\n",i,cur_scalar,cur_sign);
+        //printf("windows 0 k%d 0  = %d .. %d\n",i,cur_scalar,cur_sign);
         point_idx[i] = i;
         // j 放进去
         for (int j = i + npoints; j < NWINS * npoints; j += npoints) {
@@ -223,9 +223,7 @@ void jy_process_scalar_1(uint16_t* scalar, uint32_t* scalar_tuple,
             cur_scalar = cur_sign == 1 ? (1<< WBITS) - cur_scalar : cur_scalar;
             point_idx[j] = i;
             scalar_tuple[j] = cur_scalar << 1 | cur_sign;
-            // printf("windows %d k%d = %d .. %d\n",j,i,cur_scalar,cur_sign);
-
-            printf("windows %d k%d%d = %d...%d\n",j-i,i,j-i,cur_scalar,cur_sign);
+            //printf("windows %d k%d%d = %d...%d\n",j-i,i,j-i,cur_scalar,cur_sign);
         }
     }
 
@@ -409,14 +407,6 @@ void bucket_acc_2(bucket_t *buckets_pre, uint16_t* bucket_idx_pre_vector, uint16
     }
     // 最后存到相应的全局内存里
     buckets_ptr[tid] = bucket_acc_smem[tid_inner];  // can omit kerner `bucket_inf`
-    __syncthreads();
-    if (tid == 0){
-        for(int i = 0;i<(1 << (WBITS - 1));i++){
-            if (!buckets_ptr[i].is_inf()){
-                printf("第 %d 个窗口 第 %d 个桶\n",bid,i);
-            }
-        }
-    }
 }
 
 // 完成窗口(0,1)聚合
@@ -433,13 +423,6 @@ void bucket_agg_1(bucket_t *buckets) {
         for(int j = 1; j <= wins ; j++) {
             bucket_t* buckets_ptr_add = buckets_ptr + (1 << (WBITS - 1)) * 2 * j;
             buckets_ptr[i].add(buckets_ptr_add[i]);
-        }
-    }
-    if (tid == 0){
-        for(int i = 0;i<(1 << (WBITS - 1));i++){
-            if (!buckets_ptr[i].is_inf()){
-                printf("聚合后 第 %d 个窗口 第 %d 个桶\n",bid,i);
-            }
         }
     }
 }

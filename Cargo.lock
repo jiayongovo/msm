@@ -135,24 +135,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "blst-msm"
-version = "0.1.0"
-dependencies = [
- "ark-bls12-381",
- "ark-ec",
- "ark-ff",
- "ark-std",
- "blst",
- "cc",
- "criterion",
- "rand",
- "rand_chacha",
- "rayon",
- "sppark",
- "which",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -386,6 +368,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c5f195fe497f702db0f318b07fdd68edb16955aed830df8363d837542f8f935a"
 dependencies = [
  "wasm-bindgen",
+]
+
+[[package]]
+name = "jy-msm"
+version = "0.1.0"
+dependencies = [
+ "ark-bls12-381",
+ "ark-ec",
+ "ark-ff",
+ "ark-std",
+ "blst",
+ "cc",
+ "criterion",
+ "rand",
+ "rand_chacha",
+ "rayon",
+ "sppark",
+ "which",
 ]
 
 [[package]]
