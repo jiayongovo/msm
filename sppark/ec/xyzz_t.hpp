@@ -23,9 +23,24 @@ public:
         field_t X, Y;
         int inf[sizeof(field_t)%16 ? 2 : 4];
 
+        public :
         inline __device__ bool is_inf() const
         {   return inf[0]&1 != 0;   }
+        inline __device__ void affine_inf_set_inf() {
+            inf[0] = 1;
+        }
     };
+    inline __device__ xyzz_t& operator=(const affine_inf_t& a)
+    {
+        X = a.X;
+        Y = a.Y;
+        if (a.is_inf()) {
+            ZZZ.zero(); ZZ.zero();
+        } else {
+            ZZZ = ZZ = field_t::one();
+        }
+        return *this;
+    }
 #else
     class affine_inf_t { friend xyzz_t;
         field_t X, Y;
@@ -64,12 +79,7 @@ public:
         Y = a.Y;
         // this works as long as |a| was confirmed to be non-infinity
         // todo 
-        if (X.is_zero() & Y.is_zero()) {
-            this->inf();
-        } else {
-            ZZZ = ZZ = field_t::one();
-        }
-        //ZZZ = ZZ = field_t::one();
+        ZZ = ZZ = field_t::one();
         return *this;
     }
 
@@ -80,6 +90,23 @@ public:
         a.X = a.X^2;        // 1/Z^2
         a.X *= X;       // X/Z^2
         a.Y *= Y;       // Y/Z^3
+    }
+    template<class affine_inf_t>
+    inline __device__ void xyzz_to_affine_inf(affine_inf_t& a) {
+        if (ZZZ.is_zero() & ZZ.is_zero()) {
+            a.affine_inf_set_inf();
+        } else {
+            a.Y = ZZZ.inv();
+            a.X = a.Y * ZZ;   // 1/Z
+            a.X = a.X^2;        // 1/Z^2
+            a.X *= X;       // X/Z^2
+            a.Y *= Y;       // Y/Z^3
+        }
+        // a.Y = ZZZ.inv();
+        // a.X = a.Y * ZZ;   // 1/Z
+        // a.X = a.X^2;        // 1/Z^2
+        // a.X *= X;       // X/Z^2
+        // a.Y *= Y;       // Y/Z^3
     }
 
     inline __device__ void xyzz_print() {
@@ -339,7 +366,7 @@ public:
 #else
         xyzz_t& p31 = *this;
 #endif
-
+        printf("bucket add affine_t!\n");
         if (p2.is_inf()) {
             return;
         } else if (p31.is_inf()) {

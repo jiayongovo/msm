@@ -178,7 +178,7 @@ void jy_pre_compute(affine_t* pre_points, size_t npoints) {
             Pi = Pi + npoints;
              for(uint32_t k=0;k<pow;k++)
                 Pi_xyzz.dbl();
-            Pi_xyzz.xyzz_to_affine(*Pi);
+            Pi_xyzz.xyzz_to_affine_inf(*Pi);
         }
     }
 }
