@@ -12,10 +12,10 @@ use std::str::FromStr;
 use jy_msm::*;
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("10".to_string());
+    let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&bench_npow).unwrap();
 
-    let batches = 16;
+    let batches = 1;
     let (points, scalars) =
         util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
     let mut context = multi_scalar_mult_init(points.as_slice());
@@ -27,9 +27,7 @@ fn criterion_benchmark(c: &mut Criterion) {
     group.bench_function(name, |b| {
         b.iter(|| {
             let _ = multi_scalar_mult(&mut context, &points.as_slice(), unsafe {
-                std::mem::transmute::<&[_], &[BigInteger256]>(
-                    scalars.as_slice(),
-                )
+                std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
             });
         })
     });
