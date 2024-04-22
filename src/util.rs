@@ -28,7 +28,8 @@ pub fn generate_points_scalars<G: AffineCurve>(
         );
     
 // Sprinkle in some infinity points
-    points[1] = G::zero();
+    // points[1] = G::zero();
+    // points[0] = G::zero();
     while points.len() < len {
         points.append(&mut points.clone());
     }

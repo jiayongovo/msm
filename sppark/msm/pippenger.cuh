@@ -431,60 +431,55 @@ void bucket_agg_2(bucket_t *buckets,bucket_t* res,bucket_t* st,bucket_t* sos) {
     const uint32_t bucket_num = 1 << (WBITS - 1);
     bucket_t* st_my = st + bid * tnum;
     bucket_t* sos_my = sos + bid * tnum;
-    res[bid].inf();
     bucket_t tmp;
-    if(tid == 0){
-        tmp.inf();
-        for(int i = bucket_num - 2; i>=0;i--){
-            tmp.add(buckets_ptr[i]);
-            res[bid].add(tmp);
-        }
-    }
-    // const uint32_t step_len = (bucket_num + tnum - 1) / tnum;
-    // // 首先确定边界范围，当然需要进一步调整
-    // int32_t s = step_len * tid;
-    // int32_t e = s + step_len;
-    // if (s >= bucket_num) {
-    //     return;
-    // }
-    // if (e >= bucket_num) e = bucket_num;
-
-    // st_my[tid].inf();
-    // sos_my[tid].inf();
-    // // 计算 st 和 sost
-
-    // for (int32_t i = e - 1; i >= s ; i--) {
-    //     bucket_t cur_bucket = buckets_ptr[i];
-    //     if(!cur_bucket.is_inf()){
-    //         printf("bid %d tid %d i = %d step_len %d\n",bid,tid,i,step_len);
-    //     }
-    //     st_my[tid].add(cur_bucket);
-    //     sos_my[tid].add(st_my[tid]); // 每次添加当前 st 的值
-    // }
-    // bucket_t tmp;
-    // tmp.inf();
-    // for (uint32_t i = 0; i < tid; i++) {
-    //        tmp.add(st_my[tid]);
-    // }
-    // st_my[tid] = tmp;
-    // __syncthreads();
-    // if(tid ==0){
-    //     for (int i = 2; i<tnum; i++)
-    //         st_my[1].add(st_my[i]);
-    //     for (int i = 0; i< step_len;i++)
-    //         res[bid].add(st_my[1]);
-    //     for (int i = 0;i<tnum; i++)
-    //         res[bid].add(sos_my[i]);
-    //     res[bid].inf();
+    res[bid].inf();
+    st_my[tid].inf();
+    sos_my[tid].inf();
+    tmp.inf();
+    // if(tid == 0){
     //     tmp.inf();
     //     for(int i = bucket_num - 2; i>=0;i--){
     //         tmp.add(buckets_ptr[i]);
     //         res[bid].add(tmp);
     //     }
-
     // }
-    
+    const uint32_t step_len = (bucket_num + tnum - 2) / tnum;  
 
+    // // 首先确定边界范围，当然需要进一步调整
+    int32_t s = step_len * tid;
+    int32_t e = s + step_len;
+    if (s >= (bucket_num - 1)) {
+        return;
+    }
+    if (e >= (bucket_num - 1)) e = bucket_num - 1;
+
+    for (int32_t i = e - 1; i >= s ; i--) {
+        bucket_t cur_bucket = buckets_ptr[i];
+        st_my[tid].add(cur_bucket);
+        sos_my[tid].add(st_my[tid]); // 每次添加当前 st 的值
+    }
+    //printf("tid %d st_my is inf %d\n",tid,st_my[tid].is_inf());
+    //printf("tid %d sos_my is inf %d\n",tid,sos_my[tid].is_inf());
+    // bucket_t tmp;
+
+    for (int i = 0; i < tid; i++) {
+           tmp.add(st_my[tid]);
+    }
+    st_my[tid] = tmp;
+    __syncthreads();
+    if(tid == 0){
+        for (int i = 2; i< tnum; i++)
+            st_my[1].add(st_my[i]);
+
+        for (int i = 0; i< step_len;i++){
+            res[bid].add(st_my[1]);
+        }
+
+        for(int i = 0; i< tnum;i++){
+            res[bid].add(sos_my[i]);
+        }
+    }
+    
 }
 
 
