@@ -247,8 +247,8 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
                 // 获得 bucket index
                 ctx->pipp.launch_process_scalar_2(ctx->config,
                                                   ctx->jy_d_scalar_tuples_out_sn, ctx->d_bucket_idx_sn);
-                // 桶初始化 todo 是否可以删除
-                ctx->pipp.launch_bucket_inf(ctx->config, ctx->d_buckets_sn);
+
+
                 // accumulate parts of the buckets into static buffers.
                 // 预计算点
                 ctx->pipp.launch_bucket_acc(ctx->config, ctx->jy_d_scalar_tuples_out_sn,

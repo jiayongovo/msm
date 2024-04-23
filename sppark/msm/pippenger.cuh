@@ -63,8 +63,6 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
 #ifdef __CUDA_ARCH__
 
 static __shared__ bucket_t bucket_acc_smem[NTHREADS * 2];
-static __shared__ bucket_t shared_st;
-static __shared__ bucket_t shared_sost;
 
 // Transposed scalar_t
 class scalar_T
@@ -226,6 +224,7 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
             // printf("windows %d k%d%d = %d...%d\n",j-i,i,j-i,cur_scalar,cur_sign);
         }
     }
+
 }
 // bucket_idx_ptr 第i个窗口第j个值对应的就是排序后scalar的值
 __global__ void process_scalar_2(uint32_t *scalar_tuple_out,
@@ -310,7 +309,7 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out, uint16_t *bucket_idx, uin
     if (e >= npoints)
         e = npoints;
 
-    uint16_t pre_bucket_idx = 0x8000; // not exist
+    uint16_t pre_bucket_idx = 0xffff; // not exist
     // 线程块内部共享内存
     bucket_acc_smem[tid_inner * 2 + 1].inf(); // 设置为inf
 
@@ -322,7 +321,6 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out, uint16_t *bucket_idx, uin
     for (uint32_t i = s; i < e; i++)
     {
         uint16_t cur_bucket_idx = bucket_idx_ptr[i];
-
         if (cur_bucket_idx != pre_bucket_idx && (unique_num++))
         {
             // 因为unique_num ++ 了 索引就是 i != s 的时候 ,unique_num 起步等于2
@@ -456,6 +454,8 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
     const uint32_t tnum = blockDim.x * gridDim.y;
     const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
     const uint32_t bid = blockIdx.x;
+    const uint32_t tid_inner = threadIdx.x;
+
     bucket_t *buckets_ptr = buckets + (1 << (WBITS - 1)) * bid;
     const uint32_t bucket_num = 1 << (WBITS - 1);
     bucket_t *st_my = st + bid * tnum;
@@ -463,42 +463,27 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
     bucket_t tmp;
     st_my[tid].inf();
     sos_my[tid].inf();
-    // if(tid == 0){
-    //     tmp.inf();
-    //     for(int i = bucket_num - 2; i>=0;i--){
-    //         tmp.add(buckets_ptr[i]);
-    //         res[bid].add(tmp);
-    //     }
-    // }
-    // 总共 tnum 个线程  每个线程处理的桶数是 step_len = bucket_num - 1 / tnum 调整为 tnum 的整数倍
+    bucket_acc_smem[tid_inner * 2 + 1].inf(); // 设置为inf
+    bucket_acc_smem[tid_inner * 2].inf();
+
     const uint32_t step_len = (bucket_num + tnum - 2) / tnum;
-
-    // // 首先确定边界范围，当然需要进一步调整
-
     int32_t s = step_len * tid;
     int32_t e = s + step_len;
     // 对于超出的线程，直接返回
     if (s > (bucket_num - 2))
     {
-        return;
+         return;
     }
     if (e >= (bucket_num - 2))
-        e = bucket_num - 1;
+         e = bucket_num - 1;
 
     for (int32_t i = e - 1; i >= s; i--)
     {
-        bucket_t cur_bucket = buckets_ptr[i];
-        // // st_my[tid] = b[s] b[s+1] ... b[e-1]
-        st_my[tid].add(cur_bucket);
-        // //     // sos_my[tid] = b[s] + 2b[s+1] + ... + (step_len)b[e-1]
-        sos_my[tid].add(st_my[tid]);
+        bucket_acc_smem[tid_inner*2].add(buckets_ptr[i]);
+        bucket_acc_smem[tid_inner*2 + 1].add(bucket_acc_smem[tid_inner*2]);
     }
-    tmp.inf();
-    for (int i = 0; i < tid; i++)
-    {
-        tmp.add(st_my[tid]);
-    }
-    st_my[tid] = tmp;
+    mul(st_my[tid], bucket_acc_smem[tid_inner*2], tid);
+    sos_my[tid] = bucket_acc_smem[tid_inner*2 + 1];
     __syncthreads();
     if (tid == 0)
     {
@@ -512,6 +497,54 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
         for (int i = 0; i < step_len; i++)
             res[bid].add(st_my[0]);
     }
+
+
+
+
+    // // 总共 tnum 个线程  每个线程处理的桶数是 step_len = bucket_num - 1 / tnum 调整为 tnum 的整数倍
+    // const uint32_t step_len = (bucket_num + tnum - 2) / tnum;
+
+    // // // 首先确定边界范围，当然需要进一步调整
+
+    // int32_t s = step_len * tid;
+    // int32_t e = s + step_len;
+    // // 对于超出的线程，直接返回
+    // if (s > (bucket_num - 2))
+    // {
+    //     return;
+    // }
+    // if (e >= (bucket_num - 2))
+    //     e = bucket_num - 1;
+
+    // for (int32_t i = e - 1; i >= s; i--)
+    // {
+    //     bucket_t cur_bucket = buckets_ptr[i];
+    //     // // st_my[tid] = b[s] b[s+1] ... b[e-1]
+    //     st_my[tid].add(cur_bucket);
+    //     // //     // sos_my[tid] = b[s] + 2b[s+1] + ... + (step_len)b[e-1]
+    //     sos_my[tid].add(st_my[tid]);
+    // }
+    // tmp.inf();
+    // for (int i = 0; i < tid; i++)
+    // {
+    //     tmp.add(st_my[tid]);
+    // }
+    // st_my[tid] = tmp;
+    // __syncthreads();
+    // if (tid == 0)
+    // {
+    //     res[bid].inf();
+    //     for (int i = 1; i < tnum; i++)
+    //         st_my[0].add(st_my[i]);
+    //     for (int i = 0; i < tnum; i++)
+    //     {
+    //         res[bid].add(sos_my[i]);
+    //     }
+    //     for (int i = 0; i < step_len; i++)
+    //         res[bid].add(st_my[0]);
+    // }
+
+
 }
 
 #else
