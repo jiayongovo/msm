@@ -3,5 +3,3 @@
 Cargo.lock
 target/
 !target/criterion/
-wcl_msm/
-out/

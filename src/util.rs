@@ -8,7 +8,7 @@ use rand_chacha::ChaCha20Rng;
 use ark_ec::{AffineCurve, ProjectiveCurve};
 use ark_std::UniformRand;
 
-use ark_ff::prelude::*;
+use ark_ff::{prelude::*, BigInteger256, Fp256};
 use ark_std::vec::Vec;
 
 pub fn generate_points_scalars<G: AffineCurve>(
@@ -25,17 +25,20 @@ pub fn generate_points_scalars<G: AffineCurve>(
     );
 
     // Sprinkle in some infinity points
-    points[1] = G::zero();
-    points[10] = G::zero();
+    // points[1] = G::zero();
+    // points[10] = G::zero();
     while points.len() < len {
         points.append(&mut points.clone());
     }
 
     let points = &points[0..len];
 
-    let scalars = (0..len * batch_size)
+    let mut scalars = (0..len * batch_size)
         .map(|_| G::ScalarField::rand(&mut rng))
         .collect::<Vec<_>>();
+
+
+
     (points.to_vec(), scalars)
 }
 

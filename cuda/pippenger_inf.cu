@@ -261,7 +261,7 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
                 ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn);
                 ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,ctx->d_res_sn,ctx->d_st_sn,ctx->d_sost_sn);
 
-                ctx->pipp.synchronize_stream();
+                //ctx->pipp.synchronize_stream();
 
                 ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn);
 
