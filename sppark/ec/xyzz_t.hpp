@@ -39,6 +39,7 @@ public:
     };
     inline __device__ xyzz_t &operator=(const affine_inf_t &a)
     {
+        //printf("assigning affine_inf_t\n");
         X = a.X;
         Y = a.Y;
         if (a.is_inf())
@@ -94,6 +95,7 @@ public:
     template <class affine_t>
     inline __device__ xyzz_t &operator=(const affine_t &a)
     {
+        printf("assigning affine_t\n");
         X = a.X;
         Y = a.Y;
         // this works as long as |a| was confirmed to be non-infinity
@@ -160,6 +162,7 @@ public:
 
     inline __device__ operator jacobian_t<field_t>() const
     {
+        //printf("converting xyzz_t to jacobian_t\n");
         return jacobian_t<field_t>{X * ZZ, Y * ZZZ, ZZ};
     }
 
@@ -183,6 +186,7 @@ public:
      */
     __device__ void add(const xyzz_t &p2)
     {
+        //printf("using xyzz_t add xyzz_t\n");
         if (p2.is_inf())
         {
             return;
@@ -419,6 +423,7 @@ public:
 #else
         xyzz_t &p31 = *this;
 #endif
+        printf("using affine_t add xyzz_t\n");
         if (p2.is_inf())
         {
             return;

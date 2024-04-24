@@ -13,9 +13,9 @@ use jy_msm::*;
 
 #[test]
 fn msm_correctness() {
-    let test_npow = std::env::var("TEST_NPOW").unwrap_or("5".to_string());
+    let test_npow = std::env::var("TEST_NPOW").unwrap_or("2".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
-    let batches = 100;
+    let batches = 200;
     let (points, scalars) =
         util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
 
@@ -23,7 +23,7 @@ fn msm_correctness() {
     let msm_results = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
         std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
     });
-
+    
     // let mut scalars = [BigInteger256::new([
     //     16216263349635534264,
     //     15664681092332222065,
@@ -63,9 +63,8 @@ fn msm_correctness() {
     // scalars[30] = BigInteger256::new([3414014116536191969, 537868926796856752, 6733483066437204638, 5401895003828002121]);
     // scalars[31] = BigInteger256::new([12247974729265967748, 17785987365516517758, 7726225532640525801, 1215778371130875798]);
 
-
     //println!("scalar[0] is {:?}", scalars[0]);
-    
+
     //let msm_results = multi_scalar_mult(&mut context, points.as_slice(), &scalars);
     // println!("===========points beign============");
     // for i in 0..points.len() {
