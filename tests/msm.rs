@@ -13,9 +13,9 @@ use jy_msm::*;
 
 #[test]
 fn msm_correctness() {
-    let test_npow = std::env::var("TEST_NPOW").unwrap_or("5".to_string());
+    let test_npow = std::env::var("TEST_NPOW").unwrap_or("12".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
-    let batches = 100;
+    let batches = 1;
     let (points, scalars) =
         util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
 
@@ -89,18 +89,18 @@ fn msm_correctness() {
             std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
         })
         .into_affine();
-        if arkworks_result != msm_results[b].into_affine() {
-            println!("第 {} 批次出现问题", b);
-            println!("scalars beign");
-            for j in b * points.len()..(b + 1) * points.len() {
-                println!("{:?}", scalars[j]);
-            }
-            println!("scalars end");
-            println!("points beign");
-            for j in 0..points.len() {
-                println!("{:?}", points[j]);
-            }
-        }
-        // assert_eq!(arkworks_result, msm_results[b].into_affine());
+        // if arkworks_result != msm_results[b].into_affine() {
+        //     println!("第 {} 批次出现问题", b);
+        //     println!("scalars beign");
+        //     for j in b * points.len()..(b + 1) * points.len() {
+        //         println!("{:?}", scalars[j]);
+        //     }
+        //     println!("scalars end");
+        //     println!("points beign");
+        //     for j in 0..points.len() {
+        //         println!("{:?}", points[j]);
+        //     }
+        // }
+        assert_eq!(arkworks_result, msm_results[b].into_affine());
     }
 }

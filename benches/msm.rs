@@ -12,7 +12,7 @@ use std::str::FromStr;
 use jy_msm::*;
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("24".to_string());
+    let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("23".to_string());
     let npoints_npow = i32::from_str(&bench_npow).unwrap();
 
     let batches = 1;

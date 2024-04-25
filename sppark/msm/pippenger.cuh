@@ -28,10 +28,17 @@ static const int NTHRBITS = log2(NTHREADS);
 #ifndef NBITS
 #define NBITS 253
 #endif
+#ifndef FREQUENCY
+#define FREQUENCY 3
+#endif
 #ifndef WBITS
 #define WBITS 16
 #endif
 #define NWINS 16 // ((NBITS+WBITS-1)/WBITS)   // ceil(NBITS/WBITS)
+
+#if FREQUENCY > NWINS
+FREQUENCY = NWINS;
+#endif
 
 #ifndef LARGE_L1_CODE_CACHE
 #define LARGE_L1_CODE_CACHE 0
@@ -163,8 +170,13 @@ __global__ void jy_pre_compute(affine_t *pre_points, size_t npoints)
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     // 除了原始点 需要多少个num窗口 2^2num pi
-    const uint32_t num = (NWINS % 2 == 0 ? NWINS - 2 : NWINS - 1) / 2;
-
+    //const uint32_t num = (NWINS % 2 == 0 ? NWINS - 2 : NWINS - 1) / 2;
+    // if (NWINS % FREQUENCY == 0){
+    //     uint32_t  num = NWINS / FREQUENCY - 1;
+    // }else {
+    //     uint32_t  num = NWINS / FREQUENCY;
+    // }
+    const uint32_t num = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY - 1)) : (NWINS / FREQUENCY);
     bucket_t Pi_xyzz;
     for (uint32_t i = tid; i < npoints; i += tnum)
     {
@@ -175,7 +187,7 @@ __global__ void jy_pre_compute(affine_t *pre_points, size_t npoints)
             // 2c 4c
             // todo 有待优化
             Pi_xyzz = *(pre_points + i + j * npoints);
-            uint32_t pow = 2 * WBITS;
+            uint32_t pow = FREQUENCY * WBITS;
             Pi = Pi + npoints;
             for (uint32_t k = 0; k < pow; k++)
                 Pi_xyzz.dbl();
@@ -329,7 +341,7 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out, uint16_t *bucket_idx, uin
             bucket_acc_smem[tid_inner * 2 + 1].inf();
         }
         pre_bucket_idx = cur_bucket_idx;
-        uint32_t windows_pre_point_num = bid / 2;
+        uint32_t windows_pre_point_num = bid / FREQUENCY;
         // 第 bid/2 个窗口需要加 相应点的 多少次方到对应的窗口内
         bucket_acc_smem[tid_inner * 2] = pre_points[point_idx_out_ptr[i] + windows_pre_point_num * npoints];
         // 根据scalar的符号判断是否需要进行取反
@@ -437,13 +449,18 @@ __global__ void bucket_agg_1(bucket_t *buckets)
     const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
     const uint32_t bid = blockIdx.x;
     const uint32_t bucket_num = 1 << (WBITS - 1);
-    uint32_t wins = NWINS % 2 == 0 ? (NWINS - 2) / 2 : (bid == 0 ? (NWINS - 1) / 2 : ((NWINS - 1) / 2 - 1));
+    // uint32_t wins = NWINS % 2 == 0 ? (NWINS - 2) / 2 : (bid == 0 ? (NWINS - 1) / 2 : ((NWINS - 1) / 2 - 1));
+    uint32_t wins = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY - 1)) : (NWINS / FREQUENCY);
+
     bucket_t *buckets_ptr = buckets + (1 << (WBITS - 1)) * bid;
     for (uint32_t i = tid; i < bucket_num; i += tnum)
     {
         for (int j = 1; j <= wins; j++)
-        {
-            bucket_t *buckets_ptr_add = buckets_ptr + (1 << (WBITS - 1)) * 2 * j;
+        {   
+            uint32_t win_add_idx = FREQUENCY * j;
+            if (win_add_idx >= (NWINS - bid))
+                break;
+            bucket_t *buckets_ptr_add = buckets_ptr + (1 << (WBITS - 1)) * win_add_idx;
             buckets_ptr[i].add(buckets_ptr_add[i]);
         }
     }
@@ -808,7 +825,13 @@ public:
     size_t allocate_d_pre_points(MSMConfig &config)
     {
         // 11 个窗口 => 2^2c  2^4c 2^6c 2^8c 2&10c  + 原来那组
-        size_t num = (NWINS % 2 == 0 ? NWINS - 2 : NWINS - 1) / 2 + 1;
+        // size_t num = (NWINS % 2 == 0 ? NWINS - 2 : NWINS - 1) / 2 + 1;
+        // if (NWINS % FREQUENCY == 0) {
+        //     size_t num = NWINS / FREQUENCY ;
+        // } else {
+        //     size_t num = NWINS / FREQUENCY + 1;
+        // }
+        size_t num = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY)) : (NWINS / FREQUENCY + 1);
         return d_pre_points_ptrs.allocate(num * get_size_bases(config));
     }
 
@@ -844,12 +867,12 @@ public:
 
     size_t allocate_d_st(MSMConfig &config)
     {
-        return d_st_ptrs.allocate(2 * NTHREADS * config.N * sizeof(bucket_t));
+        return d_st_ptrs.allocate(FREQUENCY * NTHREADS * config.N * sizeof(bucket_t));
     }
 
     size_t allocate_d_sost(MSMConfig &config)
     {
-        return d_st_ptrs.allocate(2 * NTHREADS * config.N * sizeof(bucket_t));
+        return d_st_ptrs.allocate(FREQUENCY * NTHREADS * config.N * sizeof(bucket_t));
     }
     size_t allocate_d_res()
     {
@@ -1022,7 +1045,7 @@ public:
         bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
 
         CUDA_OK(cudaSetDevice(device));
-        launch_coop(bucket_agg_1, dim3(2, config.N), NTHREADS, stream, d_buckets);
+        launch_coop(bucket_agg_1, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets);
     }
 
     void launch_bucket_agg_2(MSMConfig &config, size_t d_buckets_sn, size_t d_res_sn, size_t d_st_sn, size_t d_sost_sn, cudaStream_t s = nullptr)
@@ -1033,7 +1056,7 @@ public:
         bucket_t *st = d_st_ptrs[d_st_sn];
         bucket_t *sost = d_st_ptrs[d_sost_sn];
         CUDA_OK(cudaSetDevice(device));
-        launch_coop(bucket_agg_2, dim3(2, config.N), NTHREADS, stream, d_buckets, d_res, st, sost);
+        launch_coop(bucket_agg_2, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets, d_res, st, sost);
     }
 
     // Perform final accumulation on CPU.
@@ -1041,7 +1064,7 @@ public:
     {
         out.inf();
 
-        for (int32_t k = 2 - 1; k >= 0; k--)
+        for (int32_t k = FREQUENCY - 1; k >= 0; k--)
         {
             for (int32_t i = 0; i < WBITS; i++)
             {
