@@ -29,15 +29,15 @@ static const int NTHRBITS = log2(NTHREADS);
 #define NBITS 253
 #endif
 #ifndef FREQUENCY
-#define FREQUENCY 3
+#define FREQUENCY 16
 #endif
 #ifndef WBITS
 #define WBITS 16
 #endif
 #define NWINS 16 // ((NBITS+WBITS-1)/WBITS)   // ceil(NBITS/WBITS)
 
-#if FREQUENCY > NWINS
-FREQUENCY = NWINS;
+#if FREQUENCY > NWINS | FREQUENCY < 1
+#error "bad FREQUENCY value"
 #endif
 
 #ifndef LARGE_L1_CODE_CACHE
