@@ -26,10 +26,10 @@ constexpr static int log2(int n)
 static const int NTHRBITS = log2(NTHREADS);
 
 #ifndef NBITS
-#define NBITS 253
+#define NBITS 255
 #endif
 #ifndef FREQUENCY
-#define FREQUENCY 16
+#define FREQUENCY 2
 #endif
 #ifndef WBITS
 #define WBITS 16
@@ -221,22 +221,49 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
         scalar_tuple[i] = cur_scalar << 1 | cur_sign;
         // printf("windows 0 k%d 0  = %d .. %d\n",i,cur_scalar,cur_sign);
         point_idx[i] = i;
+        int m =0;
         // j 放进去
         for (int j = i + npoints; j < NWINS * npoints; j += npoints)
         {
             // 获取下一个呗
+            m+=1;
             cur_scalar_ptr += 1;
-            uint32_t cur_scalar = *cur_scalar_ptr;
+            uint32_t cur_scalar;
+            if (m == NWINS - 1)
+            {
+                // 说明到达了最后一个
+                // 取低 WBITS
+                // 256 - 253 16 * 16 15 * 16  255位
+                uint32_t cur_scalar = (*cur_scalar_ptr) & (0x7fff);
+
+                printf("第 %d 个标量 第 m %d 窗口 cur_scalar = %d after %d \n", i,m, *cur_scalar_ptr, cur_scalar);
+                // 获得之前处理的最低位
+                cur_scalar += (scalar_tuple[j - npoints] & 1);
+                uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
+                cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
+                point_idx[j] = i;
+                scalar_tuple[j] = cur_scalar << 1 | cur_sign;
+            }
+            else
+            {
+                uint32_t cur_scalar = *cur_scalar_ptr;
+                // 获得之前处理的最低位
+                cur_scalar += (scalar_tuple[j - npoints] & 1);
+                uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
+                cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
+                point_idx[j] = i;
+                scalar_tuple[j] = cur_scalar << 1 | cur_sign;
+            }
+
             // 获得之前处理的最低位
-            cur_scalar += (scalar_tuple[j - npoints] & 1);
-            uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-            cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
-            point_idx[j] = i;
-            scalar_tuple[j] = cur_scalar << 1 | cur_sign;
+            // cur_scalar += (scalar_tuple[j - npoints] & 1);
+            // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
+            // cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
+            // point_idx[j] = i;
+            // scalar_tuple[j] = cur_scalar << 1 | cur_sign;
             // printf("windows %d k%d%d = %d...%d\n",j-i,i,j-i,cur_scalar,cur_sign);
         }
     }
-
 }
 // bucket_idx_ptr 第i个窗口第j个值对应的就是排序后scalar的值
 __global__ void process_scalar_2(uint32_t *scalar_tuple_out,

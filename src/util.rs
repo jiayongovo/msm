@@ -37,8 +37,40 @@ pub fn generate_points_scalars<G: AffineCurve>(
         .map(|_| G::ScalarField::rand(&mut rng))
         .collect::<Vec<_>>();
 
+    (points.to_vec(), scalars)
+}
 
 
+
+pub fn generate_points_clustered_scalars<G: AffineCurve>(
+    len: usize,
+    batch_size: usize,
+    cluster: usize,
+) -> (Vec<G>, Vec<G::ScalarField>) {
+    let rand_gen: usize = 1 << 11;
+    let mut rng = ChaCha20Rng::from_entropy();
+
+    let mut points = <G::Projective as ProjectiveCurve>::batch_normalization_into_affine(
+        &(0..rand_gen)
+            .map(|_| G::Projective::rand(&mut rng))
+            .collect::<Vec<_>>(),
+    );
+
+    while points.len() < len {
+        points.append(&mut points.clone());
+    }
+
+    let points = &points[0..len];
+
+    let mut scalars = (0..cluster)
+        .map(|_| G::ScalarField::rand(&mut rng))
+        .collect::<Vec<_>>();
+
+    while scalars.len() < batch_size * len {
+        scalars.append(&mut scalars.clone());
+    }
+
+    let points = &points[0..len];
     (points.to_vec(), scalars)
 }
 
