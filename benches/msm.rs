@@ -5,7 +5,7 @@
 use ark_ec::ProjectiveCurve;
 use ark_msm::msm::VariableBaseMSM;
 use criterion::{criterion_group, criterion_main, Criterion};
-
+use ark_msm::msm::VariableBaseMSM;
 use ark_bls12_381::G1Affine;
 use ark_ff::BigInteger256;
 use rayon::vec;
