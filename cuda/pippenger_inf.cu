@@ -218,10 +218,13 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
                 // 进行标量变换，{2^c}k_{i,j} => {2^{c-1}}k_{i,j} | sign 获得对应 point_idx
                 // k1,1|sign k2,1|sign ...kn,1|sign , ... , k1,[lambda/c]|sign k2,[lambda/c]|sign ... kn,[lambda/c]|sign
                 // p1,p2,.. pn    p1,p2,pn    p1,p2,pn ...
+                printf("begin launch_jy_process_scalar_1\n");
                 ctx->pipp.launch_jy_process_scalar_1(ctx->config, d_scalars_compute,
                                                   ctx->jy_d_scalar_tuples_sn,
                                                   ctx->jy_d_point_idx_sn
                                                   );
+                printf("end launch_jy_process_scalar_1\n");
+
                 // scalar point
                 uint32_t* jy_d_scalar_tuple = ctx->pipp.jy_d_scalar_tuple_ptrs[ctx->jy_d_scalar_tuples_sn];
                 uint32_t* jy_d_scalar_tuple_out = ctx->pipp.jy_d_scalar_tuple_ptrs[ctx->jy_d_scalar_tuples_out_sn];
@@ -236,6 +239,7 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
                                                 jy_d_scalar_tuple, jy_d_scalar_tuple_out,
                                                 jy_d_point_idx, jy_d_point_idx_out, nscalars, 0, 31, stream);
                 void *d_cub_sort = (void *)ctx->pipp.d_cub_ptrs[ctx->d_cub_sort_idx];
+                printf("begin cub::DeviceRadixSort::SortPairs\n");
                 // 在每个窗口内进行排序
                 for(size_t k = 0; k < NWINS; k++)
                 {
@@ -244,27 +248,35 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
                                                     jy_d_scalar_tuple + ptr, jy_d_scalar_tuple_out + ptr,
                                                     jy_d_point_idx + ptr, jy_d_point_idx_out + ptr, nscalars, 0, 31, stream);
                 }
+                printf("end cub::DeviceRadixSort::SortPairs\n");
+                printf("begin launch_jy_process_scalar_2\n");
                 // 获得 bucket index
                 ctx->pipp.launch_process_scalar_2(ctx->config,
                                                   ctx->jy_d_scalar_tuples_out_sn, ctx->d_bucket_idx_sn);
 
+                printf("end launch_jy_process_scalar_2\n");
 
                 // accumulate parts of the buckets into static buffers.
                 // 预计算点
+                printf("begin launch_bucket_acc\n");
                 ctx->pipp.launch_bucket_acc(ctx->config, ctx->jy_d_scalar_tuples_out_sn,
                                             ctx->d_bucket_idx_sn, ctx->jy_d_point_idx_out_sn,
                                             ctx->d_pre_points_sn, ctx->d_buckets_sn,
                                             ctx->d_buckets_pre_sn, ctx->d_bucket_idx_pre_vector_sn,
                                             ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn);
+                printf("end launch_bucket_acc\n");
 
-
+                printf("begin launch_bucket_agg_1\n");
                 ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn);
+                printf("end launch_bucket_agg_1\n");
+                printf("begin launch_bucket_agg_2\n");
                 ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,ctx->d_res_sn,ctx->d_st_sn,ctx->d_sost_sn);
+                printf("end launch_bucket_agg_2\n");
 
-                //ctx->pipp.synchronize_stream();
-
+                // ctx->pipp.synchronize_stream();
+                printf("begin transfer_res_to_host_faster\n");
                 ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn);
-
+                printf("end transfer_res_to_host_faster\n");
                 ctx->pipp.synchronize_stream();
                 
                 ch.send(work);

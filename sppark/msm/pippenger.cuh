@@ -236,7 +236,7 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
                 // 256 - 253 16 * 16 15 * 16  255位
                 uint32_t cur_scalar = (*cur_scalar_ptr) & (0x7fff);
 
-                printf("第 %d 个标量 第 m %d 窗口 cur_scalar = %d after %d \n", i,m, *cur_scalar_ptr, cur_scalar);
+                //printf("第 %d 个标量 第 m %d 窗口 cur_scalar = %d after %d \n", i,m, *cur_scalar_ptr, cur_scalar);
                 // 获得之前处理的最低位
                 cur_scalar += (scalar_tuple[j - npoints] & 1);
                 uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
@@ -966,6 +966,7 @@ public:
     void transfer_res_to_host_faster(result_container_t_faster &res, size_t d_res_idx,
                                      cudaStream_t s = nullptr)
     {
+        printf("enter transfer_res_to_host_faster\n");
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         bucket_t *d_res = d_res_ptrs[d_res_idx];
 
@@ -996,6 +997,8 @@ public:
                                     size_t jy_d_point_idx_sn,
                                     cudaStream_t s = nullptr)
     {
+        printf("enter launch_jy_process_scalar_1\n");
+
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         // 把传进来的 scalar 看成是u16集合
         uint16_t *d_scalars = (uint16_t *)d_scalar_ptrs[d_scalars_sn];
@@ -1012,6 +1015,8 @@ public:
                                  size_t jy_d_scalar_tuples_out_sn, size_t d_bucket_idx_sn,
                                  cudaStream_t s = nullptr)
     {
+        printf("enter launch_jy_process_scalar_2\n");
+
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         uint32_t *jy_d_scalar_tuple_out = jy_d_scalar_tuple_ptrs[jy_d_scalar_tuples_out_sn];
         uint16_t *d_bucket_idx = d_bucket_idx_ptrs[d_bucket_idx_sn];
@@ -1051,12 +1056,15 @@ public:
         uint32_t *d_bucket_idx_pre_offset = d_bucket_idx_pre2_ptrs[d_bucket_idx_pre_offset_sn];
 
         CUDA_OK(cudaSetDevice(device));
+        printf("enter launch_bucket_acc\n");
         // accumulate parts of the buckets into static buffers.
         launch_coop(bucket_acc, dim3(NWINS, config.N), NTHREADS, stream,
                     jy_d_scalar_tuple_out, d_bucket_idx, jy_d_point_idx_out,
                     d_points, d_buckets_pre,
                     d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
                     d_bucket_idx_pre_offset, config.npoints);
+        printf("enter end launch_bucket_acc\n");
+        printf("begin launch_bucket_acc_2\n");
         // aggregate the buffered points into the buckets.
         bucket_acc_2<<<dim3(NWINS, (1 << (WBITS - 1)) / NTHREADS), NTHREADS, 0, stream>>>(
             d_buckets_pre, d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
@@ -1068,6 +1076,8 @@ public:
 
     void launch_bucket_agg_1(MSMConfig &config, size_t d_buckets_sn, cudaStream_t s = nullptr)
     {
+        printf("enter launch_bucket_agg_1\n");
+
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
 
@@ -1076,7 +1086,9 @@ public:
     }
 
     void launch_bucket_agg_2(MSMConfig &config, size_t d_buckets_sn, size_t d_res_sn, size_t d_st_sn, size_t d_sost_sn, cudaStream_t s = nullptr)
-    {
+    {   
+        printf("enter launch_bucket_agg_2\n");
+
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
         bucket_t *d_res = d_res_ptrs[d_res_sn];
