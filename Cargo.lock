@@ -78,6 +78,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "ark-msm"
+version = "0.3.0-alpha.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4b30da4a5c16f7ef918db8baf41ecc82c1449a9209fcd44899c8dac862426aa8"
+dependencies = [
+ "ark-bls12-381",
+ "ark-ec",
+ "ark-ff",
+ "ark-std",
+ "num-bigint",
+]
+
+[[package]]
 name = "ark-serialize"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -377,6 +390,7 @@ dependencies = [
  "ark-bls12-381",
  "ark-ec",
  "ark-ff",
+ "ark-msm",
  "ark-std",
  "blst",
  "cc",
