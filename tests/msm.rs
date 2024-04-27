@@ -14,17 +14,36 @@ use jy_msm::*;
 
 #[test]
 fn msm_correctness() {
-    let test_npow = std::env::var("TEST_NPOW").unwrap_or("18".to_string());
+    let test_npow = std::env::var("TEST_NPOW").unwrap_or("22".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
-    let batches = 1;
-    let (points, scalars) =
+    let batches = 16;
+    let (points, mut scalars) =
         util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
-        // let (points, scalars) =
-        // util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches,32);
+    // let (points, scalars) =
+    // util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches,32);
+    
+
     let mut context = multi_scalar_mult_init(points.as_slice());
     let msm_results = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
         std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
     });
+
+    for b in 0..batches {
+        let start = b * points.len();
+        let end = (b + 1) * points.len();
+
+        
+        let arkworks_result =
+            VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
+                std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
+        })
+        .into_affine();
+        println!("msm_results[b]: {:?}", msm_results[b].into_affine());
+        println!("arkworks_result: {:?}", arkworks_result);
+        assert_eq!(msm_results[b].into_affine(), arkworks_result);
+    }
+
+
     
     // let mut scalars = [BigInteger256::new([
     //     16216263349635534264,
@@ -83,27 +102,27 @@ fn msm_correctness() {
     // }
 
     // todo 没有完成转换
-    for b in 0..batches {
-        let start = b * points.len();
-        let end = (b + 1) * points.len();
-        let arkworks_result = VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
-            std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
-        })
-        .into_affine();
-        // if arkworks_result != msm_results[b].into_affine() {
-        //     println!("第 {} 批次出现问题", b);
-        //     println!("scalars beign");
-        //     for j in b * points.len()..(b + 1) * points.len() {
-        //         println!("{:?}", scalars[j]);
-        //     }
-        //     println!("scalars end");
-        //     println!("points beign");
-        //     for j in 0..points.len() {
-        //         println!("{:?}", points[j]);
-        //     }
-        // }
-        // assert_eq!(arkworks_result, msm_results[b].into_affine());
-        assert_eq!(arkworks_result, msm_results[b].into_affine(), "第 {} 批次成功",b);
+    // for b in 0..batches {
+    //     let start = b * points.len();
+    //     let end = (b + 1) * points.len();
+    //     let arkworks_result = VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
+    //         std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
+    //     })
+    //     .into_affine();
+    //     // if arkworks_result != msm_results[b].into_affine() {
+    //     //     println!("第 {} 批次出现问题", b);
+    //     //     println!("scalars beign");
+    //     //     for j in b * points.len()..(b + 1) * points.len() {
+    //     //         println!("{:?}", scalars[j]);
+    //     //     }
+    //     //     println!("scalars end");
+    //     //     println!("points beign");
+    //     //     for j in 0..points.len() {
+    //     //         println!("{:?}", points[j]);
+    //     //     }
+    //     // }
+    //     // assert_eq!(arkworks_result, msm_results[b].into_affine());
+    //     assert_eq!(arkworks_result, msm_results[b].into_affine(), "第 {} 批次成功",b);
 
-    }
+    // }
 }
