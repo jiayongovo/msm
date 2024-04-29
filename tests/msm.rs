@@ -14,11 +14,13 @@ use jy_msm::*;
 
 #[test]
 fn msm_correctness() {
-    let test_npow = std::env::var("TEST_NPOW").unwrap_or("24".to_string());
+    let test_npow = std::env::var("TEST_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
-    let batches = 1;
+    let batches = 16;
+    // 随机标量测试
     let (points, scalars) =
         util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
+    // 聚集标量测试
     // let (points, scalars) =
     // util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches,32);
 
@@ -35,6 +37,8 @@ fn msm_correctness() {
             std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
         })
         .into_affine();
+        println!("res[{}]: {:?}", b, msm_results[b].into_affine());
+        println!("arkworks_result[{}]: {:?}", b, arkworks_result);
         assert_eq!(msm_results[b].into_affine(), arkworks_result);
     }
 }

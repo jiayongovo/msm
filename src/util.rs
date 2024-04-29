@@ -7,8 +7,6 @@ use rand_chacha::ChaCha20Rng;
 
 use ark_ec::{AffineCurve, ProjectiveCurve};
 use ark_std::UniformRand;
-
-use ark_ff::{prelude::*, BigInteger256, Fp256};
 use ark_std::vec::Vec;
 
 pub fn generate_points_scalars<G: AffineCurve>(

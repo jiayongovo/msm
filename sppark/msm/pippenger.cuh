@@ -170,22 +170,13 @@ __global__ void jy_pre_compute(affine_t *pre_points, size_t npoints)
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     // 除了原始点 需要多少个num窗口 2^2num pi
-    // const uint32_t num = (NWINS % 2 == 0 ? NWINS - 2 : NWINS - 1) / 2;
-    // if (NWINS % FREQUENCY == 0){
-    //     uint32_t  num = NWINS / FREQUENCY - 1;
-    // }else {
-    //     uint32_t  num = NWINS / FREQUENCY;
-    // }
     const uint32_t num = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY - 1)) : (NWINS / FREQUENCY);
     bucket_t Pi_xyzz;
     for (uint32_t i = tid; i < npoints; i += tnum)
     {
         affine_t *Pi = pre_points + i;
-        // todo todo 这份代码有个问题，就是 判断 inf上
         for (int j = 0; j < num; j++)
         {
-            // 2c 4c
-            // todo 有待优化
             Pi_xyzz = *(pre_points + i + j * npoints);
             uint32_t pow = FREQUENCY * WBITS;
             Pi = Pi + npoints;
@@ -212,14 +203,13 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
         // 当前线程处理的起始标量 ki
         uint16_t *cur_scalar_ptr = scalar + (i << 4);
         // 获得标量值
-        uint32_t cur_scalar = *cur_scalar_ptr; // uint32_t instead of uint16_t, specifically for 0x10000
+        uint32_t cur_scalar = *cur_scalar_ptr;
         // tid ktid 对应的第一个 cur_sign
         // 右移 WBITS-1 位
         uint16_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
         cur_scalar = cur_sign == 1 ? ((1 << WBITS) - cur_scalar) : cur_scalar;
         // 将 scalar 和 sign进行拼接
         scalar_tuple[i] = cur_scalar << 1 | cur_sign;
-        // printf("windows 0 k%d 0  = %d .. %d\n",i,cur_scalar,cur_sign);
         point_idx[i] = i;
         int m = 0;
         // j 放进去
@@ -228,7 +218,6 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
             // 获取下一个呗
             m += 1;
             cur_scalar_ptr += 1;
-            uint32_t cur_scalar;
             if (m == NWINS - 1)
             {
                 // 说明到达了最后一个
@@ -236,7 +225,6 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
                 // 256 - 253 16 * 16 15 * 16  255位
                 uint32_t cur_scalar = (*cur_scalar_ptr) & (0x7fff);
 
-                // printf("第 %d 个标量 第 m %d 窗口 cur_scalar = %d after %d \n", i,m, *cur_scalar_ptr, cur_scalar);
                 //  获得之前处理的最低位
                 cur_scalar += (scalar_tuple[j - npoints] & 1);
                 uint16_t cur_sign;
@@ -274,14 +262,6 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
                 point_idx[j] = i;
                 scalar_tuple[j] = cur_scalar << 1 | cur_sign;
             }
-
-            // 获得之前处理的最低位
-            // cur_scalar += (scalar_tuple[j - npoints] & 1);
-            // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-            // cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
-            // point_idx[j] = i;
-            // scalar_tuple[j] = cur_scalar << 1 | cur_sign;
-            // printf("windows %d k%d%d = %d...%d\n",j-i,i,j-i,cur_scalar,cur_sign);
         }
     }
 }
@@ -569,49 +549,6 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
         for (int i = 0; i < step_len; i++)
             res[bid].add(st_my[0]);
     }
-
-    // // 总共 tnum 个线程  每个线程处理的桶数是 step_len = bucket_num - 1 / tnum 调整为 tnum 的整数倍
-    // const uint32_t step_len = (bucket_num + tnum - 2) / tnum;
-
-    // // // 首先确定边界范围，当然需要进一步调整
-
-    // int32_t s = step_len * tid;
-    // int32_t e = s + step_len;
-    // // 对于超出的线程，直接返回
-    // if (s > (bucket_num - 2))
-    // {
-    //     return;
-    // }
-    // if (e >= (bucket_num - 2))
-    //     e = bucket_num - 1;
-
-    // for (int32_t i = e - 1; i >= s; i--)
-    // {
-    //     bucket_t cur_bucket = buckets_ptr[i];
-    //     // // st_my[tid] = b[s] b[s+1] ... b[e-1]
-    //     st_my[tid].add(cur_bucket);
-    //     // //     // sos_my[tid] = b[s] + 2b[s+1] + ... + (step_len)b[e-1]
-    //     sos_my[tid].add(st_my[tid]);
-    // }
-    // tmp.inf();
-    // for (int i = 0; i < tid; i++)
-    // {
-    //     tmp.add(st_my[tid]);
-    // }
-    // st_my[tid] = tmp;
-    // __syncthreads();
-    // if (tid == 0)
-    // {
-    //     res[bid].inf();
-    //     for (int i = 1; i < tnum; i++)
-    //         st_my[0].add(st_my[i]);
-    //     for (int i = 0; i < tnum; i++)
-    //     {
-    //         res[bid].add(sos_my[i]);
-    //     }
-    //     for (int i = 0; i < step_len; i++)
-    //         res[bid].add(st_my[0]);
-    // }
 }
 
 #else
@@ -874,13 +811,6 @@ public:
 
     size_t allocate_d_pre_points(MSMConfig &config)
     {
-        // 11 个窗口 => 2^2c  2^4c 2^6c 2^8c 2&10c  + 原来那组
-        // size_t num = (NWINS % 2 == 0 ? NWINS - 2 : NWINS - 1) / 2 + 1;
-        // if (NWINS % FREQUENCY == 0) {
-        //     size_t num = NWINS / FREQUENCY ;
-        // } else {
-        //     size_t num = NWINS / FREQUENCY + 1;
-        // }
         size_t num = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY)) : (NWINS / FREQUENCY + 1);
         return d_pre_points_ptrs.allocate(num * get_size_bases(config));
     }
@@ -989,7 +919,6 @@ public:
     void transfer_res_to_host_faster(result_container_t_faster &res, size_t d_res_idx,
                                      cudaStream_t s = nullptr)
     {
-        // printf("enter transfer_res_to_host_faster\n");
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         bucket_t *d_res = d_res_ptrs[d_res_idx];
 
@@ -1020,8 +949,6 @@ public:
                                     size_t jy_d_point_idx_sn,
                                     cudaStream_t s = nullptr)
     {
-        // printf("enter launch_jy_process_scalar_1\n");
-
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         // 把传进来的 scalar 看成是u16集合
         uint16_t *d_scalars = (uint16_t *)d_scalar_ptrs[d_scalars_sn];
@@ -1038,7 +965,6 @@ public:
                                  size_t jy_d_scalar_tuples_out_sn, size_t d_bucket_idx_sn,
                                  cudaStream_t s = nullptr)
     {
-        // printf("enter launch_jy_process_scalar_2\n");
 
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         uint32_t *jy_d_scalar_tuple_out = jy_d_scalar_tuple_ptrs[jy_d_scalar_tuples_out_sn];
@@ -1079,15 +1005,12 @@ public:
         uint32_t *d_bucket_idx_pre_offset = d_bucket_idx_pre2_ptrs[d_bucket_idx_pre_offset_sn];
 
         CUDA_OK(cudaSetDevice(device));
-        // printf("enter launch_bucket_acc\n");
         //  accumulate parts of the buckets into static buffers.
         launch_coop(bucket_acc, dim3(NWINS, config.N), NTHREADS, stream,
                     jy_d_scalar_tuple_out, d_bucket_idx, jy_d_point_idx_out,
                     d_points, d_buckets_pre,
                     d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
                     d_bucket_idx_pre_offset, config.npoints);
-        // printf("enter end launch_bucket_acc\n");
-        // printf("begin launch_bucket_acc_2\n");
         //  aggregate the buffered points into the buckets.
         bucket_acc_2<<<dim3(NWINS, (1 << (WBITS - 1)) / NTHREADS), NTHREADS, 0, stream>>>(
             d_buckets_pre, d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
@@ -1099,7 +1022,6 @@ public:
 
     void launch_bucket_agg_1(MSMConfig &config, size_t d_buckets_sn, cudaStream_t s = nullptr)
     {
-        // printf("enter launch_bucket_agg_1\n");
 
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
@@ -1110,7 +1032,6 @@ public:
 
     void launch_bucket_agg_2(MSMConfig &config, size_t d_buckets_sn, size_t d_res_sn, size_t d_st_sn, size_t d_sost_sn, cudaStream_t s = nullptr)
     {
-        // printf("enter launch_bucket_agg_2\n");
 
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
