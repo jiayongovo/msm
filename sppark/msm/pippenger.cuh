@@ -29,7 +29,7 @@ static const int NTHRBITS = log2(NTHREADS);
 #define NBITS 255
 #endif
 #ifndef FREQUENCY
-#define FREQUENCY 2
+#define FREQUENCY 8
 #endif
 #ifndef WBITS
 #define WBITS 16
@@ -1025,9 +1025,11 @@ public:
 
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
-
+        size_t tnum = config.N * NWINS;
+        size_t y_tnum = (tnum / FREQUENCY + config.N - 1) / config.N;
         CUDA_OK(cudaSetDevice(device));
-        launch_coop(bucket_agg_1, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets);
+        // launch_coop(bucket_agg_1, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets);
+        bucket_agg_1<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets);
     }
 
     void launch_bucket_agg_2(MSMConfig &config, size_t d_buckets_sn, size_t d_res_sn, size_t d_st_sn, size_t d_sost_sn, cudaStream_t s = nullptr)
@@ -1038,8 +1040,12 @@ public:
         bucket_t *d_res = d_res_ptrs[d_res_sn];
         bucket_t *st = d_st_ptrs[d_st_sn];
         bucket_t *sost = d_st_ptrs[d_sost_sn];
+        size_t tnum = config.N * NWINS;
+        size_t y_tnum = (tnum / FREQUENCY + config.N - 1) / config.N;
         CUDA_OK(cudaSetDevice(device));
-        launch_coop(bucket_agg_2, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets, d_res, st, sost);
+        // launch_coop(bucket_agg_2, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets, d_res, st, sost);
+
+        bucket_agg_2<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets, d_res, st, sost);
     }
 
     // Perform final accumulation on CPU.

@@ -9,6 +9,7 @@ use ark_msm::msm::VariableBaseMSM;
 use criterion::{criterion_group, criterion_main, Criterion};
 
 use std::str::FromStr;
+use std::time::Instant;
 
 use jy_msm::*;
 
@@ -16,15 +17,19 @@ fn criterion_benchmark(c: &mut Criterion) {
     let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&bench_npow).unwrap();
 
-    let batches = 16;
+    let batches = 1;
     // 随机标量bench
     let (points, scalars) =
         util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
     // 聚集标量bench
     // let (points, scalars) =
     //     util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches, 32);
-
+    let init_start_time = Instant::now();
     let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());
+    let init_end_time = init_start_time.elapsed();
+    let init_time = init_end_time;
+    let init_time_us = init_time.as_micros();
+    println!("precompute init_time: {} us", init_time_us);
 
     let mut group = c.benchmark_group("CUDA");
     group.sample_size(10);
