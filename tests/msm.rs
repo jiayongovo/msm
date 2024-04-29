@@ -21,7 +21,6 @@ fn msm_correctness() {
         util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
     // let (points, scalars) =
     // util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches,32);
-    
 
     let mut context = multi_scalar_mult_init(points.as_slice());
     let msm_results = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
@@ -32,10 +31,8 @@ fn msm_correctness() {
         let start = b * points.len();
         let end = (b + 1) * points.len();
 
-        
-        let arkworks_result =
-            VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
-                std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
+        let arkworks_result = VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
+            std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
         })
         .into_affine();
         assert_eq!(msm_results[b].into_affine(), arkworks_result);

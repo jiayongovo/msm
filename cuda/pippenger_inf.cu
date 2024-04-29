@@ -18,8 +18,7 @@ typedef fr_t scalar_t;
 #include <msm/pippenger.cuh>
 
 // init cub radix sort
-extern "C"
-void cub_initial()
+extern "C" void cub_initial()
 {
     uint32_t *d_scalar_tuple = nullptr;
     uint32_t *d_scalar_tuple_out = nullptr;
@@ -30,13 +29,12 @@ void cub_initial()
     void *d_temp = NULL;
     size_t temp_size = 0;
     cub::DeviceRadixSort::SortPairs(d_temp, temp_size,
-                                        d_scalar_tuple, d_scalar_tuple_out,
-                                        d_point_idx, d_point_idx_out, 1);
+                                    d_scalar_tuple, d_scalar_tuple_out,
+                                    d_point_idx, d_point_idx_out, 1);
     cub::DeviceSegmentedRadixSort::SortPairs(d_temp, temp_size,
                                              d_scalar_tuple, d_scalar_tuple_out,
                                              d_point_idx, d_point_idx_out, 1, 1, d_offset_a, d_offset_b);
 }
-
 
 #ifndef __CUDA_ARCH__
 
@@ -47,8 +45,9 @@ static thread_pool_t batch_pool(NUM_BATCH_THREADS);
 typedef pippenger_t<bucket_t, point_t, affine_t, scalar_t> pipp_t;
 
 // MSM context used store persistent state
-template<class bucket_t, class affine_t, class scalar_t>
-struct Context {
+template <class bucket_t, class affine_t, class scalar_t>
+struct Context
+{
     // pippenger
     pipp_t pipp;
     // MSMConfig
@@ -98,29 +97,31 @@ struct Context {
     typename pipp_t::result_container_t_faster fres1;
 };
 
-template<class bucket_t, class affine_t, class scalar_t>
-struct RustContext {
+template <class bucket_t, class affine_t, class scalar_t>
+struct RustContext
+{
     Context<bucket_t, affine_t, scalar_t> *context;
 };
 
 // Initialization function
 // Allocate device storage, transfer bases
-extern "C"
-RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
-                              const affine_t points[], size_t npoints,
-                              size_t ffi_affine_sz)
+extern "C" RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
+                                                const affine_t points[], size_t npoints,
+                                                size_t ffi_affine_sz)
 {
     context->context = new Context<bucket_t, affine_t, scalar_t>();
     Context<bucket_t, affine_t, scalar_t> *ctx = context->context;
     ctx->ffi_affine_sz = ffi_affine_sz;
-    try {
+    try
+    {
         ctx->config = ctx->pipp.init_msm_faster(npoints);
 
         // Allocate GPU storage
         // 分配预计算点空间
         ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
         //
-        for (size_t i = 0; i < NUM_BATCH_THREADS; i++) {
+        for (size_t i = 0; i < NUM_BATCH_THREADS; i++)
+        {
             ctx->d_scalars_sn[i] = ctx->pipp.allocate_d_scalars(ctx->config);
         }
         // 分配桶空间
@@ -136,7 +137,7 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
 
         ctx->d_st_sn = ctx->pipp.allocate_d_st(ctx->config);
         ctx->d_sost_sn = ctx->pipp.allocate_d_sost(ctx->config);
-        // 返回值 NWIN * bucket 
+        // 返回值 NWIN * bucket
         ctx->d_res_sn = ctx->pipp.allocate_d_res();
         // 分配符号变换空间
         ctx->jy_d_scalar_tuples_sn = ctx->pipp.allocate_jy_d_scalar_tuple(ctx->config);
@@ -155,29 +156,30 @@ RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *
         ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn, points,
                                            ffi_affine_sz);
         ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn);
-        
+
         ctx->fres0 = ctx->pipp.get_result_container_faster();
         ctx->fres1 = ctx->pipp.get_result_container_faster();
-    } catch (const cuda_error& e) {
+    }
+    catch (const cuda_error &e)
+    {
 #ifdef TAKE_RESPONSIBILITY_FOR_ERROR_MESSAGE
         return RustError{e.code(), e.what()};
 #else
-        return RustError{e.code()}
+        return RustError { e.code() }
 #endif
     }
     return RustError{cudaSuccess};
 }
 
 // Peform MSM on a batch of scalars over fixed bases
-extern "C"
-RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
-                             point_t* out, const affine_t points[],
-                             size_t npoints, size_t batches,
-                             const scalar_t scalars[],
-                             size_t ffi_affine_sz)
+extern "C" RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
+                                               point_t *out, const affine_t points[],
+                                               size_t npoints, size_t batches,
+                                               const scalar_t scalars[],
+                                               size_t ffi_affine_sz)
 {
     (void)points; // Silence unused param warning
-    
+
     Context<bucket_t, affine_t, scalar_t> *ctx = context->context;
     assert(ctx->config.npoints == npoints);
     assert(ctx->ffi_affine_sz == ffi_affine_sz);
@@ -186,8 +188,10 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
     cudaStream_t stream = ctx->pipp.default_stream;
     stream_t aux_stream(ctx->pipp.get_device());
 
-    try {
-        for (size_t i = 0; i < batches; i++) {
+    try
+    {
+        for (size_t i = 0; i < batches; i++)
+        {
             out[i].inf();
         }
 
@@ -198,21 +202,23 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
         // 一批计算
         size_t d_scalars_xfer = ctx->d_scalars_sn[0];
         size_t d_scalars_compute = ctx->d_scalars_sn[1];
-        
+
         channel_t<size_t> ch;
         size_t scalars_sz = ctx->pipp.get_size_scalars(ctx->config);
 
         int work = 0;
         // 复制第 0 批标量到h_scalars
-	    memcpy(ctx->h_scalars, &scalars[work * npoints], scalars_sz);
+        memcpy(ctx->h_scalars, &scalars[work * npoints], scalars_sz);
         // 把计算点传送到设备中
         ctx->pipp.transfer_scalars_to_device(ctx->config, d_scalars_compute,
                                              ctx->h_scalars, aux_stream);
         CUDA_OK(cudaStreamSynchronize(aux_stream));
 
-        for (; work < (int)batches; work++) {
+        for (; work < (int)batches; work++)
+        {
             // Launch the GPU kernel, transfer the results back
-            batch_pool.spawn([&]() {
+            batch_pool.spawn([&]()
+                             {
 
                 CUDA_OK(cudaStreamSynchronize(aux_stream));
                 // 进行标量变换，{2^c}k_{i,j} => {2^{c-1}}k_{i,j} | sign 获得对应 point_idx
@@ -279,11 +285,11 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
                 //printf("end transfer_res_to_host_faster\n");
                 ctx->pipp.synchronize_stream();
                 
-                ch.send(work);
-            });
+                ch.send(work); });
 
             // Transfer the next set of scalars, Faccumulate the previous result
-            batch_pool.spawn([&]() {
+            batch_pool.spawn([&]()
+                             {
                 // Start next scalar transfer
                 if (work + 1 < (int)batches) {
                     // Copy into pinned memory
@@ -299,8 +305,7 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
 
 		    
                 }
-                ch.send(work);
-            });
+                ch.send(work); });
             ch.recv();
             ch.recv();
             std::swap(kernel_res, accum_res);
@@ -309,16 +314,17 @@ RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *c
 
         // Accumulate the final result
         ctx->pipp.accumulate_faster(out[batches - 1], *accum_res);
-
-    } catch (const cuda_error& e) {
+    }
+    catch (const cuda_error &e)
+    {
 #ifdef TAKE_RESPONSIBILITY_FOR_ERROR_MESSAGE
         return RustError{e.code(), e.what()};
 #else
-        return RustError{e.code()}
+        return RustError { e.code() }
 #endif
     }
 
     return RustError{cudaSuccess};
 }
 
-#endif  //  __CUDA_ARCH__
+#endif //  __CUDA_ARCH__

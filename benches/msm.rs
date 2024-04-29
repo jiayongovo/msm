@@ -2,12 +2,11 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
+use ark_bls12_381::G1Affine;
 use ark_ec::ProjectiveCurve;
+use ark_ff::BigInteger256;
 use ark_msm::msm::VariableBaseMSM;
 use criterion::{criterion_group, criterion_main, Criterion};
-use ark_bls12_381::G1Affine;
-use ark_ff::BigInteger256;
-use rayon::vec;
 
 use std::str::FromStr;
 
@@ -19,7 +18,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 
     let batches = 1;
     let (points, scalars) =
-        util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches,32);
+        util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches, 32);
     // let (points, scalars) =
     //     util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
     let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());
@@ -44,7 +43,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         })
         .into_affine();
         //println!("arkworks_result[{}]: {:?}", b, arkworks_result);
-        assert_eq!(res[b].into_affine(),arkworks_result);
+        assert_eq!(res[b].into_affine(), arkworks_result);
     }
     group.finish();
 }
