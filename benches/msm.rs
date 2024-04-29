@@ -2,7 +2,8 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-use ark_bls12_381::G1Affine;
+use ark_bls12_381::G1Affine; // 默认 381
+// use ark_bls12_377::G1Affine; // 377
 use ark_ec::ProjectiveCurve;
 use ark_ff::BigInteger256;
 use ark_msm::msm::VariableBaseMSM;
@@ -14,7 +15,7 @@ use std::time::Instant;
 use jy_msm::*;
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("20".to_string());
+    let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("10".to_string());
     let npoints_npow = i32::from_str(&bench_npow).unwrap();
 
     let batches = 1;

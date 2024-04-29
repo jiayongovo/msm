@@ -5,8 +5,14 @@
 #include <cuda.h>
 #include <sys/mman.h>
 #include <cub/cub.cuh>
-
-#include <ff/bls12-381.hpp>
+#if defined(FEATURE_BLS12_381)
+# include <ff/bls12-381.hpp>
+#elif defined(FEATURE_BLS12_377)
+# include <ff/bls12-377.hpp>
+#else
+# error "no FEATURE"
+#endif
+// #include <ff/bls12-381.hpp>
 #include <ec/jacobian_t.hpp>
 #include <ec/xyzz_t.hpp>
 
@@ -86,8 +92,6 @@ struct Context
 
     size_t d_st_sn;
     size_t d_sost_sn;
-    // point => buffer index
-    size_t d_bucket_idx_sn;
     // cub
     size_t d_cub_sort_idx;
     // host scalars
@@ -144,8 +148,6 @@ extern "C" RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, 
         ctx->jy_d_point_idx_sn = ctx->pipp.allocate_jy_d_point_idx(ctx->config);
         ctx->jy_d_scalar_tuples_out_sn = ctx->pipp.allocate_jy_d_scalar_tuple_out(ctx->config);
         ctx->jy_d_point_idx_out_sn = ctx->pipp.allocate_jy_d_point_idx(ctx->config);
-        // 分配桶索引空间
-        ctx->d_bucket_idx_sn = ctx->pipp.allocate_d_bucket_idx(ctx->config);
         // CUB 排序
         ctx->d_cub_sort_idx = ctx->pipp.allocate_d_cub_sort_faster(ctx->config);
 
@@ -251,15 +253,11 @@ extern "C" RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, s
                                                     jy_d_scalar_tuple + ptr, jy_d_scalar_tuple_out + ptr,
                                                     jy_d_point_idx + ptr, jy_d_point_idx_out + ptr, nscalars, 0, 31, stream);
                 }
-                // 获得 bucket index
-                ctx->pipp.launch_process_scalar_2(ctx->config,
-                                                  ctx->jy_d_scalar_tuples_out_sn, ctx->d_bucket_idx_sn);
-
 
                 // accumulate parts of the buckets into static buffers.
                 // 预计算点
                 ctx->pipp.launch_bucket_acc(ctx->config, ctx->jy_d_scalar_tuples_out_sn,
-                                            ctx->d_bucket_idx_sn, ctx->jy_d_point_idx_out_sn,
+                                             ctx->jy_d_point_idx_out_sn,
                                             ctx->d_pre_points_sn, ctx->d_buckets_sn,
                                             ctx->d_buckets_pre_sn, ctx->d_bucket_idx_pre_vector_sn,
                                             ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn);

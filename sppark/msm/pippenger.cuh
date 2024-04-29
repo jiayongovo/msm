@@ -25,9 +25,18 @@ constexpr static int log2(int n)
 
 static const int NTHRBITS = log2(NTHREADS);
 
+#if defined(FEATURE_BLS12_381)
 #ifndef NBITS
 #define NBITS 255
 #endif
+#elif defined(FEATURE_BLS12_377)
+#ifndef NBITS
+#define NBITS 253
+#endif
+#else
+# error "no nbits"
+#endif
+
 #ifndef FREQUENCY
 #define FREQUENCY 8
 #endif
@@ -49,13 +58,8 @@ __global__ void jy_pre_compute(affine_t *pre_points, size_t npoints);
 __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
                                     uint32_t *point_idx, size_t npoints);
 
-__global__ void process_scalar_2(uint32_t *scalar_tuple_out,
-                                 uint16_t *bucket_idx, size_t npoints);
-
-__global__ void bucket_inf(bucket_t *buckets);
-
 // v1.1
-__global__ void bucket_acc(uint32_t *scalar_tuple_out, uint16_t *bucket_idx, uint32_t *point_idx_out,
+__global__ void bucket_acc(uint32_t *scalar_tuple_out, /*uint16_t *bucket_idx, */ uint32_t *point_idx_out,
                            affine_t *pre_points, bucket_t *buckets_pre,
                            uint16_t *bucket_idx_pre_vector, uint16_t *bucket_idx_pre_used,
                            uint32_t *bucket_idx_pre_offset, size_t npoints);
@@ -265,54 +269,9 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
         }
     }
 }
-// bucket_idx_ptr 第i个窗口第j个值对应的就是排序后scalar的值
-__global__ void process_scalar_2(uint32_t *scalar_tuple_out,
-                                 uint16_t *bucket_idx, size_t npoints)
-{
-    // dim3(NWINS, config.N), NTHREADS
-    // 线程总数
-    // blockDim.x 每个 block 中的线程数量 NTHREADS
-    // gridDim.y  grid 在 y 维度上的大小 config.N
-    // 每加一个 tnum  线程块处理的总数
-    const uint32_t tnum = blockDim.x * gridDim.y;
-    // 全局索引
-    // blockIdx.y 当前线程所在线程块在 y 方向哪里
-    // blockDim.x 每个 block 中的线程数量 NTHREADS
-    // 当前窗口的第 tid 个线程
-    const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
-    // 当前线程在 block x 方向上哪里  其实就是第几个 windows
-    const uint32_t bid = blockIdx.x;
-
-    // 当前线程处理第几个 windows
-    // 窗口内对应的桶 idx 和排序处理后的 scalars
-    uint16_t *bucket_idx_ptr = bucket_idx + npoints * bid;
-    uint32_t *scalar_tuple_out_ptr = scalar_tuple_out + npoints * bid;
-    // 每个线程处理当前窗口内负责的任务
-    for (uint32_t i = tid; i < npoints; i += tnum)
-    {
-        // 去除符号位获得 scalar
-        bucket_idx_ptr[i] = (uint16_t)(scalar_tuple_out_ptr[i] >> 1);
-    }
-}
-
-// total_bucket_num = NWINS * (1 << (WBITS - 1))
-__global__ void bucket_inf(bucket_t *buckets)
-{
-    const uint32_t tnum = blockDim.x * gridDim.y;
-    const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
-    const uint32_t bid = blockIdx.x;
-
-    const uint32_t bucket_num = 1 << (WBITS - 1);
-    bucket_t *buckets_ptr = buckets + bucket_num * bid;
-
-    for (uint32_t i = tid; i < bucket_num; i += tnum)
-    {
-        buckets_ptr[i].inf();
-    }
-}
 
 // v1.1
-__global__ void bucket_acc(uint32_t *scalar_tuple_out, uint16_t *bucket_idx, uint32_t *point_idx_out,
+__global__ void bucket_acc(uint32_t *scalar_tuple_out, /*uint16_t *bucket_idx,*/ uint32_t *point_idx_out,
                            affine_t *pre_points, bucket_t *buckets_pre,
                            uint16_t *bucket_idx_pre_vector, uint16_t *bucket_idx_pre_used,
                            uint32_t *bucket_idx_pre_offset, size_t npoints)
@@ -323,7 +282,7 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out, uint16_t *bucket_idx, uin
     const uint32_t bid = blockIdx.x;
     const uint32_t buffer_len = tnum + (1 << (WBITS - 1));
     uint32_t *scalar_tuple_out_ptr = scalar_tuple_out + npoints * bid;
-    uint16_t *bucket_idx_ptr = bucket_idx + npoints * bid;
+    // uint16_t *bucket_idx_ptr = bucket_idx + npoints * bid;
     uint32_t *point_idx_out_ptr = point_idx_out + npoints * bid;
     // 和负载平衡相关
     // 只使用一个config.N * NTHREADS 个线程 处理每个窗口
@@ -352,14 +311,14 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out, uint16_t *bucket_idx, uin
     // 线程块内部共享内存
     bucket_acc_smem[tid_inner * 2 + 1].inf(); // 设置为inf
 
-    uint32_t offset = tid + bucket_idx_ptr[s];
+    uint32_t offset = tid + (scalar_tuple_out_ptr[s] >> 1); // bucket_idx_ptr[s];
     bucket_idx_pre_offset_ptr[tid] = offset;
     uint32_t unique_num = 0;
     // 每个线程在每个窗口下处理的点
     // process [s, e)
     for (uint32_t i = s; i < e; i++)
     {
-        uint16_t cur_bucket_idx = bucket_idx_ptr[i];
+        uint16_t cur_bucket_idx = scalar_tuple_out_ptr[i] >> 1; // bucket_idx_ptr[i];
         if (cur_bucket_idx != pre_bucket_idx && (unique_num++))
         {
             // 因为unique_num ++ 了 索引就是 i != s 的时候 ,unique_num 起步等于2
@@ -468,7 +427,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre, uint16_t *bucket_idx_pre_vec
     buckets_ptr[tid] = bucket_acc_smem[tid_inner]; // can omit kerner `bucket_inf`
 }
 
-// 完成窗口(0,1)聚合
+// 完成窗口(0,FREQUENCY)聚合
 __global__ void bucket_agg_1(bucket_t *buckets)
 {
     // dim3(2, config.N), NTHREADS
@@ -671,7 +630,6 @@ public:
     device_ptr_list_t<uint32_t> jy_d_scalar_tuple_ptrs;
     device_ptr_list_t<uint32_t> jy_d_point_idx_ptrs;
 
-    device_ptr_list_t<uint16_t> d_bucket_idx_ptrs;
     // cub
     device_ptr_list_t<unsigned char> d_cub_ptrs;
 
@@ -783,11 +741,6 @@ public:
     {
         return config.n * sizeof(uint32_t) * NWINS;
     }
-    // 桶索引大小 点数 * 窗口数 * 窗口内桶索引
-    size_t get_size_bucket_idx(MSMConfig &config)
-    {
-        return config.n * sizeof(uint16_t) * NWINS;
-    }
     // 分配 cub 排序所需空间
     size_t get_size_cub_sort_faster(MSMConfig &config)
     {
@@ -875,11 +828,6 @@ public:
     {
         return jy_d_point_idx_ptrs.allocate(get_size_point_idx(config));
     }
-    // 分配桶索引空间
-    size_t allocate_d_bucket_idx(MSMConfig &config)
-    {
-        return d_bucket_idx_ptrs.allocate(get_size_bucket_idx(config));
-    }
 
     size_t allocate_d_cub_sort_faster(MSMConfig &config)
     {
@@ -960,34 +908,8 @@ public:
                     d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
     }
 
-    // 根据排序后的scalar元组，获得桶idx
-    void launch_process_scalar_2(MSMConfig &config,
-                                 size_t jy_d_scalar_tuples_out_sn, size_t d_bucket_idx_sn,
-                                 cudaStream_t s = nullptr)
-    {
-
-        cudaStream_t stream = (s == nullptr) ? default_stream : s;
-        uint32_t *jy_d_scalar_tuple_out = jy_d_scalar_tuple_ptrs[jy_d_scalar_tuples_out_sn];
-        uint16_t *d_bucket_idx = d_bucket_idx_ptrs[d_bucket_idx_sn];
-
-        CUDA_OK(cudaSetDevice(device));
-        // NWINS 是网格在 x 维度上的大小，config.N 是网格在 y 维度上的大小。
-        // 看成是二维的即可
-        launch_coop(process_scalar_2, dim3(NWINS, config.N), NTHREADS, stream,
-                    jy_d_scalar_tuple_out, d_bucket_idx, config.npoints);
-    }
-
-    void launch_bucket_inf(MSMConfig &config, size_t d_buckets_sn, cudaStream_t s = nullptr)
-    {
-        cudaStream_t stream = (s == nullptr) ? default_stream : s;
-        bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
-
-        CUDA_OK(cudaSetDevice(device));
-        launch_coop(bucket_inf, dim3(NWINS, config.N), NTHREADS, stream, d_buckets);
-    }
-
     void launch_bucket_acc(MSMConfig &config,
-                           size_t jy_d_scalar_tuples_out_sn, size_t d_bucket_idx_sn,
+                           size_t jy_d_scalar_tuples_out_sn, // size_t d_bucket_idx_sn,
                            size_t jy_d_point_idx_out_sn, size_t d_points_sn, size_t d_buckets_sn,
                            size_t d_buckets_pre_sn, size_t d_bucket_idx_pre_vector_sn,
                            size_t d_bucket_idx_pre_used_sn, size_t d_bucket_idx_pre_offset_sn,
@@ -995,7 +917,7 @@ public:
     {
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         uint32_t *jy_d_scalar_tuple_out = jy_d_scalar_tuple_ptrs[jy_d_scalar_tuples_out_sn];
-        uint16_t *d_bucket_idx = d_bucket_idx_ptrs[d_bucket_idx_sn];
+        // uint16_t *d_bucket_idx = d_bucket_idx_ptrs[d_bucket_idx_sn];
         uint32_t *jy_d_point_idx_out = jy_d_point_idx_ptrs[jy_d_point_idx_out_sn];
         affine_t *d_points = d_pre_points_ptrs[d_points_sn];
         bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
@@ -1007,7 +929,7 @@ public:
         CUDA_OK(cudaSetDevice(device));
         //  accumulate parts of the buckets into static buffers.
         launch_coop(bucket_acc, dim3(NWINS, config.N), NTHREADS, stream,
-                    jy_d_scalar_tuple_out, d_bucket_idx, jy_d_point_idx_out,
+                    jy_d_scalar_tuple_out, /*d_bucket_idx,*/ jy_d_point_idx_out,
                     d_points, d_buckets_pre,
                     d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
                     d_bucket_idx_pre_offset, config.npoints);
@@ -1015,9 +937,6 @@ public:
         bucket_acc_2<<<dim3(NWINS, (1 << (WBITS - 1)) / NTHREADS), NTHREADS, 0, stream>>>(
             d_buckets_pre, d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
             d_bucket_idx_pre_offset, d_buckets, (uint32_t)(config.N * NTHREADS), config.npoints);
-        //    launch_coop(bucket_acc_2, dim3(NWINS, (1 << (WBITS - 1)) / NTHREADS), NTHREADS, stream,
-        //                d_buckets_pre, d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
-        //                d_bucket_idx_pre_offset, d_buckets, (uint32_t)(config.N * NTHREADS), config.npoints);
     }
 
     void launch_bucket_agg_1(MSMConfig &config, size_t d_buckets_sn, cudaStream_t s = nullptr)
