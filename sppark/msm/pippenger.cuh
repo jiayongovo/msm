@@ -890,6 +890,8 @@ public:
         CUDA_OK(cudaSetDevice(device));
         launch_coop(jy_pre_compute, NWINS * config.N, NTHREADS, stream,
                     d_pre_points, config.npoints);
+        // jy_pre_compute<<<NWINS * config.N,NTHRBITS,0,stream>>>(
+        //     d_pre_points, config.npoints);
     }
 
     void launch_jy_process_scalar_1(MSMConfig &config,
@@ -906,6 +908,8 @@ public:
         CUDA_OK(cudaSetDevice(device));
         launch_coop(jy_process_scalar_1, NWINS * config.N, NTHREADS, stream,
                     d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
+        // jy_process_scalar_1<<<NWINS * config.N, NTHREADS,0,stream>>>(
+        //     d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
     }
 
     void launch_bucket_acc(MSMConfig &config,
@@ -933,6 +937,11 @@ public:
                     d_points, d_buckets_pre,
                     d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
                     d_bucket_idx_pre_offset, config.npoints);
+        // bucket_acc<<<dim3(NWINS, config.N), NTHREADS, 0, stream>>>(
+        //     jy_d_scalar_tuple_out, /*d_bucket_idx,*/ jy_d_point_idx_out,
+        //     d_points, d_buckets_pre,
+        //     d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
+        //     d_bucket_idx_pre_offset, config.npoints);
         //  aggregate the buffered points into the buckets.
         bucket_acc_2<<<dim3(NWINS, (1 << (WBITS - 1)) / NTHREADS), NTHREADS, 0, stream>>>(
             d_buckets_pre, d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
