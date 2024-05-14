@@ -11,3 +11,20 @@ cargo bench
 # for test
 cargo test --release 
 ```
+
+test
+
+```shell
+
+# cuzk
+cd test
+make
+./msmtestb 20 
+
+# submission-msm-gpu Yrrid
+
+# z-prize-msm-gpu   MatterLab
+
+# wlc_msm (381-xyzz-bal、381-xyzz-con)
+
+```
