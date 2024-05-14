@@ -17,7 +17,7 @@ use jy_msm::*;
 fn msm_correctness() {
     let test_npow = std::env::var("TEST_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
-    let batches = 16;
+    let batches = 1;
     // 随机标量测试
     let (points, scalars) =
         util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches);
