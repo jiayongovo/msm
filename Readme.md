@@ -17,9 +17,8 @@ cargo test --release
 ```shell
 
 # cuzk
-cd test
-make
-./msmtestb 20 
+cd ../../cuZK/test
+make msmb
 
 # submission-msm-gpu Yrrid
 
