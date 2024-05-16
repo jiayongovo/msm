@@ -17,6 +17,7 @@ use jy_msm::*;
 fn criterion_benchmark(c: &mut Criterion) {
     let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&bench_npow).unwrap();
+    let test_true = std::env::var("TEST_TRUE").unwrap_or("false".to_string());
 
     // 添加环境 
     let batches_str = std::env::var("BENCHES").unwrap_or("1".to_string());
@@ -27,12 +28,9 @@ fn criterion_benchmark(c: &mut Criterion) {
     // 聚集标量bench
     // let (points, scalars) =
     //     util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches, 32);
-    // let init_start_time = Instant::now();
+
     let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());
-    // let init_end_time = init_start_time.elapsed();
-    // let init_time = init_end_time;
-    // let init_time_us = init_time.as_micros();
-    // println!("precompute init_time: {} us", init_time_us);
+
 
     let mut group = c.benchmark_group("CUDA");
     group.sample_size(10);
@@ -45,16 +43,18 @@ fn criterion_benchmark(c: &mut Criterion) {
             });
         })
     });
-    for b in 0..batches {
-        let start = b * points.len();
-        let end = (b + 1) * points.len();
-        let arkworks_result = VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
-            std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
-        })
-        .into_affine();
-        println!("msm_result[{}]: {:?}", b, msm_result[b].into_affine());
-        println!("arkworks_result[{}]: {:?}", b, arkworks_result);
-        assert_eq!(msm_result[b].into_affine(), arkworks_result);
+    if test_true == "false" {
+        ;
+    }else{
+        for b in 0..batches {
+            let start = b * points.len();
+            let end = (b + 1) * points.len();
+            let arkworks_result = VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
+                std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
+            })
+            .into_affine();
+            assert_eq!(msm_result[b].into_affine(), arkworks_result);
+        }
     }
     group.finish();
 }

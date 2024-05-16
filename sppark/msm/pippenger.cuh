@@ -69,7 +69,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre, uint16_t *bucket_idx_pre_vec
 
 __global__ void bucket_agg_1(bucket_t *buckets);
 
-__global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, bucket_t *sos);
+__global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos);
 
 #ifdef __CUDA_ARCH__
 
@@ -425,23 +425,53 @@ __global__ void bucket_agg_1(bucket_t *buckets)
     }
 }
 
-#include <cooperative_groups.h>
-__global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, bucket_t *sos)
+__global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos)
 {
     const uint32_t tnum = blockDim.x * gridDim.y;
     const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
     const uint32_t bid = blockIdx.x;
-    const uint32_t tid_inner = threadIdx.x;
 
     bucket_t *buckets_ptr = buckets + (1 << (WBITS - 1)) * bid;
     const uint32_t bucket_num = 1 << (WBITS - 1);
-    bucket_t *st_my = st + bid * tnum;
     bucket_t *sos_my = sos + bid * tnum;
     bucket_t tmp;
-    st_my[tid].inf();
+    bucket_t st_tmp;
+    bucket_t sos_tmp;
+
     sos_my[tid].inf();
-    // bucket_acc_smem[tid_inner * 2 + 1].inf(); // 设置为inf
-    // bucket_acc_smem[tid_inner * 2].inf();
+    st_tmp.inf();
+    sos_tmp.inf();
+    tmp.inf();
+    const uint32_t step_len = (bucket_num + tnum - 1) / tnum;
+    int32_t s = step_len * tid;
+    int32_t e = s + step_len;
+    if (s > bucket_num)
+    {
+        return;
+    }
+    if (e >= (bucket_num))
+        e = bucket_num;
+
+
+    for (int32_t i = e - 1; i >= s; i--)
+    {
+        st_tmp.add(buckets_ptr[i]);
+        sos_tmp.add(st_tmp);
+    }
+    mul(tmp, st_tmp, tid * step_len);
+    sos_tmp.add(tmp);
+    // 最后结果写到 sos中
+    sos_my[tid] = sos_tmp;
+    __syncthreads();
+
+    // 将块内求和结果写回全局内存中
+    if (tid == 0)
+    {
+        res[bid].inf();
+        for (int i = 0; i < tnum; i++)
+            res[bid].add(sos_my[i]);
+    }
+
     // 传统串行算法
     // if (tid == 0){
     //     res[bid].inf();
@@ -452,76 +482,18 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
     //         res[bid].add(tmp);
     //     }
     // }
-    // const uint32_t step_len = (bucket_num + tnum - 1) / tnum;
-    // int32_t s = step_len * tid;
-    // int32_t e = s + step_len;
-    // // 对于超出的线程，直接返回
-    // if (s > bucket_num)
-    // {
-    //     return;
-    // }
-    // if (e >= (bucket_num))
-    //     e = bucket_num;
-    // for (int32_t i = e - 1; i >= s; i--)
-    // {
-    //     bucket_acc_smem[tid_inner * 2].add(buckets_ptr[i]);
-    //     bucket_acc_smem[tid_inner * 2 + 1].add(bucket_acc_smem[tid_inner * 2]);
-    // }
-    // mul(st_my[tid], bucket_acc_smem[tid_inner * 2], tid);
-    // sos_my[tid] = bucket_acc_smem[tid_inner * 2 + 1];
-    // __syncthreads();
-    // if (tid == 0)
-    // {
-    //     res[bid].inf();
-    //     for (int i = 1; i < tnum; i++)
-    //         st_my[0].add(st_my[i]);
-    //     for (int i = 0; i < tnum; i++)
-    //     {
-    //         res[bid].add(sos_my[i]);
-    //     }
-    //     for (int i = 0; i < step_len; i++)
-    //         res[bid].add(st_my[0]);
-    // }
 
-    const uint32_t step_len = (bucket_num + tnum - 1) / tnum;
-    int32_t s = step_len * tid;
-    int32_t e = s + step_len;
-    if (s > bucket_num)
-    {
-        return;
-    }
-    if (e >= (bucket_num))
-        e = bucket_num;
-    bucket_t st_tmp;
-    bucket_t sos_tmp;
-    st_tmp.inf();
-    sos_tmp.inf();
-    for (int32_t i = e - 1; i >= s; i--)
-    {
-        st_tmp.add(buckets_ptr[i]);
-        sos_tmp.add(st_tmp);
-    }
-    // bucket_t tmp;
-    tmp.inf();
-    mul(tmp, st_tmp, tid * step_len);
-    sos_tmp.add(tmp);
-    // 最后结果写到 sos中
-    sos_my[tid] = sos_tmp;
-    __syncthreads();
-    res[bid].inf();
-    // for (int s = tnum / 2; s > 0; s >>= 1) {
-    //     if (tid < s) {
-    //         sos_my[tid].add(sos_my[tid + s]);
+    // todo 数组合并并行化
+    // for (int32_t m = tnum / 2; m > 0; m >>= 1) {
+    //     if (tid < m) {
+    //         sos_my[tid].add(sos_my[tid + m]);
     //     }
     //     __syncthreads();
     // }
-
-    // 将块内求和结果写回全局内存中
-    if (tid == 0)
-    {
-        for (int i = 0; i < tnum; i++)
-            res[bid].add(sos_my[i]);
-    }
+    // if (tid == 0) {
+    //     res[bid].inf();
+    //     res[bid].add(sos_my[0]);
+    // }
 }
 
 #else
@@ -827,11 +799,6 @@ public:
         return d_bucket_idx_pre2_ptrs.allocate(get_size_bucket_idx_pre_offset(config));
     }
 
-    size_t allocate_d_st(MSMConfig &config)
-    {
-        return d_st_ptrs.allocate(FREQUENCY * NTHREADS * config.N * sizeof(bucket_t));
-    }
-
     size_t allocate_d_sost(MSMConfig &config)
     {
         return d_st_ptrs.allocate(FREQUENCY * NTHREADS * config.N * sizeof(bucket_t));
@@ -989,20 +956,19 @@ public:
         bucket_agg_1<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets);
     }
 
-    void launch_bucket_agg_2(MSMConfig &config, size_t d_buckets_sn, size_t d_res_sn, size_t d_st_sn, size_t d_sost_sn, cudaStream_t s = nullptr)
+    void launch_bucket_agg_2(MSMConfig &config, size_t d_buckets_sn, size_t d_res_sn, size_t d_sost_sn, cudaStream_t s = nullptr)
     {
 
         cudaStream_t stream = (s == nullptr) ? default_stream : s;
         bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
         bucket_t *d_res = d_res_ptrs[d_res_sn];
-        bucket_t *st = d_st_ptrs[d_st_sn];
         bucket_t *sost = d_st_ptrs[d_sost_sn];
         size_t tnum = config.N * NWINS;
         size_t y_tnum = (tnum / FREQUENCY + config.N - 1) / config.N;
         CUDA_OK(cudaSetDevice(device));
         // launch_coop(bucket_agg_2, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets, d_res, st, sost);
 
-        bucket_agg_2<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets, d_res, st, sost);
+        bucket_agg_2<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets, d_res, sost);
     }
 
     // Perform final accumulation on CPU.

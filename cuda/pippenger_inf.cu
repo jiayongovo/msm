@@ -90,7 +90,6 @@ struct Context
     // res
     size_t d_res_sn;
 
-    size_t d_st_sn;
     size_t d_sost_sn;
     // cub
     size_t d_cub_sort_idx;
@@ -139,7 +138,6 @@ extern "C" RustError mult_pippenger_faster_init(RustContext<bucket_t, affine_t, 
         // buffer_offset
         ctx->d_bucket_idx_pre_offset_sn = ctx->pipp.allocate_d_bucket_idx_pre_offset(ctx->config);
 
-        ctx->d_st_sn = ctx->pipp.allocate_d_st(ctx->config);
         ctx->d_sost_sn = ctx->pipp.allocate_d_sost(ctx->config);
         // 返回值 NWIN * bucket
         ctx->d_res_sn = ctx->pipp.allocate_d_res();
@@ -263,7 +261,7 @@ extern "C" RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, s
                                             ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn);
 
                 ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn);
-                ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,ctx->d_res_sn,ctx->d_st_sn,ctx->d_sost_sn);
+                ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,ctx->d_res_sn,ctx->d_sost_sn);
 
                 ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn);
                 ctx->pipp.synchronize_stream();

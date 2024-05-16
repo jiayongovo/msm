@@ -5,11 +5,12 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 Benchmarking CUDA/2**20x1
 Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
-Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 6.7636 s (165 iterations)
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 6.5552 s (165 iterations)
 Benchmarking CUDA/2**20x1: Analyzing
-CUDA/2**20x1            time:   [40.258 ms 41.029 ms 41.669 ms]
-Found 1 outliers among 10 measurements (10.00%)
-  1 (10.00%) high mild
+CUDA/2**20x1            time:   [39.270 ms 39.590 ms 39.885 ms]
+Found 3 outliers among 10 measurements (30.00%)
+  1 (10.00%) low severe
+  2 (20.00%) high severe
 
 
 running 0 tests
@@ -18,9 +19,11 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 Benchmarking CUDA/2**21x1
 Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
-Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 9.0028 s (110 iterations)
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 8.7006 s (110 iterations)
 Benchmarking CUDA/2**21x1: Analyzing
-CUDA/2**21x1            time:   [79.306 ms 79.727 ms 80.050 ms]
+CUDA/2**21x1            time:   [75.740 ms 76.331 ms 76.842 ms]
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
 
 
 running 0 tests
@@ -30,10 +33,12 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 Benchmarking CUDA/2**22x1
 Benchmarking CUDA/2**22x1: Warming up for 3.0000 s
 
-Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 9.1s or enable flat sampling.
-Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 9.1388 s (55 iterations)
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 8.9s or enable flat sampling.
+Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 8.8951 s (55 iterations)
 Benchmarking CUDA/2**22x1: Analyzing
-CUDA/2**22x1            time:   [152.66 ms 153.31 ms 154.15 ms]
+CUDA/2**22x1            time:   [147.81 ms 148.16 ms 148.48 ms]
+Found 2 outliers among 10 measurements (20.00%)
+  2 (20.00%) low mild
 
 
 running 0 tests
@@ -42,11 +47,11 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 Benchmarking CUDA/2**23x1
 Benchmarking CUDA/2**23x1: Warming up for 3.0000 s
-Benchmarking CUDA/2**23x1: Collecting 10 samples in estimated 7.0479 s (20 iterations)
+Benchmarking CUDA/2**23x1: Collecting 10 samples in estimated 6.9031 s (20 iterations)
 Benchmarking CUDA/2**23x1: Analyzing
-CUDA/2**23x1            time:   [306.20 ms 308.96 ms 310.71 ms]
+CUDA/2**23x1            time:   [289.70 ms 291.29 ms 292.56 ms]
 Found 1 outliers among 10 measurements (10.00%)
-  1 (10.00%) low severe
+  1 (10.00%) low mild
 
 
 running 0 tests
@@ -56,10 +61,13 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 Benchmarking CUDA/2**24x1
 Benchmarking CUDA/2**24x1: Warming up for 3.0000 s
 
-Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 10.9s.
-Benchmarking CUDA/2**24x1: Collecting 10 samples in estimated 10.881 s (10 iterations)
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 10.8s.
+Benchmarking CUDA/2**24x1: Collecting 10 samples in estimated 10.841 s (10 iterations)
 Benchmarking CUDA/2**24x1: Analyzing
-CUDA/2**24x1            time:   [589.93 ms 613.81 ms 642.04 ms]
+CUDA/2**24x1            time:   [560.58 ms 563.66 ms 566.30 ms]
+Found 3 outliers among 10 measurements (30.00%)
+  2 (20.00%) low severe
+  1 (10.00%) high mild
 
 
 running 0 tests

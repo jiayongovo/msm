@@ -5,7 +5,7 @@ for i in $(seq 17 24)
 do
    m=16
    echo "Precompute M = $m MSM scale $i"
-   BENCH_NPOW=$i cargo bench >> experiment/precompute/result/precompute_result_msm17-24_$m.txt
+   BENCH_NPOW=$i TEST_TRUE="true" cargo bench >> experiment/precompute/result/precompute_result_msm17-24_$m.txt
 done
 
 
