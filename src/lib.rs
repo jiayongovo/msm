@@ -17,7 +17,7 @@ pub mod util;
 
 #[repr(C)]
 pub struct MultiScalarMultContext {
-    context: *mut c_void,
+    pub context: *mut c_void,
 }
 
 #[cfg_attr(feature = "quiet", allow(improper_ctypes))]
@@ -70,7 +70,7 @@ pub fn multi_scalar_mult<G: AffineCurve>(
         panic!("length mismatch")
     }
 
-    //let mut context = multi_scalar_mult_init(points);
+    let mut context: MultiScalarMultContext = multi_scalar_mult_init(points);
 
     let batch_size = scalars.len() / npoints;
     let mut ret = vec![G::Projective::zero(); batch_size];
@@ -78,7 +78,7 @@ pub fn multi_scalar_mult<G: AffineCurve>(
         let result_ptr = &mut *(&mut ret as *mut Vec<G::Projective> as *mut Vec<u64>);
 
         mult_pippenger_faster_inf(
-            context,
+            &mut context,
             result_ptr.as_mut_ptr(),
             points as *const _ as *const G1Affine,
             npoints,

@@ -9,7 +9,7 @@ use ark_ec::ProjectiveCurve;
 use ark_ff::BigInteger256;
 use ark_msm::msm::VariableBaseMSM;
 
-use std::str::FromStr;
+use std::{str::FromStr, time::Instant};
 
 use jy_msm::*;
 
@@ -25,21 +25,34 @@ fn msm_correctness() {
     // let (points, scalars) =
     // util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches,32);
 
-    let mut context = multi_scalar_mult_init(points.as_slice());
+    // let mut context = multi_scalar_mult_init(points.as_slice());
+    let mut context = MultiScalarMultContext {
+        context: std::ptr::null_mut(),
+    };
+    let jy_msm_start_time = Instant::now();
     let msm_results = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
         std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
     });
-
+    let jy_msm_end_time = Instant::now();
+    let msm_time = jy_msm_end_time - jy_msm_start_time;
+    let msm_time_ms = msm_time.as_micros() as f64 / 1000.0;
+    println!("jy-msm calculation time: {} ms", msm_time_ms);
     for b in 0..batches {
         let start = b * points.len();
         let end = (b + 1) * points.len();
 
+        let arkworks_start_time = Instant::now();
         let arkworks_result = VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
             std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
-        })
-        .into_affine();
+        });
+        // .into_affine();
+        let arkworks_end_time = Instant::now();
+        let arkworks_time = arkworks_end_time - arkworks_start_time;
+        let arkworks_time_ms = arkworks_time.as_micros() as f64 / 1000.0;
+        println!("arkworks_msm calculation time: {} ms", arkworks_time_ms);
+
         println!("res[{}]: {:?}", b, msm_results[b].into_affine());
-        println!("arkworks_result[{}]: {:?}", b, arkworks_result);
-        assert_eq!(msm_results[b].into_affine(), arkworks_result);
+        println!("arkworks_result[{}]: {:?}", b, arkworks_result.into_affine());
+        assert_eq!(msm_results[b].into_affine(), arkworks_result.into_affine());
     }
 }

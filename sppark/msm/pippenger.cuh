@@ -38,7 +38,7 @@ static const int NTHRBITS = log2(NTHREADS);
 #endif
 
 #ifndef FREQUENCY
-#define FREQUENCY 8
+#define FREQUENCY 16
 #endif
 #ifndef WBITS
 #define WBITS 16
