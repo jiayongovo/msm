@@ -483,38 +483,45 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
     //         res[bid].add(st_my[0]);
     // }
 
-
     const uint32_t step_len = (bucket_num + tnum - 1) / tnum;
     int32_t s = step_len * tid;
     int32_t e = s + step_len;
+    if (s > bucket_num)
+    {
+        return;
+    }
+    if (e >= (bucket_num))
+        e = bucket_num;
     bucket_t st_tmp;
     bucket_t sos_tmp;
-    st.inf();
-    sos.inf();
+    st_tmp.inf();
+    sos_tmp.inf();
     for (int32_t i = e - 1; i >= s; i--)
     {
-        st.add(buckets_ptr[i]);
-        sos.add(st);
+        st_tmp.add(buckets_ptr[i]);
+        sos_tmp.add(st_tmp);
     }
-    mul(st, st, tid);
-    mul(st,st,tnum);
-    sos.add(st);
+    // bucket_t tmp;
+    tmp.inf();
+    mul(tmp, st_tmp, tid * step_len);
+    sos_tmp.add(tmp);
     // 最后结果写到 sos中
-    sos_my[tid] = sos;
+    sos_my[tid] = sos_tmp;
     __syncthreads();
-
-    for (int s = blockDim.x / 2; s > 0; s >>= 1) {
-        if (tid < s) {
-            sos_my[tid].add(sos_my[tid + s]);
-        }
-        __syncthreads();
-    }
+    res[bid].inf();
+    // for (int s = tnum / 2; s > 0; s >>= 1) {
+    //     if (tid < s) {
+    //         sos_my[tid].add(sos_my[tid + s]);
+    //     }
+    //     __syncthreads();
+    // }
 
     // 将块内求和结果写回全局内存中
-    if (tid == 0) {
-         res[bid].add(sos_my[0]);
+    if (tid == 0)
+    {
+        for (int i = 0; i < tnum; i++)
+            res[bid].add(sos_my[i]);
     }
-
 }
 
 #else
