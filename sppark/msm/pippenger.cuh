@@ -34,7 +34,7 @@ static const int NTHRBITS = log2(NTHREADS);
 #define NBITS 253
 #endif
 #else
-# error "no nbits"
+#error "no nbits"
 #endif
 
 #ifndef FREQUENCY
@@ -222,50 +222,23 @@ __global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
             // 获取下一个呗
             m += 1;
             cur_scalar_ptr += 1;
-            if (m == NWINS - 1)
+            uint32_t cur_scalar = *cur_scalar_ptr;
+            // 获得之前处理的最低位
+            cur_scalar += (scalar_tuple[j - npoints] & 1);
+            uint16_t cur_sign;
+            // 对于 2^{c-1} 次方 目前选择sign = 0
+            if (cur_scalar == (1 << (WBITS - 1)))
             {
-                // 说明到达了最后一个
-                // 取低 WBITS
-                // 256 - 253 16 * 16 15 * 16  255位
-                uint32_t cur_scalar = (*cur_scalar_ptr) & (0x7fff);
-
-                //  获得之前处理的最低位
-                cur_scalar += (scalar_tuple[j - npoints] & 1);
-                uint16_t cur_sign;
-                // 对于 2^{c-1} 次方 目前选择sign = 0
-                if (cur_scalar == (1 << (WBITS - 1)))
-                {
-                    cur_sign = 0;
-                }
-                else
-                {
-                    cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-                }
-                // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-                cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
-                point_idx[j] = i;
-                scalar_tuple[j] = cur_scalar << 1 | cur_sign;
+                cur_sign = 0;
             }
             else
             {
-                uint32_t cur_scalar = *cur_scalar_ptr;
-                // 获得之前处理的最低位
-                cur_scalar += (scalar_tuple[j - npoints] & 1);
-                uint16_t cur_sign;
-                // 对于 2^{c-1} 次方 目前选择sign = 0
-                if (cur_scalar == (1 << (WBITS - 1)))
-                {
-                    cur_sign = 0;
-                }
-                else
-                {
-                    cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-                }
-                // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-                cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
-                point_idx[j] = i;
-                scalar_tuple[j] = cur_scalar << 1 | cur_sign;
+                cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
             }
+            // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
+            cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
+            point_idx[j] = i;
+            scalar_tuple[j] = cur_scalar << 1 | cur_sign;
         }
     }
 }
@@ -452,6 +425,7 @@ __global__ void bucket_agg_1(bucket_t *buckets)
     }
 }
 
+#include <cooperative_groups.h>
 __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, bucket_t *sos)
 {
     const uint32_t tnum = blockDim.x * gridDim.y;
