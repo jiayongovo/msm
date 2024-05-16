@@ -440,8 +440,8 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
     bucket_t tmp;
     st_my[tid].inf();
     sos_my[tid].inf();
-    bucket_acc_smem[tid_inner * 2 + 1].inf(); // 设置为inf
-    bucket_acc_smem[tid_inner * 2].inf();
+    // bucket_acc_smem[tid_inner * 2 + 1].inf(); // 设置为inf
+    // bucket_acc_smem[tid_inner * 2].inf();
     // 传统串行算法
     // if (tid == 0){
     //     res[bid].inf();
@@ -452,36 +452,69 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *st, buc
     //         res[bid].add(tmp);
     //     }
     // }
+    // const uint32_t step_len = (bucket_num + tnum - 1) / tnum;
+    // int32_t s = step_len * tid;
+    // int32_t e = s + step_len;
+    // // 对于超出的线程，直接返回
+    // if (s > bucket_num)
+    // {
+    //     return;
+    // }
+    // if (e >= (bucket_num))
+    //     e = bucket_num;
+    // for (int32_t i = e - 1; i >= s; i--)
+    // {
+    //     bucket_acc_smem[tid_inner * 2].add(buckets_ptr[i]);
+    //     bucket_acc_smem[tid_inner * 2 + 1].add(bucket_acc_smem[tid_inner * 2]);
+    // }
+    // mul(st_my[tid], bucket_acc_smem[tid_inner * 2], tid);
+    // sos_my[tid] = bucket_acc_smem[tid_inner * 2 + 1];
+    // __syncthreads();
+    // if (tid == 0)
+    // {
+    //     res[bid].inf();
+    //     for (int i = 1; i < tnum; i++)
+    //         st_my[0].add(st_my[i]);
+    //     for (int i = 0; i < tnum; i++)
+    //     {
+    //         res[bid].add(sos_my[i]);
+    //     }
+    //     for (int i = 0; i < step_len; i++)
+    //         res[bid].add(st_my[0]);
+    // }
+
+
     const uint32_t step_len = (bucket_num + tnum - 1) / tnum;
     int32_t s = step_len * tid;
     int32_t e = s + step_len;
-    // 对于超出的线程，直接返回
-    if (s > bucket_num)
-    {
-        return;
-    }
-    if (e >= (bucket_num))
-        e = bucket_num;
+    bucket_t st_tmp;
+    bucket_t sos_tmp;
+    st.inf();
+    sos.inf();
     for (int32_t i = e - 1; i >= s; i--)
     {
-        bucket_acc_smem[tid_inner * 2].add(buckets_ptr[i]);
-        bucket_acc_smem[tid_inner * 2 + 1].add(bucket_acc_smem[tid_inner * 2]);
+        st.add(buckets_ptr[i]);
+        sos.add(st);
     }
-    mul(st_my[tid], bucket_acc_smem[tid_inner * 2], tid);
-    sos_my[tid] = bucket_acc_smem[tid_inner * 2 + 1];
+    mul(st, st, tid);
+    mul(st,st,tnum);
+    sos.add(st);
+    // 最后结果写到 sos中
+    sos_my[tid] = sos;
     __syncthreads();
-    if (tid == 0)
-    {
-        res[bid].inf();
-        for (int i = 1; i < tnum; i++)
-            st_my[0].add(st_my[i]);
-        for (int i = 0; i < tnum; i++)
-        {
-            res[bid].add(sos_my[i]);
+
+    for (int s = blockDim.x / 2; s > 0; s >>= 1) {
+        if (tid < s) {
+            sos_my[tid].add(sos_my[tid + s]);
         }
-        for (int i = 0; i < step_len; i++)
-            res[bid].add(st_my[0]);
+        __syncthreads();
     }
+
+    // 将块内求和结果写回全局内存中
+    if (tid == 0) {
+         res[bid].add(sos_my[0]);
+    }
+
 }
 
 #else
@@ -495,6 +528,13 @@ using namespace std;
 #include <util/thread_pool_t.hpp>
 #include <util/host_pinned_allocator_t.hpp>
 
+/// @brief  启动协作核函数、在协作组中进行线程协作和同步 在指定流上执行和函数
+/// @tparam ...Types 函数 f 的参数
+/// @param f         启动的核函数指针
+/// @param gridDim   网格维度
+/// @param blockDim  块维度
+/// @param stream    CUDA 流
+/// @param ...args   函数 f 的参数
 template <typename... Types>
 inline void launch_coop(void (*f)(Types...),
                         dim3 gridDim, dim3 blockDim, cudaStream_t stream,
@@ -529,6 +569,8 @@ public:
     inline operator decltype(ret) & () { return ret; }
 };
 
+/// @brief 管理设备指针的类，使用 vec 容器存储设备指针，便于分配和访问设备内存
+/// @tparam T  T* 类型指针
 template <class T>
 class device_ptr_list_t
 {
@@ -536,6 +578,7 @@ class device_ptr_list_t
 
 public:
     device_ptr_list_t() {}
+    /// @brief 析构函数，释放分配的设备内存，遍历容器 cudaFree
     ~device_ptr_list_t()
     {
         for (T *ptr : d_ptrs)
@@ -543,6 +586,9 @@ public:
             cudaFree(ptr);
         }
     }
+    /// @brief 分配指定大小的设备内存，存入容器中
+    /// @param bytes 需要分配的字节数
+    /// @return 容器中设备指针的索引
     size_t allocate(size_t bytes)
     {
         T *d_ptr;
@@ -550,10 +596,12 @@ public:
         d_ptrs.push_back(d_ptr);
         return d_ptrs.size() - 1;
     }
+    /// @brief 获取容器中的设备指针数量
     size_t size()
     {
         return d_ptrs.size();
     }
+    /// @brief 重载下标操作符，支持索引访问容器中设备指针
     T *operator[](size_t i)
     {
         if (i > d_ptrs.size() - 1)
