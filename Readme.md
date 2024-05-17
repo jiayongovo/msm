@@ -41,6 +41,7 @@ sh /experiment/multi_batches/multi_batches.sh
 在BLS12-381上跑规模在2^17-2^24的MSM计算，预计算间隔为 1，2，4，8，12，16
 ```shell
 sh /experiment/precompute/precompute.sh
+# 需要修改 sppark/msm/pippenger.cuh 的 FREQUENCY = 1,2,4,8,12,16
 # 结果在 /experiment/precompute/result 下
 # 论文绘图
 python /experiment/precompute/plot.py 
