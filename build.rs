@@ -6,8 +6,8 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    let curve = "FEATURE_BLS12_377";
-    // let curve = "FEATURE_BLS12_381";
+    // let curve = "FEATURE_BLS12_377";
+    let curve = "FEATURE_BLS12_381";
     // account for cross-compilation [by examining environment variable]
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
 

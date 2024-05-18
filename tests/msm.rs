@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-// use ark_bls12_381::G1Affine;
-use ark_bls12_377::G1Affine; // 377
+use ark_bls12_381::G1Affine;
+// use ark_bls12_377::G1Affine; // 377
 // use ark_ec::msm::VariableBaseMSM;
 use ark_ec::ProjectiveCurve;
 use ark_ff::BigInteger256;
