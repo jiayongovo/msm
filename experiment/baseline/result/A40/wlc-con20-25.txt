@@ -1,0 +1,17 @@
+CUDA/2**20x1            time:   [29.300 ms 29.395 ms 29.499 ms]
+CUDA/2**21x1            time:   [51.960 ms 52.373 ms 52.777 ms]
+CUDA/2**22x1            time:   [94.209 ms 94.916 ms 95.773 ms]
+CUDA/2**23x1            time:   [185.40 ms 192.54 ms 204.97 ms]
+CUDA/2**24x1            time:   [365.92 ms 379.92 ms 406.02 ms]
+
+CUDA/2**20x1            time:   [29.414 ms 29.669 ms 29.932 ms]
+CUDA/2**21x1            time:   [52.186 ms 52.448 ms 52.682 ms]
+CUDA/2**22x1            time:   [94.158 ms 94.781 ms 95.731 ms]
+CUDA/2**23x1            time:   [185.69 ms 193.01 ms 206.26 ms]
+CUDA/2**24x1            time:   [365.95 ms 380.32 ms 406.86 ms]
+
+CUDA/2**20x1            time:   [29.320 ms 29.553 ms 29.748 ms]
+CUDA/2**21x1            time:   [52.375 ms 52.895 ms 53.555 ms]
+CUDA/2**22x1            time:   [94.377 ms 94.943 ms 95.525 ms]
+CUDA/2**23x1            time:   [185.27 ms 191.98 ms 203.69 ms]
+CUDA/2**24x1            time:   [365.40 ms 379.30 ms 405.27 ms]
