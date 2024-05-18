@@ -1,0 +1,17 @@
+Time thread 0 for MSM:  76.57680 ms
+Time thread 0 for MSM:  112.35402 ms
+Time thread 0 for MSM:  180.87082 ms
+Time thread 0 for MSM:  347.37970 ms
+Time thread 0 for MSM:  642.47998 ms
+
+Time thread 0 for MSM:  78.07379 ms
+Time thread 0 for MSM:  112.79872 ms
+Time thread 0 for MSM:  182.10001 ms
+Time thread 0 for MSM:  346.33340 ms
+Time thread 0 for MSM:  632.14594 ms
+
+Time thread 0 for MSM:  75.57050 ms
+Time thread 0 for MSM:  112.84339 ms
+Time thread 0 for MSM:  180.56509 ms
+Time thread 0 for MSM:  347.67682 ms
+Time thread 0 for MSM:  634.10583 ms

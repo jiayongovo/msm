@@ -1,58 +1,14 @@
+CUDA/2**20x1            time:   [16.596 ms 16.765 ms 16.886 ms]
+CUDA/2**21x1            time:   [30.416 ms 30.483 ms 30.523 ms]
+CUDA/2**22x1            time:   [56.279 ms 57.691 ms 59.458 ms]
+CUDA/2**23x1            time:   [107.60 ms 110.86 ms 116.94 ms]
 
-running 0 tests
+CUDA/2**20x1            time:   [16.588 ms 16.671 ms 16.745 ms]
+CUDA/2**21x1            time:   [30.054 ms 30.344 ms 30.537 ms]
+CUDA/2**22x1            time:   [56.462 ms 58.076 ms 60.855 ms]
+CUDA/2**23x1            time:   [104.88 ms 106.80 ms 108.18 ms]
 
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
-Benchmarking CUDA/2**20x1
-Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
-Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 5.0649 s (275 iterations)
-Benchmarking CUDA/2**20x1: Analyzing
-CUDA/2**20x1            time:   [17.014 ms 17.165 ms 17.403 ms]
-
-
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
-Benchmarking CUDA/2**21x1
-Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
-Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 5.7694 s (165 iterations)
-Benchmarking CUDA/2**21x1: Analyzing
-CUDA/2**21x1            time:   [31.000 ms 31.559 ms 31.796 ms]
-
-
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
-Benchmarking CUDA/2**22x1
-Benchmarking CUDA/2**22x1: Warming up for 3.0000 s
-Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 7.9808 s (110 iterations)
-Benchmarking CUDA/2**22x1: Analyzing
-CUDA/2**22x1            time:   [57.998 ms 58.505 ms 58.816 ms]
-Found 1 outliers among 10 measurements (10.00%)
-  1 (10.00%) low severe
-
-
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
-Benchmarking CUDA/2**23x1
-Benchmarking CUDA/2**23x1: Warming up for 3.0000 s
-Benchmarking CUDA/2**23x1: Collecting 10 samples in estimated 7.2391 s (30 iterations)
-Benchmarking CUDA/2**23x1: Analyzing
-CUDA/2**23x1            time:   [112.02 ms 112.42 ms 112.86 ms]
-Found 1 outliers among 10 measurements (10.00%)
-  1 (10.00%) high mild
-
-
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
-
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
+CUDA/2**20x1            time:   [16.546 ms 16.653 ms 16.810 ms]
+CUDA/2**21x1            time:   [26.912 ms 27.504 ms 28.674 ms]
+CUDA/2**22x1            time:   [56.675 ms 58.230 ms 60.444 ms]
+CUDA/2**23x1            time:   [107.53 ms 110.46 ms 114.78 ms]
