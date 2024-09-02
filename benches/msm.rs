@@ -43,7 +43,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         })
     });
     if test_true == "false" {
-        ;
+        
     }else{
         for b in 0..batches {
             let start = b * points.len();
