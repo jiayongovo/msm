@@ -1,0 +1,1 @@
+cat reports/bench_inner.txt | grep "time:"

@@ -224,7 +224,7 @@ extern "C" RustError mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, s
                 // 进行标量变换，{2^c}k_{i,j} => {2^{c-1}}k_{i,j} | sign 获得对应 point_idx
                 // k1,1|sign k2,1|sign ...kn,1|sign , ... , k1,[lambda/c]|sign k2,[lambda/c]|sign ... kn,[lambda/c]|sign
                 // p1,p2,.. pn    p1,p2,pn    p1,p2,pn ...
-                ctx->pipp.launch_jy_process_scalar_1(ctx->config, d_scalars_compute,
+                ctx->pipp.launch_process_scalar(ctx->config, d_scalars_compute,
                                                   ctx->jy_d_scalar_tuples_sn,
                                                   ctx->jy_d_point_idx_sn
                                                   );

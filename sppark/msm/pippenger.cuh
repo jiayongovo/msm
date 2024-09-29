@@ -3,62 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cuda.h>
+#include "config.h"
 
-#ifndef WARP_SZ
-#define WARP_SZ 32
-#endif
+__global__ void pre_compute(affine_t *pre_points, size_t npoints);
 
-#ifndef NTHREADS
-#define NTHREADS 64
-#endif
-#if NTHREADS < 32 || (NTHREADS & (NTHREADS - 1)) != 0
-#error "bad NTHREADS value"
-#endif
-
-constexpr static int log2(int n)
-{
-    int ret = 0;
-    while (n >>= 1)
-        ret++;
-    return ret;
-}
-
-static const int NTHRBITS = log2(NTHREADS);
-
-#if defined(FEATURE_BLS12_381)
-#ifndef NBITS
-#define NBITS 255
-#endif
-#elif defined(FEATURE_BLS12_377)
-#ifndef NBITS
-#define NBITS 253
-#endif
-#else
-#error "no nbits"
-#endif
-
-#ifndef FREQUENCY
-#define FREQUENCY 8
-#endif
-#ifndef WBITS
-#define WBITS 16
-#endif
-#define NWINS 16 // ((NBITS+WBITS-1)/WBITS)   // ceil(NBITS/WBITS)
-
-#if FREQUENCY > NWINS | FREQUENCY < 1
-#error "bad FREQUENCY value"
-#endif
-
-#ifndef LARGE_L1_CODE_CACHE
-#define LARGE_L1_CODE_CACHE 0
-#endif
-
-__global__ void jy_pre_compute(affine_t *pre_points, size_t npoints);
-
-__global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
+__global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
                                     uint32_t *point_idx, size_t npoints);
 
-// v1.1
 __global__ void bucket_acc(uint32_t *scalar_tuple_out, /*uint16_t *bucket_idx, */ uint32_t *point_idx_out,
                            affine_t *pre_points, bucket_t *buckets_pre,
                            uint16_t *bucket_idx_pre_vector, uint16_t *bucket_idx_pre_used,
@@ -75,45 +26,6 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos);
 
 static __shared__ bucket_t bucket_acc_smem[NTHREADS * 2];
 
-// Transposed scalar_t
-class scalar_T
-{
-    uint32_t val[sizeof(scalar_t) / sizeof(uint32_t)][WARP_SZ];
-
-public:
-    __device__ uint32_t &operator[](size_t i) { return val[i][0]; }
-    __device__ const uint32_t &operator[](size_t i) const { return val[i][0]; }
-    __device__ scalar_T &operator=(const scalar_t &rhs)
-    {
-        for (size_t i = 0; i < sizeof(scalar_t) / sizeof(uint32_t); i++)
-            val[i][0] = rhs[i];
-        return *this;
-    }
-};
-
-class scalars_T
-{
-    scalar_T *ptr;
-
-public:
-    __device__ scalars_T(void *rhs) { ptr = (scalar_T *)rhs; }
-    __device__ scalar_T &operator[](size_t i)
-    {
-        return *(scalar_T *)&(&ptr[i / WARP_SZ][0])[i % WARP_SZ];
-    }
-    __device__ const scalar_T &operator[](size_t i) const
-    {
-        return *(const scalar_T *)&(&ptr[i / WARP_SZ][0])[i % WARP_SZ];
-    }
-};
-
-constexpr static __device__ int dlog2(int n)
-{
-    int ret = 0;
-    while (n >>= 1)
-        ret++;
-    return ret;
-}
 
 #if WBITS == 16
 template <class scalar_t>
@@ -169,8 +81,8 @@ static __device__ void mul(bucket_t &res, const bucket_t &base, uint32_t scalar)
 }
 
 // jy_msm 点预计算 小优化
-__global__ void jy_pre_compute(affine_t *pre_points, size_t npoints)
-{
+__global__ void pre_compute(affine_t *pre_points, size_t npoints)
+{   
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     // 除了原始点 需要多少个num窗口 2^2num pi
@@ -193,10 +105,9 @@ __global__ void jy_pre_compute(affine_t *pre_points, size_t npoints)
 
 // 把输进来的scalar看作是u16
 // 只支持窗口大小为 16 的...
-__global__ void jy_process_scalar_1(uint16_t *scalar, uint32_t *scalar_tuple,
+__global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
                                     uint32_t *point_idx, size_t npoints)
 {
-
     const uint32_t tnum = blockDim.x * gridDim.x;
     const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     // 每个线程分配到一个标量的划分
@@ -249,6 +160,7 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out, /*uint16_t *bucket_idx,*/
                            uint16_t *bucket_idx_pre_vector, uint16_t *bucket_idx_pre_used,
                            uint32_t *bucket_idx_pre_offset, size_t npoints)
 {
+    // nvtxRangePushA("bucket_acc");
     const uint32_t tnum = blockDim.x * gridDim.y;
     const uint32_t tid_inner = threadIdx.x;
     const uint32_t tid = blockIdx.y * blockDim.x + tid_inner;
@@ -313,6 +225,7 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out, /*uint16_t *bucket_idx,*/
     buckets_pre_ptr[offset + unique_num - 1] = bucket_acc_smem[tid_inner * 2 + 1];
     bucket_idx_pre_vector_ptr[offset + unique_num - 1] = pre_bucket_idx;
     bucket_idx_pre_used_ptr[tid] = unique_num;
+    // nvtxRangePop();
 }
 
 // v1.1 (2^{15} THREADS)
@@ -320,6 +233,7 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out, /*uint16_t *bucket_idx,*/
 __global__ void bucket_acc_2(bucket_t *buckets_pre, uint16_t *bucket_idx_pre_vector, uint16_t *bucket_idx_pre_used,
                              uint32_t *bucket_idx_pre_offset, bucket_t *buckets, uint32_t upper_tnum, size_t npoints)
 {
+    // nvtxRangePushA("bucket_acc_2");
     const uint32_t tid_inner = threadIdx.x;
     const uint32_t tid = blockIdx.y * blockDim.x + tid_inner;
     const uint32_t bid = blockIdx.x;
@@ -398,6 +312,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre, uint16_t *bucket_idx_pre_vec
     }
     // 最后存到相应的全局内存里
     buckets_ptr[tid] = bucket_acc_smem[tid_inner]; // can omit kerner `bucket_inf`
+    // nvtxRangePop();
 }
 
 // 完成窗口(0,FREQUENCY)聚合
@@ -471,29 +386,6 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos)
         for (int i = 0; i < tnum; i++)
             res[bid].add(sos_my[i]);
     }
-
-    // 传统串行算法
-    // if (tid == 0){
-    //     res[bid].inf();
-    //     tmp.inf();
-    //     for(int i = bucket_num - 1; i >= 0; i--){
-    //         bucket_t cur = buckets_ptr[i];
-    //         tmp.add(cur);
-    //         res[bid].add(tmp);
-    //     }
-    // }
-
-    // todo 数组合并并行化
-    // for (int32_t m = tnum / 2; m > 0; m >>= 1) {
-    //     if (tid < m) {
-    //         sos_my[tid].add(sos_my[tid + m]);
-    //     }
-    //     __syncthreads();
-    // }
-    // if (tid == 0) {
-    //     res[bid].inf();
-    //     res[bid].add(sos_my[0]);
-    // }
 }
 
 #else
@@ -884,13 +776,13 @@ public:
         affine_t *d_pre_points = d_pre_points_ptrs[d_pre_points_sn];
 
         CUDA_OK(cudaSetDevice(device));
-        launch_coop(jy_pre_compute, NWINS * config.N, NTHREADS, stream,
+        // printf("[pre compute] GPU block [(wins)%d * (config.n)%d] thread [%d] \n", NWINS ,config.N, NTHREADS);
+        launch_coop(pre_compute, NWINS * config.N, NTHREADS, stream,
                     d_pre_points, config.npoints);
-        // jy_pre_compute<<<NWINS * config.N,NTHRBITS,0,stream>>>(
-        //     d_pre_points, config.npoints);
+        // pre_compute<<<NWINS * config.N, 256, 0, stream>>>(d_pre_points, config.npoints);
     }
 
-    void launch_jy_process_scalar_1(MSMConfig &config,
+    void launch_process_scalar(MSMConfig &config,
                                     size_t d_scalars_sn, size_t jy_d_scalar_tuples_sn,
                                     size_t jy_d_point_idx_sn,
                                     cudaStream_t s = nullptr)
@@ -902,9 +794,9 @@ public:
         uint32_t *d_point_idx = jy_d_point_idx_ptrs[jy_d_point_idx_sn];
 
         CUDA_OK(cudaSetDevice(device));
-        launch_coop(jy_process_scalar_1, NWINS * config.N, NTHREADS, stream,
+        launch_coop(process_scalar, NWINS * config.N, NTHREADS, stream,
                     d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
-        // jy_process_scalar_1<<<NWINS * config.N, NTHREADS,0,stream>>>(
+        // process_scalar<<<NWINS * config.N, NTHREADS, 0, stream>>>(
         //     d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
     }
 
@@ -952,8 +844,8 @@ public:
         size_t tnum = config.N * NWINS;
         size_t y_tnum = (tnum / FREQUENCY + config.N - 1) / config.N;
         CUDA_OK(cudaSetDevice(device));
-        // launch_coop(bucket_agg_1, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets);
-        bucket_agg_1<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets);
+        launch_coop(bucket_agg_1, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets);
+        // bucket_agg_1<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets);
     }
 
     void launch_bucket_agg_2(MSMConfig &config, size_t d_buckets_sn, size_t d_res_sn, size_t d_sost_sn, cudaStream_t s = nullptr)
@@ -967,7 +859,6 @@ public:
         size_t y_tnum = (tnum / FREQUENCY + config.N - 1) / config.N;
         CUDA_OK(cudaSetDevice(device));
         // launch_coop(bucket_agg_2, dim3(FREQUENCY, config.N), NTHREADS, stream, d_buckets, d_res, st, sost);
-
         bucket_agg_2<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets, d_res, sost);
     }
 

@@ -1,0 +1,1 @@
+cargo build --release && ncu -o reports/ncu1 cargo run
