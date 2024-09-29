@@ -6,7 +6,7 @@ times=2
 run_benchmarks() {
     for ((i=s; i<=n; i++)); do
         for ((j=1; j<=times; j++)); do
-            BENCH_NPOW=$i cargo bench
+            BENCH_NPOW=$i RANDOM_BENCH="true" cargo bench
         done
     done
 }
