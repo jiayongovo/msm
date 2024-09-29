@@ -1,1 +1,1 @@
-cargo build --release && ncu -o reports/ncu1 cargo run
+cargo build --release && ncu -o reports/ncu2 cargo run

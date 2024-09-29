@@ -527,14 +527,15 @@ public:
 
     MSMConfig config;
     config.npoints = npoints;
+    // Align npoints to the nearest multiple of WARP_SZ
     config.n = (npoints + WARP_SZ - 1) & ((size_t)0 - WARP_SZ);
-    // todo 可能需要修改
+    // Calculate the number of blocks per SM
     config.N = (sm_count * 256) / (NTHREADS * NWINS);
-    size_t delta = ((npoints + (config.N) - 1) / (config.N) + WARP_SZ - 1) &
-                   (0U - WARP_SZ);
+    // Calculate the delta value for alignment
+    size_t delta = ((npoints + config.N - 1) / config.N + WARP_SZ - 1) & (0U - WARP_SZ);
+    // Calculate the final number of blocks
     config.N = (npoints + delta - 1) / delta;
 
-    //        if(config.N % 2 == 1) config.N -= 1;
     return config;
   }
 

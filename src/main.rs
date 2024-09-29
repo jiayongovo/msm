@@ -10,7 +10,7 @@ use std::str::FromStr;
 use jy_msm::*;
 
 fn main() {
-    let run_npow = std::env::var("RUN_NPOW").unwrap_or("17".to_string());
+    let run_npow = std::env::var("RUN_NPOW").unwrap_or("22".to_string());
     let npoints_npow = i32::from_str(&run_npow).unwrap();
     let batches_str = std::env::var("BENCHES").unwrap_or("1".to_string());
     let batches = usize::from_str(&batches_str).unwrap();

@@ -1,0 +1,13 @@
+
+jy-msm 2**1: 2.920 ms
+jy-msm 2**2: 2.995 ms
+jy-msm 2**3: 3.389 ms
+wlc-msm-con 2**1: 7.621 ms
+wlc-msm-con 2**2: 8.903 ms
+wlc-msm-con 2**3: 10.141 ms
+wlc-msm-bal 2**1: 6.414 ms
+wlc-msm-bal 2**2: 7.202 ms
+wlc-msm-bal 2**3: 8.855 ms
+sppark 2**1: 2.816 ms
+sppark 2**2: 3.084 ms
+sppark 2**3: 3.255 ms

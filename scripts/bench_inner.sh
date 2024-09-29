@@ -1,7 +1,7 @@
 #!/bin/bash
-s=17
-n=19
-times=2
+s=1
+n=21
+times=3
 # Function to run benchmarks
 run_benchmarks() {
     for ((i=s; i<=n; i++)); do
@@ -20,12 +20,15 @@ cargo build --release
 # Local bench
 run_benchmarks
 
-# Previous scheme bench
-cd exper/msm && cargo build --release
+# wlc_msm bench
+cd exper/wlc_msm/381_xyzz_constant && cargo build --release
 run_benchmarks
 
-# wlc_msm bench
-cd ../wlc_msm/381_xyzz_constant && cargo build --release
+cd ../381_xyzz_bal && cargo build --release
+run_benchmarks
+
+
+cd ../../sppark && cargo build --release
 run_benchmarks
 
 cd ../.. 
