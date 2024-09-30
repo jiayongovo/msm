@@ -3,4 +3,8 @@
 Cargo.lock
 target/
 !target/criterion/
-exper/
+exper/msm
+exper/pyZKP
+exper/sppark/rust/target
+wlc_msm/381_xyzz_bal/target
+wlc_msm/381_xyzz_con/target
