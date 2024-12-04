@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use ark_bls12_381::G1Affine; // 默认 381
-                             // use ark_bls12_377::G1Affine; // 377
+// use ark_bls12_377::G1Affine; // 377
 use ark_ff::BigInteger256;
 use criterion::{criterion_group, criterion_main, Criterion};
 
 use std::str::FromStr;
 
-use jy_msm::*;
+use mmsm::*;
 
 fn criterion_benchmark(c: &mut Criterion) {
     let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("17".to_string());
@@ -18,11 +18,12 @@ fn criterion_benchmark(c: &mut Criterion) {
     let batches = usize::from_str(&batches_str).unwrap();
     let random_bench = std::env::var("RANDOM_BENCH").unwrap_or("mixed".to_string());
     let (points, scalars) = match random_bench.as_str() {
-        "true" => util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
+        "random" => util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
         "mixed" => util::generate_mixed_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
-        _ => {
+        "clustered" => {
             util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches, 32)
-        }
+        },
+        _ => unimplemented!()
     };
 
     let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());

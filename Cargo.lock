@@ -395,26 +395,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "jy-msm"
-version = "0.1.0"
-dependencies = [
- "ark-bls12-377",
- "ark-bls12-381",
- "ark-ec",
- "ark-ff",
- "ark-msm",
- "ark-std",
- "blst",
- "cc",
- "criterion",
- "rand",
- "rand_chacha",
- "rayon",
- "sppark",
- "which",
-]
-
-[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -445,6 +425,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5a634b1c61a95585bd15607c6ab0c4e5b226e695ff2800ba0cdccddf208c406c"
 dependencies = [
  "autocfg",
+]
+
+[[package]]
+name = "mmsm"
+version = "0.1.0"
+dependencies = [
+ "ark-bls12-377",
+ "ark-bls12-381",
+ "ark-ec",
+ "ark-ff",
+ "ark-msm",
+ "ark-std",
+ "blst",
+ "cc",
+ "criterion",
+ "rand",
+ "rand_chacha",
+ "rayon",
+ "sppark",
+ "which",
 ]
 
 [[package]]

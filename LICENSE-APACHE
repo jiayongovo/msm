@@ -1,4 +1,4 @@
-This GPU implemetation of MSM is developed by Tao Lu with the template from 
+Load Balancing Optimization for Multi-Batch Multi-Scalar Multiplication in Resource-Constrained Environments is developed by jiayongovo with the template from 
 [the reference](https://github.com/z-prize/test-msm-gpu) provided by ZPrize.
 
 Copyright (c) 2022 Tao Lu and contributors to [the reference](https://github.com/z-prize/test-msm-gpu).

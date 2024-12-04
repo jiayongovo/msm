@@ -7,7 +7,7 @@ use ark_bls12_381::G1Affine;
 // use ark_ec::msm::VariableBaseMSM;
 use ark_ff::BigInteger256;
 use std::str::FromStr;
-use jy_msm::*;
+use mmsm::*;
 
 fn main() {
     let run_npow = std::env::var("RUN_NPOW").unwrap_or("22".to_string());

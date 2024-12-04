@@ -5,6 +5,7 @@ target/
 !target/criterion/
 exper/msm
 exper/pyZKP
+exper/DistMSM
 exper/sppark/rust/target
 wlc_msm/381_xyzz_bal/target
 wlc_msm/381_xyzz_con/target

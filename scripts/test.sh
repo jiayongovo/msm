@@ -1,8 +1,6 @@
 #!/bin/bash
 
-param1=${1:-17}
-param2=${2:-1}
-param3=${3:-true}
-
-cargo build --release
-TEST_NPOW=$param1 BENCHES=$param2 RANDOM_TEST=$param3 cargo test
+echo > reports/test.txt
+for ((i=1; i<=5; i++)); do
+    TEST_NPOW=1 RANDOM_TEST=mixed cargo test  >> reports/test.txt
+done
