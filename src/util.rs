@@ -10,6 +10,7 @@ use ark_ec::{AffineCurve, ProjectiveCurve};
 use ark_std::vec::Vec;
 use ark_std::UniformRand;
 
+
 pub fn generate_points_scalars<G: AffineCurve>(
     len: usize,
     batch_size: usize,

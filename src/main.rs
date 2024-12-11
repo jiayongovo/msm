@@ -3,30 +3,29 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use ark_bls12_381::G1Affine;
+use ark_ec::AffineCurve;
 // use ark_bls12_377::G1Affine; // 377
-// use ark_ec::msm::VariableBaseMSM;
-use ark_ff::BigInteger256;
-use std::str::FromStr;
+use std::{convert::TryInto, str::FromStr};
+use ark_ed_on_bls12_381::EdwardsAffine;
+
 use mmsm::*;
 
 fn main() {
-    let run_npow = std::env::var("RUN_NPOW").unwrap_or("22".to_string());
-    let npoints_npow = i32::from_str(&run_npow).unwrap();
-    let batches_str = std::env::var("BENCHES").unwrap_or("1".to_string());
-    let batches = usize::from_str(&batches_str).unwrap();
-    let random_test = std::env::var("RANDOM_TEST").unwrap_or("mixed".to_string());
-    let (points, scalars) = match random_test.as_str() {
-        "true" => util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
-        "zero" => util::generate_zero_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
-        "mixed" => util::generate_mixed_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
-        _ => {
-            util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches, 32)
-        }
-    };
-    let mut context = multi_scalar_mult_init(points.as_slice());
-    let msm_res = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
-        std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
-    });
-    println!("[INFO] MSM result: {:?}", msm_res);
-    println!("[INFO] msm complete!");
+    let run_npow = 20;
+    let batches = 1;
+    let (points, scalars) = util::generate_mixed_points_scalars::<EdwardsAffine>(1usize << run_npow, batches);
+    // let mut context = multi_scalar_mult_init(points.as_slice());
+    // let msm_res = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
+    //     std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
+    // });
+
+    let test_npow = 20;
+    let test_batch = 1;
+    let (test_points,test_scalars) = util::generate_mixed_points_scalars::<G1Affine>(1usize << test_npow, test_batch);
+
+    println!("[INFO] Test scalars: {:?}", test_scalars[0]);
+    println!("[INFO] scalars: {:?}", scalars[0]);
+
+    println!("[INFO] MSM test points: {:?}", test_points[0]);
+    println!("[INFO] MSM points: {:?}", points[0]);
 }

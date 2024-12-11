@@ -11,6 +11,15 @@ run_benchmarks() {
     done
 }
 
+
+run_sppark() {
+    for ((i=s; i<=n; i++)); do
+        for ((j=1; j<=times; j++)); do
+            BENCH_NPOW=$i cargo bench --features=bls12_381
+        done
+    done
+}
+
 cargo build --release
 # Local test
 # for ((i=s; i<=n; i++)); do
@@ -28,7 +37,7 @@ cd ../381_xyzz_bal && cargo build --release
 run_benchmarks
 
 
-cd ../../sppark && cargo build --release
-run_benchmarks
+cd ../../sppark/poc/msm-cuda && cargo build --release --features=bls12_381
+run_sppark
 
-cd ../.. 
+cd ../../../../

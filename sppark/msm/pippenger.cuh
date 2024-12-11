@@ -248,7 +248,9 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
     {
       bucket_acc_smem[tid_inner * 2].neg(true);
     }
-    bucket_acc_smem[tid_inner * 2 + 1].add(bucket_acc_smem[tid_inner * 2]);
+    affine_t tmp;
+    bucket_acc_smem[tid_inner * 2].xyzz_to_affine_inf(tmp);
+    bucket_acc_smem[tid_inner * 2 + 1].add(tmp);
   }
   buckets_pre_ptr[offset + unique_num - 1] = bucket_acc_smem[tid_inner * 2 + 1];
   bucket_idx_pre_vector_ptr[offset + unique_num - 1] = pre_bucket_idx;
@@ -337,6 +339,9 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
       {
         not_inf = true;
         // 把找到的点累加起来
+        // affine_t tmp;
+        // buckets_pre_ptr[i * 2].xyzz_to_affine_inf(tmp);
+        // bucket_acc_smem[tid_inner].add(tmp);
         bucket_acc_smem[tid_inner].add(buckets_pre_ptr[i]);
         break;
       }
@@ -372,6 +377,9 @@ __global__ void bucket_agg_1(bucket_t *buckets)
         break;
       bucket_t *buckets_ptr_add =
           buckets_ptr + (1 << (WBITS - 1)) * win_add_idx;
+      // affine_t tmp;
+      // buckets_ptr_add[i].xyzz_to_affine_inf(tmp);
+      // buckets_ptr[i].add(tmp);
       buckets_ptr[i].add(buckets_ptr_add[i]);
     }
   }

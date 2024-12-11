@@ -1,7 +1,7 @@
 cat reports/bench_inner.txt | grep "time:" > reports/bench_sys.txt
 
 # Define the input file
-input_file="/home/jiayong/msm/reports/bench_sys.txt"
+input_file="reports/bench_sys.txt"
 
 # Define the instances
 instances=("jy-msm" "wlc-msm-con" "wlc-msm-bal" "sppark")
