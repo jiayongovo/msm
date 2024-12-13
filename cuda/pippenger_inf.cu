@@ -5,19 +5,23 @@
 #include <cub/cub.cuh>
 #include <cuda.h>
 #include <sys/mman.h>
-#if defined(FEATURE_BLS12_381)
-#include <ff/bls12-381.hpp>
-#elif defined(FEATURE_BLS12_377)
-#include <ff/bls12-377.hpp>
-#else
-#error "no FEATURE"
-#endif
-// #include <ff/bls12-381.hpp>
 #include <ec/jacobian_t.hpp>
 #include <ec/xyzz_t.hpp>
+#include <ec/xyzt_t.hpp>
+#include "../include/log.h"
+#include "ff/bls12-381.hpp"
+
+// #if defined(FEATURE_BLS12_381)
+// #include <ff/bls12-381.hpp>
+// #elif defined(FEATURE_BLS12_377)
+// #include <ff/bls12-377.hpp>
+// #else
+// #error "Unknown curve"
+// #endif
 
 typedef jacobian_t<fp_t> point_t;
 typedef xyzz_t<fp_t> bucket_t;
+// typedef xyzt_t<fp_t> bucket_t;
 typedef bucket_t::affine_inf_t affine_t;
 typedef fr_t scalar_t;
 
@@ -113,53 +117,42 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
                            const affine_t points[], size_t npoints,
                            size_t ffi_affine_sz)
 {
+  LOG(INFO, "MSM init");
   context->context = new Context<bucket_t, affine_t, scalar_t>();
   Context<bucket_t, affine_t, scalar_t> *ctx = context->context;
   ctx->ffi_affine_sz = ffi_affine_sz;
   try
   {
     ctx->config = ctx->pipp.init_msm_faster(npoints);
-
-    // Allocate GPU storage
-    // 分配预计算点空间
     ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
     //
     for (size_t i = 0; i < NUM_BATCH_THREADS; i++)
     {
       ctx->d_scalars_sn[i] = ctx->pipp.allocate_d_scalars(ctx->config);
     }
-    // 分配桶空间
     ctx->d_buckets_sn = ctx->pipp.allocate_d_buckets();
-    // 静态 bucket
     ctx->d_buckets_pre_sn = ctx->pipp.allocate_d_buckets_pre(ctx->config);
-    // buffer_index
     ctx->d_bucket_idx_pre_vector_sn =
         ctx->pipp.allocate_d_bucket_idx_pre_vector(ctx->config);
-    // buffer_used
     ctx->d_bucket_idx_pre_used_sn =
         ctx->pipp.allocate_d_bucket_idx_pre_used(ctx->config);
-    // buffer_offset
     ctx->d_bucket_idx_pre_offset_sn =
         ctx->pipp.allocate_d_bucket_idx_pre_offset(ctx->config);
 
     ctx->d_sost_sn = ctx->pipp.allocate_d_sost(ctx->config);
-    // 返回值 NWIN * bucket
     ctx->d_res_sn = ctx->pipp.allocate_d_res();
-    // 分配符号变换空间
     ctx->d_scalar_tuples_sn =
         ctx->pipp.allocate_d_scalar_tuple(ctx->config);
     ctx->d_point_idx_sn = ctx->pipp.allocate_d_point_idx(ctx->config);
     ctx->d_scalar_tuples_out_sn =
         ctx->pipp.allocate_d_scalar_tuple_out(ctx->config);
     ctx->d_point_idx_out_sn = ctx->pipp.allocate_d_point_idx(ctx->config);
-    // CUB 排序
     ctx->d_cub_sort_idx = ctx->pipp.allocate_d_cub_sort_faster(ctx->config);
 
     // Allocate pinned memory on host
     CUDA_OK(cudaMallocHost(&ctx->h_scalars,
                            ctx->pipp.get_size_scalars(ctx->config)));
 
-    // 传输到预计算点那组
     ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn,
                                        points, ffi_affine_sz);
     ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn);
@@ -204,9 +197,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
 
     typename pipp_t::result_container_t_faster *kernel_res = &ctx->fres0;
     typename pipp_t::result_container_t_faster *accum_res = &ctx->fres1;
-    // 每次执行两批
-    // 一批传送
-    // 一批计算
+
     size_t d_scalars_xfer = ctx->d_scalars_sn[0];
     size_t d_scalars_compute = ctx->d_scalars_sn[1];
 
@@ -214,9 +205,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
     size_t scalars_sz = ctx->pipp.get_size_scalars(ctx->config);
 
     int work = 0;
-    // 复制第 0 批标量到h_scalars
     memcpy(ctx->h_scalars, &scalars[work * npoints], scalars_sz);
-    // 把计算点传送到设备中
     ctx->pipp.transfer_scalars_to_device(ctx->config, d_scalars_compute,
                                          ctx->h_scalars, aux_stream);
     CUDA_OK(cudaStreamSynchronize(aux_stream));
@@ -231,7 +220,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         // point_idx k1,1|sign k2,1|sign ...kn,1|sign , ... , k1,[lambda/c]|sign
         // k2,[lambda/c]|sign ... kn,[lambda/c]|sign p1,p2,.. pn    p1,p2,pn
         // p1,p2,pn ...
-        ctx->pipp.launch_process_scalar(ctx->config, d_scalars_compute,
+        ctx->pipp.launch_process_scalar_custom(ctx->config, d_scalars_compute,
                                         ctx->d_scalar_tuples_sn,
                                         ctx->d_point_idx_sn);
 

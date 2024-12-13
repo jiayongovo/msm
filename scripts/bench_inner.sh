@@ -1,5 +1,5 @@
 #!/bin/bash
-s=16
+s=1
 n=23
 times=1
 # Function to run benchmarks

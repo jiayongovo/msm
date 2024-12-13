@@ -16,7 +16,7 @@ public:
 };
 
 template<typename... Types>
-inline std::string fmt(const char* fmt, Types... args)
+inline std::string exce_fmt(const char* fmt, Types... args)
 {
     size_t len = std::snprintf(nullptr, 0, fmt, args...);
     std::string ret(++len, '\0');
@@ -28,7 +28,7 @@ inline std::string fmt(const char* fmt, Types... args)
 #define CUDA_OK(expr) do {                                  \
     cudaError_t code = expr;                                \
     if (code != cudaSuccess) {                              \
-        auto str = fmt("%s@%d failed: %s", #expr, __LINE__, \
+        auto str = exce_fmt("%s@%d failed: %s", #expr, __LINE__, \
                        cudaGetErrorString(code));           \
         throw cuda_error(code, str);                        \
     }                                                       \

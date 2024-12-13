@@ -14,7 +14,7 @@ const int NBITS = 253;
 const int WARP_SZ = 32;
 const int NTHREADS = 128;
 const int WBITS = 16;
-const int NWINS = 16; // ((NBITS + WBITS - 1) / WBITS)   // ceil(NBITS/WBITS)
+const int NWINS = ((NBITS + WBITS - 1) / WBITS);  // ceil(NBITS/WBITS)
 const int FREQUENCY = 16;
 
 static_assert(NTHREADS >= 32 && (NTHREADS & (NTHREADS - 1)) == 0, "bad NTHREADS value");
@@ -24,7 +24,8 @@ __global__ void pre_compute(affine_t *pre_points, size_t npoints);
 
 __global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
                                uint32_t *point_idx, size_t npoints);
-
+__global__ void process_scalar_custom(scalar_t *scalar, uint32_t *scalar_tuple,
+                                      uint32_t *point_idx, size_t npoints);
 __global__ void bucket_acc(uint32_t *scalar_tuple_out,
                            uint32_t *point_idx_out,
                            affine_t *pre_points, bucket_t *buckets_pre,
@@ -46,23 +47,36 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos);
 
 static __shared__ bucket_t bucket_acc_smem[NTHREADS * 2];
 
-#if WBITS == 16
+// #if WBITS == 16
 template <class scalar_t>
-static __device__ int get_wval(const scalar_t &d, uint32_t off, uint32_t bits)
+static __device__ uint32_t get_wval(const scalar_t *d, uint32_t off, uint32_t bits)
 {
-  uint32_t ret = d[off / 32];
-  return (ret >> (off % 32)) & ((1 << bits) - 1);
-}
-#else
-template <class scalar_t>
-static __device__ int get_wval(const scalar_t &d, uint32_t off, uint32_t bits)
-{
-  uint32_t top = off + bits - 1;
-  uint64_t ret = ((uint64_t)d[top / 32] << 32) | d[off / 32];
+  // uint16_t *d = (uint16_t *)scalar;
+  // uint16_t *cur_scalar_ptr = d + off;
+  // uint32_t ret = *cur_scalar_ptr;
+  // return ret;
+  // uint16_t *cur_scalar_ptr = (uint16_t *)d + (off / WBITS);
+  // uint32_t rets = *cur_scalar_ptr;
 
-  return (int)(ret >> (off % 32)) & ((1 << bits) - 1);
+  uint32_t *scalar = (uint32_t *)d;
+  uint32_t top = off + bits - 1;
+  uint32_t ret = ((uint32_t)scalar[top / 32] << 32) | scalar[off / 32];
+  return (uint32_t)(ret >> (off % 32)) & ((1 << bits) - 1);
+  // uint32_t *scalar = (uint32_t *)d;
+  // uint32_t ret = scalar[off / 32];
+  // return (ret >> (off % 32)) & ((1 << bits) - 1);
 }
-#endif
+// #else
+// template <class scalar_t>
+// static __device__ int get_wval(const scalar_t &d, uint32_t off, uint32_t bits)
+// {
+//   uint32_t *scalar = (uint32_t *)d;
+//   uint32_t top = off + bits - 1;
+//   uint32_t ret = ((uint32_t)scalar[top / 32] << 32) | scalar[off / 32];
+
+//   return (uint32_t)(ret >> (off % 32)) & ((1 << bits) - 1);
+// }
+// #endif
 
 static __device__ uint32_t max_bits(uint32_t scalar)
 {
@@ -109,6 +123,7 @@ __global__ void pre_compute(affine_t *pre_points, size_t npoints)
   const uint32_t num = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY - 1))
                                                 : (NWINS / FREQUENCY);
   bucket_t Pi_xyzz;
+#pragma unroll 1
   for (uint32_t i = tid; i < npoints; i += tnum)
   {
     affine_t *Pi = pre_points + i;
@@ -131,7 +146,8 @@ __global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
 {
   const uint32_t tnum = blockDim.x * gridDim.x;
   const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
-  // 每个线程分配到一个标量的划分
+// 每个线程分配到一个标量的划分
+#pragma unroll 1
   for (int i = tid; i < npoints; i += tnum)
   {
     // 因为把他看作是u16 因此偏移需要加 2^16 * i
@@ -148,7 +164,8 @@ __global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
     scalar_tuple[i] = cur_scalar << 1 | cur_sign;
     point_idx[i] = i;
     int m = 0;
-    // j 放进去
+// j 放进去
+#pragma unroll 1
     for (int j = i + npoints; j < NWINS * npoints; j += npoints)
     {
       // 获取下一个呗
@@ -176,6 +193,58 @@ __global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
   }
 }
 
+__global__ void process_scalar_custom(scalar_t *scalar, uint32_t *scalar_tuple,
+                                      uint32_t *point_idx, size_t npoints)
+{
+  const uint32_t tnum = blockDim.x * gridDim.x;
+  const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
+  // uint16_t *d = (uint16_t *)scalar;
+// 每个线程分配到一个标量的划分
+#pragma unroll 1
+  for (int i = tid; i < npoints; i += tnum)
+  {
+    // uint16_t *cur_scalar_ptr = d + (i << 4);
+    // // 获得标量值
+    // uint32_t cur_scalar = *cur_scalar_ptr;
+    uint32_t cur_scalar = get_wval<scalar_t>(scalar, i * NWINS * WBITS, WBITS);
+
+    uint16_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
+    cur_scalar = cur_sign == 1 ? ((1 << WBITS) - cur_scalar) : cur_scalar;
+    // 将 scalar 和 sign进行拼接
+    scalar_tuple[i] = cur_scalar << 1 | cur_sign;
+    point_idx[i] = i;
+    int m = 0;
+    int l = 0;
+// j 放进去
+#pragma unroll 1
+    for (int j = i + npoints; j < NWINS * npoints; j += npoints)
+    {
+      // 获取下一个呗
+      m += 1;
+      l += 1;
+      // cur_scalar_ptr += 1;
+      // uint32_t cur_scalar = *cur_scalar_ptr;
+      uint32_t cur_scalar = get_wval<scalar_t>(scalar, (i * NWINS + l) * WBITS, WBITS);
+      // 获得之前处理的最低位
+      cur_scalar += (scalar_tuple[j - npoints] & 1);
+      uint16_t cur_sign;
+      // 对于 2^{c-1} 次方 目前选择sign = 0
+      if (cur_scalar == (1 << (WBITS - 1)))
+      {
+        cur_sign = 0;
+      }
+      else
+      {
+        cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
+      }
+      // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >>
+      // WBITS)) & 1;
+      cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
+      point_idx[j] = i;
+      scalar_tuple[j] = cur_scalar << 1 | cur_sign;
+    }
+  }
+}
 // v1.1
 __global__ void bucket_acc(uint32_t *scalar_tuple_out,
                            /*uint16_t *bucket_idx,*/ uint32_t *point_idx_out,
@@ -224,8 +293,9 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
   uint32_t offset = tid + (scalar_tuple_out_ptr[s] >> 1); // bucket_idx_ptr[s];
   bucket_idx_pre_offset_ptr[tid] = offset;
   uint32_t unique_num = 0;
-  // 每个线程在每个窗口下处理的点
-  // process [s, e)
+// 每个线程在每个窗口下处理的点
+// process [s, e)
+#pragma unroll 1
   for (uint32_t i = s; i < e; i++)
   {
     uint16_t cur_bucket_idx =
@@ -283,6 +353,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
   int left = 0, right = upper_tnum - 1;
   bool not_inf = false;
   uint32_t start_pos = 0;
+#pragma unroll 1
   while (left <= right)
   {
     int mid = left + ((right - left) >> 1);
@@ -313,6 +384,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
       }
       else
       {
+#pragma unroll 1
         for (uint32_t i = vector_ptr + 1; i < vector_ptr + vector_used; i++)
         {
           if (bucket_idx_pre_vector_ptr[i] == (tid + 1))
@@ -333,6 +405,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
     // 找到对应的buffer了
     uint16_t vector_used = bucket_idx_pre_used_ptr[start_pos];
     uint32_t vector_ptr = bucket_idx_pre_offset_ptr[start_pos];
+#pragma unroll 1
     for (uint32_t i = vector_ptr; i < vector_ptr + vector_used; i++)
     {
       if (bucket_idx_pre_vector_ptr[i] == (tid + 1))
@@ -368,6 +441,7 @@ __global__ void bucket_agg_1(bucket_t *buckets)
                                            : (NWINS / FREQUENCY);
 
   bucket_t *buckets_ptr = buckets + (1 << (WBITS - 1)) * bid;
+#pragma unroll 1
   for (uint32_t i = tid; i < bucket_num; i += tnum)
   {
     for (int j = 1; j <= wins; j++)
@@ -411,7 +485,7 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos)
   }
   if (e >= (bucket_num))
     e = bucket_num;
-
+#pragma unroll 1
   for (int32_t i = e - 1; i >= s; i--)
   {
     st_tmp.add(buckets_ptr[i]);
@@ -545,7 +619,6 @@ private:
   // GPU device number
   int device;
 
-  // TODO: Move to device class eventually
   thread_pool_t *da_pool = nullptr;
 
 public:
@@ -831,6 +904,22 @@ public:
     //     d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
   }
 
+  void launch_process_scalar_custom(MSMConfig &config, size_t d_scalars_sn,
+                                    size_t d_scalar_tuples_sn,
+                                    size_t d_point_idx_sn,
+                                    cudaStream_t s = nullptr)
+  {
+    cudaStream_t stream = (s == nullptr) ? default_stream : s;
+    // 把传进来的 scalar 看成是u16集合
+    scalar_t *d_scalars = d_scalar_ptrs[d_scalars_sn];
+    uint32_t *d_scalar_tuple = d_scalar_tuple_ptrs[d_scalar_tuples_sn];
+    uint32_t *d_point_idx = d_point_idx_ptrs[d_point_idx_sn];
+
+    CUDA_OK(cudaSetDevice(device));
+    launch_coop(process_scalar_custom, NWINS * config.N, NTHREADS, stream, d_scalars,
+                d_scalar_tuple, d_point_idx, config.npoints);
+  }
+
   void launch_bucket_acc(
       MSMConfig &config,
       size_t d_scalar_tuples_out_sn, // size_t d_bucket_idx_sn,
@@ -904,13 +993,14 @@ public:
     // d_buckets, d_res, st, sost);
     bucket_agg_2<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets,
                                                                    d_res, sost);
+    // bucket_agg<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_res, d_res);
   }
 
   // Perform final accumulation on CPU.
   void accumulate_faster(point_t &out, result_container_t_faster &res)
   {
     out.inf();
-
+#pragma unroll 1
     for (int32_t k = FREQUENCY - 1; k >= 0; k--)
     {
       for (int32_t i = 0; i < WBITS; i++)

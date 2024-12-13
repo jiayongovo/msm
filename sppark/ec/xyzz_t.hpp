@@ -294,36 +294,6 @@ public:
             p31.inf(); /* set |p3| to infinity */
         }
 
-        //         field_t PP;             /* add |p1| and |p2| */
-
-        //         PP = P^2;               /* PP = P^2 */
-        // #define PPP P
-        //         PPP = P * PP;           /* PPP = P*PP */
-        //         p31.ZZ *= PP;           /* ZZ3 = ZZ1*ZZ2*PP */
-        //         p31.ZZZ *= PPP;         /* ZZZ3 = ZZZ1*ZZZ2*PPP */
-        // #define Q PP
-        //         Q = U * PP;             /* Q = U1*PP */
-
-        //         p31.X = R^2;            /* R^2 */
-        //         p31.X -= PPP;           /* R^2-PPP */
-        //         p31.X -= Q;
-        //         p31.X -= Q;             /* X3 = R^2-PPP-2*Q */
-        //         Q -= p31.X;
-
-        // 	    auto Y31 = field_t::wide_t(Q, R);
-        // 	    auto Y32 = field_t::wide_t(S, PPP);
-        // 	    Y31 -= Y32;
-        // 	    p31.Y = normalize(Y31);
-        //         // Q *= R;                 /* R*(Q-X3) */
-        //         // p31.Y = S * PPP;        /* S1*PPP */
-        //         // p31.Y = Q - p31.Y;      /* Y3 = R*(Q-X3)-S1*PPP */
-        //         if (!mix) {
-        //             p31.ZZ *= p2.ZZ;        /* ZZ1*ZZ2 */
-        //             p31.ZZZ *= p2.ZZZ;      /* ZZZ1*ZZZ2 */
-        // #undef PPP
-        // #undef Q
-        //         }
-
 #ifdef __CUDA_ARCH__
         *this = p31;
 #endif

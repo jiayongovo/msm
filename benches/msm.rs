@@ -16,7 +16,7 @@ fn criterion_benchmark(c: &mut Criterion) {
     let npoints_npow = i32::from_str(&bench_npow).unwrap();
     let batches_str = std::env::var("BENCHES").unwrap_or("1".to_string());
     let batches = usize::from_str(&batches_str).unwrap();
-    let random_bench = std::env::var("RANDOM_BENCH").unwrap_or("mixed".to_string());
+    let random_bench = std::env::var("RANDOM_BENCH").unwrap_or("random".to_string());
     let (points, scalars) = match random_bench.as_str() {
         "random" => util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
         "mixed" => util::generate_mixed_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
