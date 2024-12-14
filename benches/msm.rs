@@ -40,7 +40,7 @@ fn criterion_benchmark(c: &mut Criterion) {
             });
         })
     });
-    correctness_test(points, scalars, batches, msm_result);
+    // correctness_test(points, scalars, batches, msm_result);
     group.finish();
 }
 

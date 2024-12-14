@@ -13,7 +13,7 @@
 #undef __noinline__
 #define __noinline__
 #endif
-
+#include<util/log.h>
 template <class field_t>
 class xyzz_t
 {
@@ -183,6 +183,7 @@ public:
      */
     __device__ void add(const xyzz_t &p2)
     {
+        // LOG(INFO,"xyzz plus xyzz");
         if (p2.is_inf())
         {
             return;
@@ -198,6 +199,14 @@ public:
 #else
         xyzz_t &p31 = *this;
 #endif
+//         p31.X = p31.X * p2.ZZ;  /* U1 = X1*ZZ2 */
+//         p31.Y = p31.Y * p2.ZZZ; /* S1 = Y1*ZZZ2 */
+//         p31.ZZ = p2.X * p31.ZZ;  /* U2 = X2*ZZ1 */
+//         p31.ZZZ = p2.Y * p31.ZZZ; /* S2 = Y2*ZZZ1 */
+//         p31.X = p31.X * p2.ZZ;  /* U1 = X1*ZZ2 */
+//         p31.Y = p31.Y * p2.ZZZ; /* S1 = Y1*ZZZ2 */
+//         p31.ZZ = p2.X * p31.ZZ;  /* U2 = X2*ZZ1 */
+//         p31.ZZZ = p2.Y * p31.ZZZ; /* S2 = Y2*ZZZ1 */
         bool mix = p2.ZZ.is_one() && p2.ZZZ.is_one();
 
         field_t U, S, P, R;
@@ -384,6 +393,7 @@ public:
     template <class affine_t>
     __device__ void add(const affine_t &p2, bool subtract = false)
     {
+        LOG(INFO,"xyzz plus affine");
 #ifdef __CUDA_ARCH__
         xyzz_t p31 = *this;
 #else

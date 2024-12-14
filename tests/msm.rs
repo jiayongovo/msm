@@ -4,14 +4,10 @@
 
 use ark_bls12_381::G1Affine;
 // use ark_bls12_377::G1Affine; // 377
-// use ark_ec::msm::VariableBaseMSM;
-use ark_ec::ProjectiveCurve;
-use ark_ed_on_bls12_381::EdwardsAffine;
 use ark_ff::BigInteger256;
-use ark_msm::msm::VariableBaseMSM;
-use std::str::FromStr;
-
+use correctness_test::correctness_test;
 use mmsm::*;
+use std::str::FromStr;
 
 #[test]
 fn msm_correctness() {
@@ -33,15 +29,5 @@ fn msm_correctness() {
     let msm_results = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
         std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
     });
-
-    for b in 0..batches {
-        let start = b * points.len();
-        let end = (b + 1) * points.len();
-
-        let arkworks_result = VariableBaseMSM::multi_scalar_mul(points.as_slice(), unsafe {
-            std::mem::transmute::<&[_], &[BigInteger256]>(&scalars[start..end])
-        })
-        .into_affine();
-        assert_eq!(msm_results[b].into_affine(), arkworks_result);
-    }
+    correctness_test(points, scalars, batches, msm_results);
 }
