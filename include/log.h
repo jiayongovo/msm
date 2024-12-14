@@ -16,10 +16,11 @@
 #if ENABLE_LOGGING
     #define LOG(level, fmt, ...) \
         do { \
-            if (level >= INFO && level <= ERROR) { \
+        if (level >= INFO && level <= ERROR) {  \
                 printf("[%s:%d](%s) [%s] " fmt "\n", __FILE__, __LINE__, __FUNCTION__, LOG_LEVEL_STRING(level), ##__VA_ARGS__); \
             } \
         } while(0)
 #else
     #define LOG(level, fmt, ...)
 #endif
+

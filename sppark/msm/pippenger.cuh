@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cuda.h>
-
+#include "../../include/log.h"
 #if defined(FEATURE_BLS12_381)
 const int NBITS = 255;
 #elif defined(FEATURE_BLS12_377)
@@ -11,10 +11,11 @@ const int NBITS = 253;
 #else
 #error "Unknown curve"
 #endif
+
 const int WARP_SZ = 32;
 const int NTHREADS = 128;
 const int WBITS = 16;
-const int NWINS = ((NBITS + WBITS - 1) / WBITS);  // ceil(NBITS/WBITS)
+const int NWINS = ((NBITS + WBITS - 1) / WBITS); // ceil(NBITS/WBITS)
 const int FREQUENCY = 16;
 
 static_assert(NTHREADS >= 32 && (NTHREADS & (NTHREADS - 1)) == 0, "bad NTHREADS value");
@@ -22,10 +23,7 @@ const bool LARGE_L1_CODE_CACHE = false;
 
 __global__ void pre_compute(affine_t *pre_points, size_t npoints);
 
-__global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
-                               uint32_t *point_idx, size_t npoints);
-__global__ void process_scalar_custom(scalar_t *scalar, uint32_t *scalar_tuple,
-                                      uint32_t *point_idx, size_t npoints);
+__global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple, uint32_t *point_idx, size_t npoints);
 __global__ void bucket_acc(uint32_t *scalar_tuple_out,
                            uint32_t *point_idx_out,
                            affine_t *pre_points, bucket_t *buckets_pre,
@@ -139,62 +137,8 @@ __global__ void pre_compute(affine_t *pre_points, size_t npoints)
   }
 }
 
-// 把输进来的scalar看作是u16
-// 只支持窗口大小为 16 的...
-__global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
-                               uint32_t *point_idx, size_t npoints)
-{
-  const uint32_t tnum = blockDim.x * gridDim.x;
-  const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
-// 每个线程分配到一个标量的划分
-#pragma unroll 1
-  for (int i = tid; i < npoints; i += tnum)
-  {
-    // 因为把他看作是u16 因此偏移需要加 2^16 * i
-    // 每个 scalar 是 256位即 16个 16位
-    // 当前线程处理的起始标量 ki
-    uint16_t *cur_scalar_ptr = scalar + (i << 4);
-    // 获得标量值
-    uint32_t cur_scalar = *cur_scalar_ptr;
-    // tid ktid 对应的第一个 cur_sign
-    // 右移 WBITS-1 位
-    uint16_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
-    cur_scalar = cur_sign == 1 ? ((1 << WBITS) - cur_scalar) : cur_scalar;
-    // 将 scalar 和 sign进行拼接
-    scalar_tuple[i] = cur_scalar << 1 | cur_sign;
-    point_idx[i] = i;
-    int m = 0;
-// j 放进去
-#pragma unroll 1
-    for (int j = i + npoints; j < NWINS * npoints; j += npoints)
-    {
-      // 获取下一个呗
-      m += 1;
-      cur_scalar_ptr += 1;
-      uint32_t cur_scalar = *cur_scalar_ptr;
-      // 获得之前处理的最低位
-      cur_scalar += (scalar_tuple[j - npoints] & 1);
-      uint16_t cur_sign;
-      // 对于 2^{c-1} 次方 目前选择sign = 0
-      if (cur_scalar == (1 << (WBITS - 1)))
-      {
-        cur_sign = 0;
-      }
-      else
-      {
-        cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-      }
-      // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >>
-      // WBITS)) & 1;
-      cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
-      point_idx[j] = i;
-      scalar_tuple[j] = cur_scalar << 1 | cur_sign;
-    }
-  }
-}
-
-__global__ void process_scalar_custom(scalar_t *scalar, uint32_t *scalar_tuple,
-                                      uint32_t *point_idx, size_t npoints)
+__global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple,
+                                uint32_t *point_idx, size_t npoints)
 {
   const uint32_t tnum = blockDim.x * gridDim.x;
   const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
@@ -253,7 +197,6 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
                            uint16_t *bucket_idx_pre_used,
                            uint32_t *bucket_idx_pre_offset, size_t npoints)
 {
-  // nvtxRangePushA("bucket_acc");
   const uint32_t tnum = blockDim.x * gridDim.y;
   const uint32_t tid_inner = threadIdx.x;
   const uint32_t tid = blockIdx.y * blockDim.x + tid_inner;
@@ -325,7 +268,6 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
   buckets_pre_ptr[offset + unique_num - 1] = bucket_acc_smem[tid_inner * 2 + 1];
   bucket_idx_pre_vector_ptr[offset + unique_num - 1] = pre_bucket_idx;
   bucket_idx_pre_used_ptr[tid] = unique_num;
-  // nvtxRangePop();
 }
 
 // v1.1 (2^{15} THREADS)
@@ -336,7 +278,6 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
                              uint32_t *bucket_idx_pre_offset, bucket_t *buckets,
                              uint32_t upper_tnum, size_t npoints)
 {
-  // nvtxRangePushA("bucket_acc_2");
   const uint32_t tid_inner = threadIdx.x;
   const uint32_t tid = blockIdx.y * blockDim.x + tid_inner;
   const uint32_t bid = blockIdx.x;
@@ -676,8 +617,9 @@ public:
   // Initialize parameters for a specific size MSM. Throws cuda_error on error.
   MSMConfig init_msm_faster(size_t npoints)
   {
+    LOG(INFO, "Init GPU device for MSM with %d points", npoints);
     init();
-
+    LOG(INFO, "Find Best parameters for MSM");
     MSMConfig config;
     config.npoints = npoints;
     // Align npoints to the nearest multiple of WARP_SZ
@@ -878,36 +820,16 @@ public:
     affine_t *d_pre_points = d_pre_points_ptrs[d_pre_points_sn];
 
     CUDA_OK(cudaSetDevice(device));
-    // printf("[pre compute] GPU block [(wins)%d * (config.n)%d] thread [%d]
-    // \n", NWINS ,config.N, NTHREADS);
     launch_coop(pre_compute, NWINS * config.N, NTHREADS, stream, d_pre_points,
                 config.npoints);
     // pre_compute<<<NWINS * config.N, 256, 0, stream>>>(d_pre_points,
     // config.npoints);
   }
 
-  void launch_process_scalar(MSMConfig &config, size_t d_scalars_sn,
-                             size_t d_scalar_tuples_sn,
-                             size_t d_point_idx_sn,
-                             cudaStream_t s = nullptr)
-  {
-    cudaStream_t stream = (s == nullptr) ? default_stream : s;
-    // 把传进来的 scalar 看成是u16集合
-    uint16_t *d_scalars = (uint16_t *)d_scalar_ptrs[d_scalars_sn];
-    uint32_t *d_scalar_tuple = d_scalar_tuple_ptrs[d_scalar_tuples_sn];
-    uint32_t *d_point_idx = d_point_idx_ptrs[d_point_idx_sn];
-
-    CUDA_OK(cudaSetDevice(device));
-    launch_coop(process_scalar, NWINS * config.N, NTHREADS, stream, d_scalars,
-                d_scalar_tuple, d_point_idx, config.npoints);
-    // process_scalar<<<NWINS * config.N, NTHREADS, 0, stream>>>(
-    //     d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
-  }
-
-  void launch_process_scalar_custom(MSMConfig &config, size_t d_scalars_sn,
-                                    size_t d_scalar_tuples_sn,
-                                    size_t d_point_idx_sn,
-                                    cudaStream_t s = nullptr)
+  void launch_process_scalars(MSMConfig &config, size_t d_scalars_sn,
+                              size_t d_scalar_tuples_sn,
+                              size_t d_point_idx_sn,
+                              cudaStream_t s = nullptr)
   {
     cudaStream_t stream = (s == nullptr) ? default_stream : s;
     // 把传进来的 scalar 看成是u16集合
@@ -916,7 +838,7 @@ public:
     uint32_t *d_point_idx = d_point_idx_ptrs[d_point_idx_sn];
 
     CUDA_OK(cudaSetDevice(device));
-    launch_coop(process_scalar_custom, NWINS * config.N, NTHREADS, stream, d_scalars,
+    launch_coop(process_scalars, NWINS * config.N, NTHREADS, stream, d_scalars,
                 d_scalar_tuple, d_point_idx, config.npoints);
   }
 
@@ -965,7 +887,6 @@ public:
   void launch_bucket_agg_1(MSMConfig &config, size_t d_buckets_sn,
                            cudaStream_t s = nullptr)
   {
-
     cudaStream_t stream = (s == nullptr) ? default_stream : s;
     bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
     size_t tnum = config.N * NWINS;
@@ -999,6 +920,7 @@ public:
   // Perform final accumulation on CPU.
   void accumulate_faster(point_t &out, result_container_t_faster &res)
   {
+    LOG(WARN, "accumulate_faster");
     out.inf();
 #pragma unroll 1
     for (int32_t k = FREQUENCY - 1; k >= 0; k--)

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use ark_bls12_381::G1Affine; // 默认 381
+use ark_ec::ProjectiveCurve;
 // use ark_bls12_377::G1Affine; // 377
 use ark_ff::BigInteger256;
 use criterion::{criterion_group, criterion_main, Criterion};
@@ -38,6 +39,7 @@ fn criterion_benchmark(c: &mut Criterion) {
             msm_result = multi_scalar_mult(&mut context, &points.as_slice(), unsafe {
                 std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
             });
+            // println!("{:?}", msm_result[0].into_affine());
         })
     });
     group.finish();

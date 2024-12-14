@@ -124,6 +124,7 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
   try
   {
     ctx->config = ctx->pipp.init_msm_faster(npoints);
+    LOG(INFO, "Molloc MSM memory");
     ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
     //
     for (size_t i = 0; i < NUM_BATCH_THREADS; i++)
@@ -153,8 +154,11 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
     CUDA_OK(cudaMallocHost(&ctx->h_scalars,
                            ctx->pipp.get_size_scalars(ctx->config)));
 
+    LOG(INFO, "Transfer bases to device");
+
     ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn,
                                        points, ffi_affine_sz);
+    LOG(INFO, "Launch kernel pre compute init");
     ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn);
 
     ctx->fres0 = ctx->pipp.get_result_container_faster();
@@ -205,6 +209,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
     size_t scalars_sz = ctx->pipp.get_size_scalars(ctx->config);
 
     int work = 0;
+    LOG(INFO, "Transfer scalars to device");
     memcpy(ctx->h_scalars, &scalars[work * npoints], scalars_sz);
     ctx->pipp.transfer_scalars_to_device(ctx->config, d_scalars_compute,
                                          ctx->h_scalars, aux_stream);
@@ -220,10 +225,10 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         // point_idx k1,1|sign k2,1|sign ...kn,1|sign , ... , k1,[lambda/c]|sign
         // k2,[lambda/c]|sign ... kn,[lambda/c]|sign p1,p2,.. pn    p1,p2,pn
         // p1,p2,pn ...
-        ctx->pipp.launch_process_scalar_custom(ctx->config, d_scalars_compute,
+        LOG(INFO, "Launch process scalars");
+        ctx->pipp.launch_process_scalars(ctx->config, d_scalars_compute,
                                         ctx->d_scalar_tuples_sn,
                                         ctx->d_point_idx_sn);
-
         // scalar point
         uint32_t *d_scalar_tuple =
             ctx->pipp.d_scalar_tuple_ptrs[ctx->d_scalar_tuples_sn];
@@ -243,6 +248,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
             d_point_idx, d_point_idx_out, nscalars, 0, 31, stream);
         void *d_cub_sort = (void *)ctx->pipp.d_cub_ptrs[ctx->d_cub_sort_idx];
         // 在每个窗口内进行排序
+        LOG(INFO, "Launch sort");
         for (size_t k = 0; k < NWINS; k++) {
           size_t ptr = k * nscalars;
           cub::DeviceRadixSort::SortPairs(
@@ -252,17 +258,17 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         }
 
         // accumulate parts of the buckets into static buffers.
-        // 预计算点
+        LOG(INFO, "Launch bucket acc");
         ctx->pipp.launch_bucket_acc(
             ctx->config, ctx->d_scalar_tuples_out_sn,
             ctx->d_point_idx_out_sn, ctx->d_pre_points_sn, ctx->d_buckets_sn,
             ctx->d_buckets_pre_sn, ctx->d_bucket_idx_pre_vector_sn,
             ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn);
-
+        LOG(INFO, "Launch bucket agg");
         ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn);
         ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,
                                       ctx->d_res_sn, ctx->d_sost_sn);
-
+        LOG(INFO, "Transfer res to host");
         ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn);
         ctx->pipp.synchronize_stream();
 
@@ -274,6 +280,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         // Start next scalar transfer
         if (work + 1 < (int)batches) {
           // Copy into pinned memory
+          LOG(INFO, "Transfer next batch scalars to device");
           memcpy(ctx->h_scalars, &scalars[(work + 1) * npoints], scalars_sz);
 
           ctx->pipp.transfer_scalars_to_device(ctx->config, d_scalars_xfer,
@@ -281,6 +288,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         }
         // Accumulate the previous result
         if (work - 1 >= 0) {
+          LOG(INFO, "Accumulate result");
           ctx->pipp.accumulate_faster(out[work - 1], *accum_res);
         }
         ch.send(work); });
@@ -291,6 +299,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
     }
 
     // Accumulate the final result
+    LOG(INFO, "Accumulate final result");
     ctx->pipp.accumulate_faster(out[batches - 1], *accum_res);
   }
   catch (const cuda_error &e)
