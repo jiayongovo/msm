@@ -8,8 +8,8 @@
 #include <ec/jacobian_t.hpp>
 #include <ec/xyzz_t.hpp>
 #include <ec/xyzt_t.hpp>
-#include "../include/log.h"
-#include "ff/bls12-381.hpp"
+#include <util/log.h>
+#include <ff/bls12-381.hpp>
 
 // #if defined(FEATURE_BLS12_381)
 // #include <ff/bls12-381.hpp>
@@ -226,7 +226,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         // k2,[lambda/c]|sign ... kn,[lambda/c]|sign p1,p2,.. pn    p1,p2,pn
         // p1,p2,pn ...
         LOG(INFO, "Launch process scalars");
-        ctx->pipp.launch_process_scalars(ctx->config, d_scalars_compute,
+        ctx->pipp.launch_process_scalar(ctx->config, d_scalars_compute,
                                         ctx->d_scalar_tuples_sn,
                                         ctx->d_point_idx_sn);
         // scalar point

@@ -6,9 +6,9 @@ use ark_bls12_381::G1Affine;
 // use ark_bls12_377::G1Affine; // 377
 // use ark_ec::msm::VariableBaseMSM;
 use ark_ec::ProjectiveCurve;
+use ark_ed_on_bls12_381::EdwardsAffine;
 use ark_ff::BigInteger256;
 use ark_msm::msm::VariableBaseMSM;
-use ark_ed_on_bls12_381::EdwardsAffine;
 use std::str::FromStr;
 
 use mmsm::*;
@@ -45,6 +45,3 @@ fn msm_correctness() {
         assert_eq!(msm_results[b].into_affine(), arkworks_result);
     }
 }
-
-
- 

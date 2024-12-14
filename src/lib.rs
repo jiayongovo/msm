@@ -14,7 +14,7 @@ use blst::*;
 sppark::cuda_error!();
 
 pub mod util;
-
+pub mod correctness_test;
 #[repr(C)]
 pub struct MultiScalarMultContext {
     context: *mut c_void,

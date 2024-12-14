@@ -14,7 +14,6 @@ typedef xyzz_t<fp_t> bucket_t;
 typedef bucket_t::affine_inf_t affine_t;
 typedef fr_t scalar_t;
 
-
 #include <msm/pippenger.cuh>
 
 #ifndef __CUDA_ARCH__

@@ -221,7 +221,7 @@
 //         }
 // #ifdef __CUDA_ARCH__
 //         *this = p31;
-// #endif   
+// #endif
 //     }
 
 //     __device__ void dbl()

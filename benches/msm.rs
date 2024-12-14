@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use ark_bls12_381::G1Affine; // 默认 381
-use ark_ec::ProjectiveCurve;
-// use ark_bls12_377::G1Affine; // 377
+                             // use ark_bls12_377::G1Affine; // 377
 use ark_ff::BigInteger256;
+
+use correctness_test::correctness_test;
 use criterion::{criterion_group, criterion_main, Criterion};
-
-use std::str::FromStr;
-
 use mmsm::*;
+use std::str::FromStr;
 
 fn criterion_benchmark(c: &mut Criterion) {
     let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("23".to_string());
@@ -23,8 +22,8 @@ fn criterion_benchmark(c: &mut Criterion) {
         "mixed" => util::generate_mixed_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
         "clustered" => {
             util::generate_points_clustered_scalars::<G1Affine>(1usize << npoints_npow, batches, 32)
-        },
-        _ => unimplemented!()
+        }
+        _ => unimplemented!(),
     };
 
     let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());
@@ -34,14 +33,14 @@ fn criterion_benchmark(c: &mut Criterion) {
     let mut msm_result = vec![];
     let name = format!("2**{}x{}", npoints_npow, batches);
     group.bench_function(name, |b| {
-    // let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());
+        // let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());
         b.iter(|| {
             msm_result = multi_scalar_mult(&mut context, &points.as_slice(), unsafe {
                 std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
             });
-            // println!("{:?}", msm_result[0].into_affine());
         })
     });
+    correctness_test(points, scalars, batches, msm_result);
     group.finish();
 }
 

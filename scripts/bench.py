@@ -6,17 +6,13 @@ with open('reports/bench_sys_avg.txt', 'r') as file:
     lines = file.readlines()
 
 # Initialize dictionaries to store the results
-results = {
-    'jy-msm': {},
-    'wlc-msm-con': {},
-    'wlc-msm-bal': {},
-    'sppark': {}
-}
+results = {'jy-msm': {}, 'wlc-msm-con': {}, 'wlc-msm-bal': {}, 'sppark': {}}
 
 # Parse the results
 for line in lines:
-    match = re.match(r'(\w\w+|\w+-\w+|\w+-\w+-\w+) 2\*\*(\d+): ([0-9.]+) ms', line)
-    
+    match = re.match(r'(\w\w+|\w+-\w+|\w+-\w+-\w+) 2\*\*(\d+): ([0-9.]+) ms',
+                     line)
+
     if match:
         instance, power, time = match.groups()
         power = int(power)
