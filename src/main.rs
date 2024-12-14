@@ -8,9 +8,9 @@ use mmsm::*;
 use std::str::FromStr;
 use correctness_test::correctness_test;
 fn main() {
-    let test_npow = std::env::var("TEST_NPOW").unwrap_or("17".to_string());
+    let test_npow = std::env::var("MAIN_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
-    let batches_str = std::env::var("BENCHES").unwrap_or("2".to_string());
+    let batches_str = std::env::var("BENCHES").unwrap_or("1".to_string());
     let batches = usize::from_str(&batches_str).unwrap();
     let random_test = std::env::var("RANDOM_TEST").unwrap_or("random".to_string());
     let (points, scalars) = match random_test.as_str() {

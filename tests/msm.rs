@@ -11,7 +11,7 @@ use std::str::FromStr;
 
 #[test]
 fn msm_correctness() {
-    let test_npow = std::env::var("TEST_NPOW").unwrap_or("2".to_string());
+    let test_npow = std::env::var("TEST_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
     let batches_str = std::env::var("BENCHES").unwrap_or("1".to_string());
     let batches = usize::from_str(&batches_str).unwrap();

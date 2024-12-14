@@ -13,6 +13,7 @@ pub fn correctness_test(
     batches: usize,
     msm_result: Vec<G1Projective>,
 ) {
+    println!("[info] Correctness test");
     for b in 0..batches {
         let start = b * points.len();
         let end = (b + 1) * points.len();

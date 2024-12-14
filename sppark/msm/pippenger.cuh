@@ -22,8 +22,6 @@ static_assert(NTHREADS >= 32 && (NTHREADS & (NTHREADS - 1)) == 0, "bad NTHREADS 
 const bool LARGE_L1_CODE_CACHE = false;
 
 __global__ void pre_compute(affine_t *pre_points, size_t npoints);
-__global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
-                               uint32_t *point_idx, size_t npoints);
 __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple, uint32_t *point_idx, size_t npoints);
 __global__ void bucket_acc(uint32_t *scalar_tuple_out,
                            uint32_t *point_idx_out,
@@ -46,36 +44,14 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos);
 
 static __shared__ bucket_t bucket_acc_smem[NTHREADS * 2];
 
-// #if WBITS == 16
 template <class scalar_t>
 static __device__ uint32_t get_wval(const scalar_t *d, uint32_t off, uint32_t bits)
 {
-  // uint16_t *d = (uint16_t *)scalar;
-  // uint16_t *cur_scalar_ptr = d + off;
-  // uint32_t ret = *cur_scalar_ptr;
-  // return ret;
-  // uint16_t *cur_scalar_ptr = (uint16_t *)d + (off / WBITS);
-  // uint32_t rets = *cur_scalar_ptr;
-
   uint32_t *scalar = (uint32_t *)d;
   uint32_t top = off + bits - 1;
-  uint32_t ret = ((uint32_t)scalar[top / 32] << 32) | scalar[off / 32];
+  uint64_t ret = ((uint64_t)scalar[top / 32] << 32) | scalar[off / 32];
   return (uint32_t)(ret >> (off % 32)) & ((1 << bits) - 1);
-  // uint32_t *scalar = (uint32_t *)d;
-  // uint32_t ret = scalar[off / 32];
-  // return (ret >> (off % 32)) & ((1 << bits) - 1);
 }
-// #else
-// template <class scalar_t>
-// static __device__ int get_wval(const scalar_t &d, uint32_t off, uint32_t bits)
-// {
-//   uint32_t *scalar = (uint32_t *)d;
-//   uint32_t top = off + bits - 1;
-//   uint32_t ret = ((uint32_t)scalar[top / 32] << 32) | scalar[off / 32];
-
-//   return (uint32_t)(ret >> (off % 32)) & ((1 << bits) - 1);
-// }
-// #endif
 
 static __device__ uint32_t max_bits(uint32_t scalar)
 {
@@ -138,73 +114,17 @@ __global__ void pre_compute(affine_t *pre_points, size_t npoints)
   }
 }
 
-__global__ void process_scalar(uint16_t *scalar, uint32_t *scalar_tuple,
-                               uint32_t *point_idx, size_t npoints)
-{
-  const uint32_t tnum = blockDim.x * gridDim.x;
-  const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
-// 每个线程分配到一个标量的划分
-#pragma unroll 1
-  for (int i = tid; i < npoints; i += tnum)
-  {
-    // 因为把他看作是u16 因此偏移需要加 2^16 * i
-    // 每个 scalar 是 256位即 16个 16位
-    // 当前线程处理的起始标量 ki
-    uint16_t *cur_scalar_ptr = scalar + (i << 4);
-    // 获得标量值
-    uint32_t cur_scalar = *cur_scalar_ptr;
-    // tid ktid 对应的第一个 cur_sign
-    // 右移 WBITS-1 位
-    uint16_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
-    cur_scalar = cur_sign == 1 ? ((1 << WBITS) - cur_scalar) : cur_scalar;
-    // 将 scalar 和 sign进行拼接
-    scalar_tuple[i] = cur_scalar << 1 | cur_sign;
-    point_idx[i] = i;
-    int m = 0;
-// j 放进去
-#pragma unroll 1
-    for (int j = i + npoints; j < NWINS * npoints; j += npoints)
-    {
-      // 获取下一个呗
-      m += 1;
-      cur_scalar_ptr += 1;
-      uint32_t cur_scalar = *cur_scalar_ptr;
-      // 获得之前处理的最低位
-      cur_scalar += (scalar_tuple[j - npoints] & 1);
-      uint16_t cur_sign;
-      // 对于 2^{c-1} 次方 目前选择sign = 0
-      if (cur_scalar == (1 << (WBITS - 1)))
-      {
-        cur_sign = 0;
-      }
-      else
-      {
-        cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-      }
-      // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >>
-      // WBITS)) & 1;
-      cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
-      point_idx[j] = i;
-      scalar_tuple[j] = cur_scalar << 1 | cur_sign;
-    }
-  }
-}
-
 __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple,
                                 uint32_t *point_idx, size_t npoints)
 {
   const uint32_t tnum = blockDim.x * gridDim.x;
   const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
-  // uint16_t *d = (uint16_t *)scalar;
+  uint16_t *d = (uint16_t *)scalar;
 // 每个线程分配到一个标量的划分
 #pragma unroll 1
   for (int i = tid; i < npoints; i += tnum)
   {
-    // uint16_t *cur_scalar_ptr = d + (i << 4);
-    // // 获得标量值
-    // uint32_t cur_scalar = *cur_scalar_ptr;
     uint32_t cur_scalar = get_wval<scalar_t>(scalar, i * NWINS * WBITS, WBITS);
-
     uint16_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
     cur_scalar = cur_sign == 1 ? ((1 << WBITS) - cur_scalar) : cur_scalar;
     // 将 scalar 和 sign进行拼接
@@ -219,9 +139,9 @@ __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple,
       // 获取下一个呗
       m += 1;
       l += 1;
-      // cur_scalar_ptr += 1;
-      // uint32_t cur_scalar = *cur_scalar_ptr;
+
       uint32_t cur_scalar = get_wval<scalar_t>(scalar, (i * NWINS + l) * WBITS, WBITS);
+
       // 获得之前处理的最低位
       cur_scalar += (scalar_tuple[j - npoints] & 1);
       uint16_t cur_sign;
@@ -878,22 +798,6 @@ public:
                 config.npoints);
     // pre_compute<<<NWINS * config.N, 256, 0, stream>>>(d_pre_points,
     // config.npoints);
-  }
-  void launch_process_scalar(MSMConfig &config, size_t d_scalars_sn,
-                             size_t d_scalar_tuples_sn,
-                             size_t d_point_idx_sn,
-                             cudaStream_t s = nullptr)
-  {
-    cudaStream_t stream = (s == nullptr) ? default_stream : s;
-    // 把传进来的 scalar 看成是u16集合
-    uint16_t *d_scalars = (uint16_t *)d_scalar_ptrs[d_scalars_sn];
-    uint32_t *d_scalar_tuple = d_scalar_tuple_ptrs[d_scalar_tuples_sn];
-    uint32_t *d_point_idx = d_point_idx_ptrs[d_point_idx_sn];
-    CUDA_OK(cudaSetDevice(device));
-    launch_coop(process_scalar, NWINS * config.N, NTHREADS, stream, d_scalars,
-                d_scalar_tuple, d_point_idx, config.npoints);
-    // process_scalar<<<NWINS * config.N, NTHREADS, 0, stream>>>(
-    //     d_scalars, d_scalar_tuple, d_point_idx, config.npoints);
   }
 
   void launch_process_scalars(MSMConfig &config, size_t d_scalars_sn,
