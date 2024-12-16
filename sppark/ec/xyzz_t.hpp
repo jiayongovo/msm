@@ -199,14 +199,14 @@ public:
 #else
         xyzz_t &p31 = *this;
 #endif
-//         p31.X = p31.X * p2.ZZ;  /* U1 = X1*ZZ2 */
-//         p31.Y = p31.Y * p2.ZZZ; /* S1 = Y1*ZZZ2 */
-//         p31.ZZ = p2.X * p31.ZZ;  /* U2 = X2*ZZ1 */
-//         p31.ZZZ = p2.Y * p31.ZZZ; /* S2 = Y2*ZZZ1 */
-//         p31.X = p31.X * p2.ZZ;  /* U1 = X1*ZZ2 */
-//         p31.Y = p31.Y * p2.ZZZ; /* S1 = Y1*ZZZ2 */
-//         p31.ZZ = p2.X * p31.ZZ;  /* U2 = X2*ZZ1 */
-//         p31.ZZZ = p2.Y * p31.ZZZ; /* S2 = Y2*ZZZ1 */
+        // p31.X = p31.X * p2.ZZ;  /* U1 = X1*ZZ2 */
+        // p31.Y = p31.Y * p2.ZZZ; /* S1 = Y1*ZZZ2 */
+        // p31.ZZ = p2.X * p31.ZZ;  /* U2 = X2*ZZ1 */
+        // p31.ZZZ = p2.Y * p31.ZZZ; /* S2 = Y2*ZZZ1 */
+        // p31.X = p31.X * p2.ZZ;  /* U1 = X1*ZZ2 */
+        // p31.Y = p31.Y * p2.ZZZ; /* S1 = Y1*ZZZ2 */
+        // p31.ZZ = p2.X * p31.ZZ;  /* U2 = X2*ZZ1 */
+        // p31.ZZZ = p2.Y * p31.ZZZ; /* S2 = Y2*ZZZ1 */
         bool mix = p2.ZZ.is_one() && p2.ZZZ.is_one();
 
         field_t U, S, P, R;

@@ -1,0 +1,927 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**1x1
+Benchmarking CUDA/2**1x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**1x1: Collecting 10 samples in estimated 5.3307 s (715 iterations)
+Benchmarking CUDA/2**1x1: Analyzing
+CUDA/2**1x1             time:   [7.2101 ms 7.3383 ms 7.5893 ms]
+                        change: [+30.324% +34.035% +37.784%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([14341226774867389081, 11477406246971747605, 6635304588326567803, 1216951113297647526, 546040853346438411, 1066212439051721921])), y: Fp384(BigInteger384([14739722063318231981, 14374793635011692372, 17768387893303065240, 11774675527620597091, 489218579065436576, 1466986072920624582])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([14341226774867389081, 11477406246971747605, 6635304588326567803, 1216951113297647526, 546040853346438411, 1066212439051721921])), y: Fp384(BigInteger384([14739722063318231981, 14374793635011692372, 17768387893303065240, 11774675527620597091, 489218579065436576, 1466986072920624582])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**1x1
+Benchmarking CUDA/2**1x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**1x1: Collecting 10 samples in estimated 5.2586 s (715 iterations)
+Benchmarking CUDA/2**1x1: Analyzing
+CUDA/2**1x1             time:   [7.3449 ms 7.4203 ms 7.5038 ms]
+                        change: [-3.7447% -0.6242% +2.4367%] (p = 0.72 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([18388233283015557712, 16868770287337696906, 13217840109961255094, 8248613087008349729, 6899685309528435274, 783024700557534249])), y: Fp384(BigInteger384([5374573586062202712, 4827524990988922888, 6178116342836682889, 11888058809017652536, 6981220293002496829, 1560289998443678834])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([18388233283015557712, 16868770287337696906, 13217840109961255094, 8248613087008349729, 6899685309528435274, 783024700557534249])), y: Fp384(BigInteger384([5374573586062202712, 4827524990988922888, 6178116342836682889, 11888058809017652536, 6981220293002496829, 1560289998443678834])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**2x1
+Benchmarking CUDA/2**2x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**2x1: Collecting 10 samples in estimated 5.3725 s (715 iterations)
+Benchmarking CUDA/2**2x1: Analyzing
+CUDA/2**2x1             time:   [7.5494 ms 7.6136 ms 7.7077 ms]
+                        change: [+32.869% +35.744% +38.870%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([8093619918691502913, 2236117318820027772, 706128223636000408, 11616939674517275587, 11277949931268266813, 620107566669289521])), y: Fp384(BigInteger384([2318843686016412025, 17561239831151989021, 5953525850024134380, 7442731088016410382, 9374309694270801515, 574362032392950953])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([8093619918691502913, 2236117318820027772, 706128223636000408, 11616939674517275587, 11277949931268266813, 620107566669289521])), y: Fp384(BigInteger384([2318843686016412025, 17561239831151989021, 5953525850024134380, 7442731088016410382, 9374309694270801515, 574362032392950953])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**2x1
+Benchmarking CUDA/2**2x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**2x1: Collecting 10 samples in estimated 5.3950 s (715 iterations)
+Benchmarking CUDA/2**2x1: Analyzing
+CUDA/2**2x1             time:   [7.4455 ms 7.4974 ms 7.5447 ms]
+                        change: [-4.6895% -2.2254% +0.0923%] (p = 0.11 > 0.05)
+                        No change in performance detected.
+Found 3 outliers among 10 measurements (30.00%)
+  1 (10.00%) low severe
+  1 (10.00%) low mild
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([2420728609370968823, 1921144698252739097, 5133646595293081396, 7656967804511013579, 10728141572468447363, 1775781644415019526])), y: Fp384(BigInteger384([11962465462766614100, 6371985446678201833, 4574809921111160438, 3647184813283284400, 12119480666069188257, 184528883460273789])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([2420728609370968823, 1921144698252739097, 5133646595293081396, 7656967804511013579, 10728141572468447363, 1775781644415019526])), y: Fp384(BigInteger384([11962465462766614100, 6371985446678201833, 4574809921111160438, 3647184813283284400, 12119480666069188257, 184528883460273789])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**3x1
+Benchmarking CUDA/2**3x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**3x1: Collecting 10 samples in estimated 5.3912 s (660 iterations)
+Benchmarking CUDA/2**3x1: Analyzing
+CUDA/2**3x1             time:   [8.1223 ms 8.2124 ms 8.2995 ms]
+                        change: [+21.594% +23.491% +25.402%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([585436718390210819, 4989199862270411853, 17208725906644113083, 4531937351861946155, 16054779880827978985, 165085585653050463])), y: Fp384(BigInteger384([9078494486232553233, 6149836617004609195, 5309551938539299260, 5579854913640115060, 2628704720036275440, 541794337766135682])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([585436718390210819, 4989199862270411853, 17208725906644113083, 4531937351861946155, 16054779880827978985, 165085585653050463])), y: Fp384(BigInteger384([9078494486232553233, 6149836617004609195, 5309551938539299260, 5579854913640115060, 2628704720036275440, 541794337766135682])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**3x1
+Benchmarking CUDA/2**3x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**3x1: Collecting 10 samples in estimated 5.3833 s (660 iterations)
+Benchmarking CUDA/2**3x1: Analyzing
+CUDA/2**3x1             time:   [7.8802 ms 7.9848 ms 8.0716 ms]
+                        change: [-4.7469% -2.8765% -0.8291%] (p = 0.01 < 0.05)
+                        Change within noise threshold.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([16358860244157962649, 14086072120608861673, 7049582848178682572, 13386107685709256152, 10575362691419137473, 187793870381899377])), y: Fp384(BigInteger384([6974465170468828231, 17599979238453517767, 14117105948479522825, 8247786169068034443, 10978281558287518506, 1348019161937842921])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([16358860244157962649, 14086072120608861673, 7049582848178682572, 13386107685709256152, 10575362691419137473, 187793870381899377])), y: Fp384(BigInteger384([6974465170468828231, 17599979238453517767, 14117105948479522825, 8247786169068034443, 10978281558287518506, 1348019161937842921])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**4x1
+Benchmarking CUDA/2**4x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**4x1: Collecting 10 samples in estimated 5.2095 s (605 iterations)
+Benchmarking CUDA/2**4x1: Analyzing
+CUDA/2**4x1             time:   [8.5348 ms 8.5907 ms 8.6445 ms]
+                        change: [+23.414% +25.424% +27.419%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 3 outliers among 10 measurements (30.00%)
+  1 (10.00%) low mild
+  1 (10.00%) high mild
+  1 (10.00%) high severe
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([14172519806107960751, 8386218324072246054, 15476388567136205295, 12577978851235803845, 518811441529894928, 915215540086682526])), y: Fp384(BigInteger384([6066343180814539150, 16338853569962609578, 6661065443655486410, 16555719615626347141, 16520980504300272925, 1753318330741183034])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([14172519806107960751, 8386218324072246054, 15476388567136205295, 12577978851235803845, 518811441529894928, 915215540086682526])), y: Fp384(BigInteger384([6066343180814539150, 16338853569962609578, 6661065443655486410, 16555719615626347141, 16520980504300272925, 1753318330741183034])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**4x1
+Benchmarking CUDA/2**4x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**4x1: Collecting 10 samples in estimated 5.0039 s (550 iterations)
+Benchmarking CUDA/2**4x1: Analyzing
+CUDA/2**4x1             time:   [8.9290 ms 8.9836 ms 9.0457 ms]
+                        change: [+2.5054% +4.1620% +5.6976%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) low mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([13692398806518930931, 11040181919673331483, 5839426947643799292, 17043006134212063580, 6043518418590644188, 894283517750054820])), y: Fp384(BigInteger384([11006472860057584073, 3500882575206923245, 5027669081038390478, 10843504096046332327, 2794322895815621549, 1873530513806049174])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([13692398806518930931, 11040181919673331483, 5839426947643799292, 17043006134212063580, 6043518418590644188, 894283517750054820])), y: Fp384(BigInteger384([11006472860057584073, 3500882575206923245, 5027669081038390478, 10843504096046332327, 2794322895815621549, 1873530513806049174])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**5x1
+Benchmarking CUDA/2**5x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**5x1: Collecting 10 samples in estimated 5.3971 s (550 iterations)
+Benchmarking CUDA/2**5x1: Analyzing
+CUDA/2**5x1             time:   [9.5292 ms 9.6325 ms 9.7661 ms]
+                        change: [+20.470% +23.574% +26.547%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([4233294490192930616, 9112132445047834489, 541205309908431249, 5918100707147977292, 599112547482838830, 1099210934875035257])), y: Fp384(BigInteger384([5169173560676607574, 17649597670118841961, 97123731536627540, 7444154502233729711, 11286023538377866302, 685339779966492643])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([4233294490192930616, 9112132445047834489, 541205309908431249, 5918100707147977292, 599112547482838830, 1099210934875035257])), y: Fp384(BigInteger384([5169173560676607574, 17649597670118841961, 97123731536627540, 7444154502233729711, 11286023538377866302, 685339779966492643])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**5x1
+Benchmarking CUDA/2**5x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**5x1: Collecting 10 samples in estimated 5.1246 s (550 iterations)
+Benchmarking CUDA/2**5x1: Analyzing
+CUDA/2**5x1             time:   [9.1467 ms 9.1999 ms 9.2758 ms]
+                        change: [-6.2845% -4.7256% -3.2050%] (p = 0.00 < 0.05)
+                        Performance has improved.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([3796734225714618772, 10083169543924286017, 5327113367145893598, 14562284116228469242, 8377130366335711169, 608541936299703300])), y: Fp384(BigInteger384([13930053163893313160, 6772198165106897093, 2569386759719389167, 12550363688273663984, 12232407136721878402, 978669339799728962])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([3796734225714618772, 10083169543924286017, 5327113367145893598, 14562284116228469242, 8377130366335711169, 608541936299703300])), y: Fp384(BigInteger384([13930053163893313160, 6772198165106897093, 2569386759719389167, 12550363688273663984, 12232407136721878402, 978669339799728962])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**6x1
+Benchmarking CUDA/2**6x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**6x1: Collecting 10 samples in estimated 5.1044 s (495 iterations)
+Benchmarking CUDA/2**6x1: Analyzing
+CUDA/2**6x1             time:   [10.237 ms 10.287 ms 10.333 ms]
+                        change: [+13.960% +16.024% +18.561%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([16525377503925562156, 10629603730794200404, 3904642215902457565, 4414335983362416568, 18262255957354855783, 1398970137301602615])), y: Fp384(BigInteger384([7760298093127523718, 3019896622146739582, 15279418247476006844, 11657952807430692862, 1184071151783733768, 427050474969488007])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([16525377503925562156, 10629603730794200404, 3904642215902457565, 4414335983362416568, 18262255957354855783, 1398970137301602615])), y: Fp384(BigInteger384([7760298093127523718, 3019896622146739582, 15279418247476006844, 11657952807430692862, 1184071151783733768, 427050474969488007])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**6x1
+Benchmarking CUDA/2**6x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**6x1: Collecting 10 samples in estimated 5.1061 s (495 iterations)
+Benchmarking CUDA/2**6x1: Analyzing
+CUDA/2**6x1             time:   [10.185 ms 10.304 ms 10.388 ms]
+                        change: [-1.5367% -0.1092% +1.1483%] (p = 0.88 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([9508392845215861238, 1822760173101121829, 2322617338086829261, 17206970418667850822, 5984972365265006298, 999948852350443446])), y: Fp384(BigInteger384([13992539230178102157, 6139701060999910922, 2417067297746855916, 10560368909805633062, 1127717878304185214, 1218899214718971651])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([9508392845215861238, 1822760173101121829, 2322617338086829261, 17206970418667850822, 5984972365265006298, 999948852350443446])), y: Fp384(BigInteger384([13992539230178102157, 6139701060999910922, 2417067297746855916, 10560368909805633062, 1127717878304185214, 1218899214718971651])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**7x1
+Benchmarking CUDA/2**7x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**7x1: Collecting 10 samples in estimated 5.6011 s (495 iterations)
+Benchmarking CUDA/2**7x1: Analyzing
+CUDA/2**7x1             time:   [11.223 ms 11.358 ms 11.536 ms]
+                        change: [+7.1667% +9.2734% +11.365%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([18247406332097971121, 3865059776105198193, 16435489828491986500, 2936152350109310474, 18426924380160418450, 427424954703441658])), y: Fp384(BigInteger384([14521141553881796825, 6686185933758203917, 16126250556894794531, 8639349465178416336, 2449385099893487303, 796213173218426354])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([18247406332097971121, 3865059776105198193, 16435489828491986500, 2936152350109310474, 18426924380160418450, 427424954703441658])), y: Fp384(BigInteger384([14521141553881796825, 6686185933758203917, 16126250556894794531, 8639349465178416336, 2449385099893487303, 796213173218426354])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**7x1
+Benchmarking CUDA/2**7x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**7x1: Collecting 10 samples in estimated 5.5113 s (495 iterations)
+Benchmarking CUDA/2**7x1: Analyzing
+CUDA/2**7x1             time:   [11.066 ms 11.263 ms 11.554 ms]
+                        change: [-4.8957% -1.8214% +0.9733%] (p = 0.24 > 0.05)
+                        No change in performance detected.
+Found 3 outliers among 10 measurements (30.00%)
+  1 (10.00%) low severe
+  2 (20.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([16078450780688396519, 5224081375438454649, 4817244305865844219, 930182639228116749, 2727352938411588210, 1171570820160120778])), y: Fp384(BigInteger384([4750149600143216581, 16696874340315522129, 14157320812379491439, 10600030809748521095, 15623206025516991917, 1481828058313294068])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([16078450780688396519, 5224081375438454649, 4817244305865844219, 930182639228116749, 2727352938411588210, 1171570820160120778])), y: Fp384(BigInteger384([4750149600143216581, 16696874340315522129, 14157320812379491439, 10600030809748521095, 15623206025516991917, 1481828058313294068])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**8x1
+Benchmarking CUDA/2**8x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**8x1: Collecting 10 samples in estimated 5.6393 s (440 iterations)
+Benchmarking CUDA/2**8x1: Analyzing
+CUDA/2**8x1             time:   [12.515 ms 12.602 ms 12.691 ms]
+                        change: [+0.9731% +2.4136% +3.8319%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([12401711749885515949, 6365820023795704331, 16385837340955013549, 6177676006622685642, 16059650887410309349, 1000109114458455932])), y: Fp384(BigInteger384([10164263639264184717, 16294769138689333942, 16872197621810520959, 6738038384421330337, 13614800432707225158, 340264551875649401])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([12401711749885515949, 6365820023795704331, 16385837340955013549, 6177676006622685642, 16059650887410309349, 1000109114458455932])), y: Fp384(BigInteger384([10164263639264184717, 16294769138689333942, 16872197621810520959, 6738038384421330337, 13614800432707225158, 340264551875649401])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**8x1
+Benchmarking CUDA/2**8x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**8x1: Collecting 10 samples in estimated 5.6798 s (440 iterations)
+Benchmarking CUDA/2**8x1: Analyzing
+CUDA/2**8x1             time:   [12.577 ms 12.690 ms 12.798 ms]
+                        change: [-0.7863% +0.6460% +2.0921%] (p = 0.43 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([4282992104355433422, 479875658113625976, 3279169159998149068, 16856364119849547109, 11960323809673976038, 1860453005372448458])), y: Fp384(BigInteger384([16722914593351671603, 200621984306565881, 8245475005767352489, 1055863915843067753, 8605430728525989078, 1495139674423997101])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([4282992104355433422, 479875658113625976, 3279169159998149068, 16856364119849547109, 11960323809673976038, 1860453005372448458])), y: Fp384(BigInteger384([16722914593351671603, 200621984306565881, 8245475005767352489, 1055863915843067753, 8605430728525989078, 1495139674423997101])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**9x1
+Benchmarking CUDA/2**9x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**9x1: Collecting 10 samples in estimated 5.4407 s (385 iterations)
+Benchmarking CUDA/2**9x1: Analyzing
+CUDA/2**9x1             time:   [13.782 ms 13.895 ms 14.045 ms]
+                        change: [+0.2925% +2.2952% +5.2154%] (p = 0.11 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) high mild
+  1 (10.00%) high severe
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([13582146630019355266, 11034245442611539864, 9937005925358183144, 8292786969161381968, 7856078940870299068, 1486008134436719766])), y: Fp384(BigInteger384([14717726090677247170, 9961058870498083199, 5306525300574601118, 10295326198404145310, 11941059487490589069, 1100417507300710731])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([13582146630019355266, 11034245442611539864, 9937005925358183144, 8292786969161381968, 7856078940870299068, 1486008134436719766])), y: Fp384(BigInteger384([14717726090677247170, 9961058870498083199, 5306525300574601118, 10295326198404145310, 11941059487490589069, 1100417507300710731])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**9x1
+Benchmarking CUDA/2**9x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**9x1: Collecting 10 samples in estimated 5.4199 s (385 iterations)
+Benchmarking CUDA/2**9x1: Analyzing
+CUDA/2**9x1             time:   [13.911 ms 13.995 ms 14.097 ms]
+                        change: [-3.2670% -0.5480% +1.9654%] (p = 0.72 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([6948239193103674525, 12755124527169763922, 11147641674707591173, 16869435547719317940, 2032818615469689462, 1423854811867985411])), y: Fp384(BigInteger384([945784660980759909, 18321887252432932368, 16665498526373176094, 9655161700126619955, 13330147673290603442, 1696714640367278098])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([6948239193103674525, 12755124527169763922, 11147641674707591173, 16869435547719317940, 2032818615469689462, 1423854811867985411])), y: Fp384(BigInteger384([945784660980759909, 18321887252432932368, 16665498526373176094, 9655161700126619955, 13330147673290603442, 1696714640367278098])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**10x1
+Benchmarking CUDA/2**10x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**10x1: Collecting 10 samples in estimated 5.1250 s (330 iterations)
+Benchmarking CUDA/2**10x1: Analyzing
+CUDA/2**10x1            time:   [15.108 ms 15.287 ms 15.460 ms]
+                        change: [+2.8208% +4.1960% +5.4755%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([17093429208711317525, 5009850633634889298, 17641973413080076894, 7886624765791252838, 13319385005063221950, 106765214560031879])), y: Fp384(BigInteger384([11309136299013919345, 17213926818464880320, 6790032301174269604, 10481496882167548881, 4855819129014827936, 1192165558628936884])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([17093429208711317525, 5009850633634889298, 17641973413080076894, 7886624765791252838, 13319385005063221950, 106765214560031879])), y: Fp384(BigInteger384([11309136299013919345, 17213926818464880320, 6790032301174269604, 10481496882167548881, 4855819129014827936, 1192165558628936884])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**10x1
+Benchmarking CUDA/2**10x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**10x1: Collecting 10 samples in estimated 5.0438 s (330 iterations)
+Benchmarking CUDA/2**10x1: Analyzing
+CUDA/2**10x1            time:   [15.001 ms 15.138 ms 15.353 ms]
+                        change: [-2.4701% -0.2017% +2.3482%] (p = 0.88 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([2883157266501062360, 4500432939376420522, 16966955800389558157, 9715629341935895219, 9716471327322237742, 596741092577085145])), y: Fp384(BigInteger384([16709687258804258083, 7480216610689726588, 2011875508575269001, 7560001195194109563, 17542806580686292779, 536372547508959289])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([2883157266501062360, 4500432939376420522, 16966955800389558157, 9715629341935895219, 9716471327322237742, 596741092577085145])), y: Fp384(BigInteger384([16709687258804258083, 7480216610689726588, 2011875508575269001, 7560001195194109563, 17542806580686292779, 536372547508959289])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**11x1
+Benchmarking CUDA/2**11x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**11x1: Collecting 10 samples in estimated 5.5579 s (330 iterations)
+Benchmarking CUDA/2**11x1: Analyzing
+CUDA/2**11x1            time:   [16.660 ms 16.848 ms 16.993 ms]
+                        change: [+3.9190% +6.1806% +8.4289%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([9089495208322177235, 18415509907313716633, 8066668157831565218, 18304771214477431688, 11793558463311923096, 1456597377805932075])), y: Fp384(BigInteger384([16700881310177816372, 16216995194789080656, 7473648095384198383, 12892897218913969563, 17563038413668246272, 191361795023222996])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([9089495208322177235, 18415509907313716633, 8066668157831565218, 18304771214477431688, 11793558463311923096, 1456597377805932075])), y: Fp384(BigInteger384([16700881310177816372, 16216995194789080656, 7473648095384198383, 12892897218913969563, 17563038413668246272, 191361795023222996])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**11x1
+Benchmarking CUDA/2**11x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**11x1: Collecting 10 samples in estimated 5.5847 s (330 iterations)
+Benchmarking CUDA/2**11x1: Analyzing
+CUDA/2**11x1            time:   [16.593 ms 16.756 ms 16.961 ms]
+                        change: [-2.4758% -0.2490% +1.7900%] (p = 0.82 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([13477149782026295351, 12766812412230702289, 1303531566688305603, 5042113058637922073, 1668543072898662494, 1381911770879301412])), y: Fp384(BigInteger384([5011101345885113489, 11280924966946236049, 15662160735051055194, 3076430132014904902, 1646480979094819697, 718118463141703837])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([13477149782026295351, 12766812412230702289, 1303531566688305603, 5042113058637922073, 1668543072898662494, 1381911770879301412])), y: Fp384(BigInteger384([5011101345885113489, 11280924966946236049, 15662160735051055194, 3076430132014904902, 1646480979094819697, 718118463141703837])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**12x1
+Benchmarking CUDA/2**12x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**12x1: Collecting 10 samples in estimated 5.9695 s (330 iterations)
+Benchmarking CUDA/2**12x1: Analyzing
+CUDA/2**12x1            time:   [17.875 ms 17.987 ms 18.101 ms]
+                        change: [+4.0743% +5.3684% +6.6615%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([288775167057929742, 18288026461134179633, 12330844360263969040, 2943636354509337767, 12496337362208009189, 934251457004187579])), y: Fp384(BigInteger384([7283697675043522701, 17869799837683411052, 10781973200738402437, 4634847737728536562, 7525171801342934643, 130297312336007018])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([288775167057929742, 18288026461134179633, 12330844360263969040, 2943636354509337767, 12496337362208009189, 934251457004187579])), y: Fp384(BigInteger384([7283697675043522701, 17869799837683411052, 10781973200738402437, 4634847737728536562, 7525171801342934643, 130297312336007018])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**12x1
+Benchmarking CUDA/2**12x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**12x1: Collecting 10 samples in estimated 5.9854 s (330 iterations)
+Benchmarking CUDA/2**12x1: Analyzing
+CUDA/2**12x1            time:   [17.761 ms 17.845 ms 17.958 ms]
+                        change: [-1.4572% +0.7226% +3.7506%] (p = 0.68 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([11093672568720449796, 14355560180889149985, 15985028826519049254, 15608879678019771435, 8010589211207407121, 230424568170140616])), y: Fp384(BigInteger384([9462465415824699458, 4589287290128266337, 11612188064490713842, 5300327783461096003, 4043747981227373194, 1777399247022118960])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([11093672568720449796, 14355560180889149985, 15985028826519049254, 15608879678019771435, 8010589211207407121, 230424568170140616])), y: Fp384(BigInteger384([9462465415824699458, 4589287290128266337, 11612188064490713842, 5300327783461096003, 4043747981227373194, 1777399247022118960])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**13x1
+Benchmarking CUDA/2**13x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**13x1: Collecting 10 samples in estimated 5.2004 s (220 iterations)
+Benchmarking CUDA/2**13x1: Analyzing
+CUDA/2**13x1            time:   [22.085 ms 22.389 ms 22.719 ms]
+                        change: [+1.6442% +3.4518% +5.1505%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([2631941660192272588, 6867379454563262882, 4246481767503877815, 2310329469140082322, 7328357829811460294, 1659802694321243945])), y: Fp384(BigInteger384([9919150169100075398, 7477193093140938963, 10022161151642237546, 15430720500107240645, 786846190594196669, 1204660551967419254])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([2631941660192272588, 6867379454563262882, 4246481767503877815, 2310329469140082322, 7328357829811460294, 1659802694321243945])), y: Fp384(BigInteger384([9919150169100075398, 7477193093140938963, 10022161151642237546, 15430720500107240645, 786846190594196669, 1204660551967419254])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**13x1
+Benchmarking CUDA/2**13x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**13x1: Collecting 10 samples in estimated 6.1924 s (275 iterations)
+Benchmarking CUDA/2**13x1: Analyzing
+CUDA/2**13x1            time:   [22.494 ms 22.662 ms 22.937 ms]
+                        change: [-0.3374% +1.3420% +3.0745%] (p = 0.16 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([9561732460127094888, 6147900377849475170, 12870512883084411886, 4260744796480845908, 9798261360349895442, 838098167662825315])), y: Fp384(BigInteger384([14389751323681509969, 6285838960277994612, 13078859928872080604, 3594313124422670530, 17057519906019796285, 290916758138474350])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([9561732460127094888, 6147900377849475170, 12870512883084411886, 4260744796480845908, 9798261360349895442, 838098167662825315])), y: Fp384(BigInteger384([14389751323681509969, 6285838960277994612, 13078859928872080604, 3594313124422670530, 17057519906019796285, 290916758138474350])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**14x1
+Benchmarking CUDA/2**14x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**14x1: Collecting 10 samples in estimated 5.7278 s (220 iterations)
+Benchmarking CUDA/2**14x1: Analyzing
+CUDA/2**14x1            time:   [25.861 ms 26.173 ms 26.468 ms]
+                        change: [-1.4854% +0.6954% +2.8073%] (p = 0.56 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([9328969544728702834, 1973499061446677123, 7819988296705271496, 8105421771908323671, 11476824089374830372, 1060334505112892274])), y: Fp384(BigInteger384([4892781817723526092, 12053858947564500659, 11990409575102361374, 16382096233461846544, 14654980407364002341, 1557239152796121120])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([9328969544728702834, 1973499061446677123, 7819988296705271496, 8105421771908323671, 11476824089374830372, 1060334505112892274])), y: Fp384(BigInteger384([4892781817723526092, 12053858947564500659, 11990409575102361374, 16382096233461846544, 14654980407364002341, 1557239152796121120])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**14x1
+Benchmarking CUDA/2**14x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**14x1: Collecting 10 samples in estimated 5.7580 s (220 iterations)
+Benchmarking CUDA/2**14x1: Analyzing
+CUDA/2**14x1            time:   [25.999 ms 26.294 ms 26.565 ms]
+                        change: [-1.0723% +0.1921% +1.4533%] (p = 0.77 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([6100296175644196388, 7415970876365158299, 8111287643803723492, 1092800815756512717, 5049371368007667833, 1522557215754218483])), y: Fp384(BigInteger384([11382413647835925873, 10268948469252107038, 2686451621842879542, 9389241360951758476, 4761001813864755275, 445931145308569846])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([6100296175644196388, 7415970876365158299, 8111287643803723492, 1092800815756512717, 5049371368007667833, 1522557215754218483])), y: Fp384(BigInteger384([11382413647835925873, 10268948469252107038, 2686451621842879542, 9389241360951758476, 4761001813864755275, 445931145308569846])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**15x1
+Benchmarking CUDA/2**15x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**15x1: Collecting 10 samples in estimated 6.5461 s (220 iterations)
+Benchmarking CUDA/2**15x1: Analyzing
+CUDA/2**15x1            time:   [28.993 ms 29.417 ms 29.806 ms]
+                        change: [-2.9059% -0.3089% +2.2335%] (p = 0.82 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([16201354764481262924, 9338396877899540705, 13926385158659460170, 7545464665298339333, 1514001667623261447, 1205151202927283816])), y: Fp384(BigInteger384([18417388789222659962, 3359726669724139997, 7641680220781115176, 17740340859925492679, 6562981476978523524, 362616736421468838])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([16201354764481262924, 9338396877899540705, 13926385158659460170, 7545464665298339333, 1514001667623261447, 1205151202927283816])), y: Fp384(BigInteger384([18417388789222659962, 3359726669724139997, 7641680220781115176, 17740340859925492679, 6562981476978523524, 362616736421468838])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**15x1
+Benchmarking CUDA/2**15x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**15x1: Collecting 10 samples in estimated 6.4637 s (220 iterations)
+Benchmarking CUDA/2**15x1: Analyzing
+CUDA/2**15x1            time:   [29.194 ms 29.487 ms 29.703 ms]
+                        change: [-1.7769% -0.1744% +1.4573%] (p = 0.85 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([11995119285166837715, 7843716562275894331, 5948702369967907941, 3653634429042299388, 11446586600354806484, 1867764916721012237])), y: Fp384(BigInteger384([15374200896833216910, 14277662632833466948, 1649563956386924060, 1625128280143527157, 3766556189187453523, 222654046222395796])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([11995119285166837715, 7843716562275894331, 5948702369967907941, 3653634429042299388, 11446586600354806484, 1867764916721012237])), y: Fp384(BigInteger384([15374200896833216910, 14277662632833466948, 1649563956386924060, 1625128280143527157, 3766556189187453523, 222654046222395796])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**16x1
+Benchmarking CUDA/2**16x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**16x1: Collecting 10 samples in estimated 5.7914 s (165 iterations)
+Benchmarking CUDA/2**16x1: Analyzing
+CUDA/2**16x1            time:   [34.401 ms 34.848 ms 35.287 ms]
+                        change: [+1.1641% +3.5480% +5.8326%] (p = 0.01 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([12068063414985720431, 16830215725793751267, 9127935715776429021, 16125758868726797812, 15629553919169284653, 424816714170780600])), y: Fp384(BigInteger384([10634875056265027822, 9462146019483118470, 3472396722018896995, 9521242531803045752, 2206641285781340735, 1865677690675337535])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([12068063414985720431, 16830215725793751267, 9127935715776429021, 16125758868726797812, 15629553919169284653, 424816714170780600])), y: Fp384(BigInteger384([10634875056265027822, 9462146019483118470, 3472396722018896995, 9521242531803045752, 2206641285781340735, 1865677690675337535])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**16x1
+Benchmarking CUDA/2**16x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**16x1: Collecting 10 samples in estimated 5.8835 s (165 iterations)
+Benchmarking CUDA/2**16x1: Analyzing
+CUDA/2**16x1            time:   [34.074 ms 34.391 ms 34.902 ms]
+                        change: [-1.9140% +1.8147% +8.1584%] (p = 0.59 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([5750304405256797778, 8341309336092707504, 18313553770380751449, 5193952935871641637, 11225954640827947961, 184136808114161040])), y: Fp384(BigInteger384([3258520709305166586, 10480728387425820789, 5319307986374058342, 12093645840006349337, 12572707802178203005, 1640356849623653943])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([5750304405256797778, 8341309336092707504, 18313553770380751449, 5193952935871641637, 11225954640827947961, 184136808114161040])), y: Fp384(BigInteger384([3258520709305166586, 10480728387425820789, 5319307986374058342, 12093645840006349337, 12572707802178203005, 1640356849623653943])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**17x1
+Benchmarking CUDA/2**17x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**17x1: Collecting 10 samples in estimated 6.6918 s (165 iterations)
+Benchmarking CUDA/2**17x1: Analyzing
+CUDA/2**17x1            time:   [39.882 ms 40.146 ms 40.456 ms]
+                        change: [-2.6938% -0.3906% +1.7585%] (p = 0.77 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([933138959018696825, 4684326459223857881, 13790811683458803949, 15816571391302120299, 4732588077827507035, 286574722382940669])), y: Fp384(BigInteger384([948817438007198124, 3056910832352534664, 4211335519816684841, 7260313900740979127, 12318450980407351207, 1136329983902656208])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([933138959018696825, 4684326459223857881, 13790811683458803949, 15816571391302120299, 4732588077827507035, 286574722382940669])), y: Fp384(BigInteger384([948817438007198124, 3056910832352534664, 4211335519816684841, 7260313900740979127, 12318450980407351207, 1136329983902656208])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**17x1
+Benchmarking CUDA/2**17x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**17x1: Collecting 10 samples in estimated 6.8223 s (165 iterations)
+Benchmarking CUDA/2**17x1: Analyzing
+CUDA/2**17x1            time:   [40.508 ms 40.903 ms 41.591 ms]
+                        change: [+0.7584% +2.6672% +4.8983%] (p = 0.02 < 0.05)
+                        Change within noise threshold.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([4191786883578544524, 17984798406930570277, 15171009560129297601, 7736346563792578570, 709027223737577733, 1788444872283601572])), y: Fp384(BigInteger384([6384369853274509460, 5297890323896764675, 16928361501901008120, 5518517524002236422, 10656595369308992430, 643057079393707508])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([4191786883578544524, 17984798406930570277, 15171009560129297601, 7736346563792578570, 709027223737577733, 1788444872283601572])), y: Fp384(BigInteger384([6384369853274509460, 5297890323896764675, 16928361501901008120, 5518517524002236422, 10656595369308992430, 643057079393707508])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**18x1
+Benchmarking CUDA/2**18x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**18x1: Collecting 10 samples in estimated 5.8176 s (110 iterations)
+Benchmarking CUDA/2**18x1: Analyzing
+CUDA/2**18x1            time:   [51.225 ms 51.670 ms 52.030 ms]
+                        change: [-1.5437% +0.3530% +2.8870%] (p = 0.77 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([9839611113276030284, 15163299837769017466, 12217274288172987001, 12226592116195113694, 16496658761797832682, 895489762463109749])), y: Fp384(BigInteger384([16468699432666416557, 10544127373711143899, 12318928372292198490, 3545923716502546097, 1083719722633448493, 462898957998680961])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([9839611113276030284, 15163299837769017466, 12217274288172987001, 12226592116195113694, 16496658761797832682, 895489762463109749])), y: Fp384(BigInteger384([16468699432666416557, 10544127373711143899, 12318928372292198490, 3545923716502546097, 1083719722633448493, 462898957998680961])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**18x1
+Benchmarking CUDA/2**18x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**18x1: Collecting 10 samples in estimated 5.9246 s (110 iterations)
+Benchmarking CUDA/2**18x1: Analyzing
+CUDA/2**18x1            time:   [53.421 ms 55.424 ms 58.328 ms]
+                        change: [+3.5981% +7.5699% +11.784%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([5125956601025438830, 3817263857181618174, 4749246781582710725, 3821288812499348222, 18303295106147101876, 573289615636745701])), y: Fp384(BigInteger384([18388486990304957438, 4065113764528762145, 38401177416382332, 9784224869833154242, 8152955013130425550, 502391383140464890])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([5125956601025438830, 3817263857181618174, 4749246781582710725, 3821288812499348222, 18303295106147101876, 573289615636745701])), y: Fp384(BigInteger384([18388486990304957438, 4065113764528762145, 38401177416382332, 9784224869833154242, 8152955013130425550, 502391383140464890])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**19x1
+Benchmarking CUDA/2**19x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**19x1: Collecting 10 samples in estimated 8.1860 s (110 iterations)
+Benchmarking CUDA/2**19x1: Analyzing
+CUDA/2**19x1            time:   [74.139 ms 74.697 ms 75.157 ms]
+                        change: [-2.8587% -1.5519% -0.0091%] (p = 0.05 < 0.05)
+                        Change within noise threshold.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([5524551655598622774, 16947349741353542185, 16420055617442762730, 3225175284597811924, 17993839151268262284, 829808004940941958])), y: Fp384(BigInteger384([8884376480092950136, 16048175960373951602, 4605683584837928267, 10839187284661778646, 15778907215426731521, 1468815773491511222])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([5524551655598622774, 16947349741353542185, 16420055617442762730, 3225175284597811924, 17993839151268262284, 829808004940941958])), y: Fp384(BigInteger384([8884376480092950136, 16048175960373951602, 4605683584837928267, 10839187284661778646, 15778907215426731521, 1468815773491511222])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**19x1
+Benchmarking CUDA/2**19x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**19x1: Collecting 10 samples in estimated 8.2195 s (110 iterations)
+Benchmarking CUDA/2**19x1: Analyzing
+CUDA/2**19x1            time:   [73.783 ms 74.410 ms 75.130 ms]
+                        change: [-1.6269% +0.1862% +2.1924%] (p = 0.86 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([849779604234029942, 4712859414582505625, 7238231249401323923, 11307962199686272571, 16364161203760470919, 860133459576937780])), y: Fp384(BigInteger384([10588004247780075673, 3234176856315478034, 14745427937394890217, 10251147962890426862, 12407168336274640039, 1059346921752719095])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([849779604234029942, 4712859414582505625, 7238231249401323923, 11307962199686272571, 16364161203760470919, 860133459576937780])), y: Fp384(BigInteger384([10588004247780075673, 3234176856315478034, 14745427937394890217, 10251147962890426862, 12407168336274640039, 1059346921752719095])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**20x1
+Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
+
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 6.9s or enable flat sampling.
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 6.8688 s (55 iterations)
+Benchmarking CUDA/2**20x1: Analyzing
+CUDA/2**20x1            time:   [121.32 ms 122.34 ms 123.58 ms]
+                        change: [-1.0648% +1.3581% +3.7362%] (p = 0.30 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([14807334904774598018, 2939028994968946075, 17055718028604307658, 18402419094835275444, 17081166263430564561, 1111837070036440393])), y: Fp384(BigInteger384([7127826107651483591, 5901733079779897156, 12529834593814746406, 16222301505176411173, 3362537546811306039, 1310359275079332466])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([14807334904774598018, 2939028994968946075, 17055718028604307658, 18402419094835275444, 17081166263430564561, 1111837070036440393])), y: Fp384(BigInteger384([7127826107651483591, 5901733079779897156, 12529834593814746406, 16222301505176411173, 3362537546811306039, 1310359275079332466])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**20x1
+Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
+
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 6.7s or enable flat sampling.
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 6.7459 s (55 iterations)
+Benchmarking CUDA/2**20x1: Analyzing
+CUDA/2**20x1            time:   [120.44 ms 121.25 ms 122.05 ms]
+                        change: [-3.6881% -1.7723% +0.1175%] (p = 0.11 > 0.05)
+                        No change in performance detected.
+Found 3 outliers among 10 measurements (30.00%)
+  1 (10.00%) low mild
+  2 (20.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([8935929747086700348, 592386184089605772, 13970857101035646339, 2627730684518095977, 16395181324984295098, 1233529123216692766])), y: Fp384(BigInteger384([16177780474392837787, 1487473227029409872, 17543554801805470721, 16716953675565180305, 8340643168446893245, 1603128600694145310])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([8935929747086700348, 592386184089605772, 13970857101035646339, 2627730684518095977, 16395181324984295098, 1233529123216692766])), y: Fp384(BigInteger384([16177780474392837787, 1487473227029409872, 17543554801805470721, 16716953675565180305, 8340643168446893245, 1603128600694145310])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**21x1
+Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 6.5108 s (30 iterations)
+Benchmarking CUDA/2**21x1: Analyzing
+CUDA/2**21x1            time:   [214.66 ms 217.33 ms 220.46 ms]
+                        change: [-1.4027% +0.6907% +2.8181%] (p = 0.53 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([5823055887222885697, 1888410562671817784, 3031100826906259006, 4663585242538897363, 1469558859092994680, 746040048982891147])), y: Fp384(BigInteger384([7040962532281804613, 6558213097845473772, 16933923077721368712, 5101963026177600840, 15914055336916821540, 328116752092203443])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([5823055887222885697, 1888410562671817784, 3031100826906259006, 4663585242538897363, 1469558859092994680, 746040048982891147])), y: Fp384(BigInteger384([7040962532281804613, 6558213097845473772, 16933923077721368712, 5101963026177600840, 15914055336916821540, 328116752092203443])), infinity: false }
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Benchmarking CUDA/2**21x1
+Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 6.4248 s (30 iterations)
+Benchmarking CUDA/2**21x1: Analyzing
+CUDA/2**21x1            time:   [213.02 ms 215.60 ms 218.26 ms]
+                        change: [-2.6456% -0.7949% +0.9761%] (p = 0.42 > 0.05)
+                        No change in performance detected.
+[info] Correctness test
+msm_result: GroupAffine { x: Fp384(BigInteger384([15327978898572406340, 7569868489085385207, 327968183170396341, 6385641974430852676, 2697689598049876312, 1601523668671679867])), y: Fp384(BigInteger384([13247854506073797048, 181713162568042464, 1280287418025887520, 9390846652517100556, 2725769981533915637, 1318231924684616963])), infinity: false }
+arkworks_result: GroupAffine { x: Fp384(BigInteger384([15327978898572406340, 7569868489085385207, 327968183170396341, 6385641974430852676, 2697689598049876312, 1601523668671679867])), y: Fp384(BigInteger384([13247854506073797048, 181713162568042464, 1280287418025887520, 9390846652517100556, 2725769981533915637, 1318231924684616963])), infinity: false }
+

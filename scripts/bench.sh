@@ -1,5 +1,4 @@
 #!/bin/bash
-
 s=${1:-1}
 e=${2:-21}
 times=${3:-2}
@@ -39,7 +38,7 @@ exper_times=($(grep -oP '\[\d+\.\d+ ms \K\d+\.\d+(?= ms \d+\.\d+ ms\])' "$output
 for ((j = 0; j <= e - s; j++)); do
     exper_time=0
     for ((k = 0; k < times; k++)); do
-        exper_time=$(echo "scale=2; $exper_time + ${exper_times[i * (e - s + 1) * times + j * times + k]}" | bc)
+        exper_time=$(echo "scale=2; $exper_time + ${exper_times[j * times + k]}" | bc)
     done
     average_time=$(echo "scale=2;$exper_time / $times" | bc)
     echo "mmsm $((s + j)) $average_time" >>"$output_avg_file"

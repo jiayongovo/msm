@@ -4,22 +4,7 @@
 
 #include <cuda.h>
 #include "util/log.h"
-#if defined(FEATURE_BLS12_381)
-const int NBITS = 255;
-#elif defined(FEATURE_BLS12_377)
-const int NBITS = 253;
-#else
-#error "Unknown curve"
-#endif
-
-const int WARP_SZ = 32;
-const int NTHREADS = 128;
-const int WBITS = 16;
-const int NWINS = ((NBITS + WBITS - 1) / WBITS); // ceil(NBITS/WBITS)
-const int FREQUENCY = 16;
-
-static_assert(NTHREADS >= 32 && (NTHREADS & (NTHREADS - 1)) == 0, "bad NTHREADS value");
-const bool LARGE_L1_CODE_CACHE = false;
+#include "util/config.h"
 
 __global__ void pre_compute(affine_t *pre_points, size_t npoints);
 __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple, uint32_t *point_idx, size_t npoints);
@@ -119,49 +104,36 @@ __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple,
 {
   const uint32_t tnum = blockDim.x * gridDim.x;
   const uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
-  uint16_t *d = (uint16_t *)scalar;
+  const uint32_t scalar_max = 1U << WBITS;
+  const uint32_t half_scalar = scalar_max >> 1;
+
 // 每个线程分配到一个标量的划分
 #pragma unroll 1
   for (int i = tid; i < npoints; i += tnum)
   {
     uint32_t cur_scalar = get_wval<scalar_t>(scalar, i * NWINS * WBITS, WBITS);
     uint16_t cur_sign = (cur_scalar >> (WBITS - 1)) & 1;
-    cur_scalar = cur_sign == 1 ? ((1 << WBITS) - cur_scalar) : cur_scalar;
+    cur_scalar = cur_sign == 1 ? (scalar_max - cur_scalar) : cur_scalar;
     // 将 scalar 和 sign进行拼接
     scalar_tuple[i] = cur_scalar << 1 | cur_sign;
     point_idx[i] = i;
     int m = 0;
-    int l = 0;
-// j 放进去
 #pragma unroll 1
     for (int j = i + npoints; j < NWINS * npoints; j += npoints)
     {
-      // 获取下一个呗
       m += 1;
-      l += 1;
-
-      uint32_t cur_scalar = get_wval<scalar_t>(scalar, (i * NWINS + l) * WBITS, WBITS);
-
+      uint32_t cur_scalar = get_wval<scalar_t>(scalar, (i * NWINS + m) * WBITS, WBITS);
       // 获得之前处理的最低位
       cur_scalar += (scalar_tuple[j - npoints] & 1);
-      uint16_t cur_sign;
       // 对于 2^{c-1} 次方 目前选择sign = 0
-      if (cur_scalar == (1 << (WBITS - 1)))
-      {
-        cur_sign = 0;
-      }
-      else
-      {
-        cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1;
-      }
-      // uint16_t cur_sign = ((cur_scalar >> (WBITS - 1)) | (cur_scalar >>
-      // WBITS)) & 1;
-      cur_scalar = cur_sign == 1 ? (1 << WBITS) - cur_scalar : cur_scalar;
+      uint16_t cur_sign = (cur_scalar == half_scalar) ? 0 : (((cur_scalar >> (WBITS - 1)) | (cur_scalar >> WBITS)) & 1);
+      cur_scalar = cur_sign == 1 ? scalar_max - cur_scalar : cur_scalar;
       point_idx[j] = i;
       scalar_tuple[j] = cur_scalar << 1 | cur_sign;
     }
   }
 }
+
 // v1.1
 __global__ void bucket_acc(uint32_t *scalar_tuple_out,
                            /*uint16_t *bucket_idx,*/ uint32_t *point_idx_out,
