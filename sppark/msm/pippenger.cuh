@@ -5,7 +5,6 @@
 #include <cuda.h>
 #include "util/log.h"
 #include "util/config.h"
-
 __global__ void pre_compute(affine_t *pre_points, size_t npoints);
 __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple, uint32_t *point_idx, size_t npoints);
 __global__ void bucket_acc(uint32_t *scalar_tuple_out,
@@ -83,7 +82,7 @@ __global__ void pre_compute(affine_t *pre_points, size_t npoints)
   const uint32_t num = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY - 1))
                                                 : (NWINS / FREQUENCY);
   bucket_t Pi_xyzz;
-#pragma unroll 1
+#pragma unroll
   for (uint32_t i = tid; i < npoints; i += tnum)
   {
     affine_t *Pi = pre_points + i;
@@ -108,7 +107,7 @@ __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple,
   const uint32_t half_scalar = scalar_max >> 1;
 
 // 每个线程分配到一个标量的划分
-#pragma unroll 1
+#pragma unroll
   for (int i = tid; i < npoints; i += tnum)
   {
     uint32_t cur_scalar = get_wval<scalar_t>(scalar, i * NWINS * WBITS, WBITS);
@@ -118,7 +117,7 @@ __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple,
     scalar_tuple[i] = cur_scalar << 1 | cur_sign;
     point_idx[i] = i;
     int m = 0;
-#pragma unroll 1
+#pragma unroll
     for (int j = i + npoints; j < NWINS * npoints; j += npoints)
     {
       m += 1;
@@ -165,25 +164,23 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
   const uint32_t step_len = (npoints + tnum - 1) / tnum;
   // 首先确定边界范围，当然需要进一步调整
   uint32_t s = step_len * tid;
-  uint32_t e = s + step_len;
+  uint32_t e = min(s + step_len, (uint32_t)npoints);
   if (s >= npoints)
   {
     bucket_idx_pre_used_ptr[tid] = 0;
     return;
   }
-  if (e >= npoints)
-    e = npoints;
 
   uint16_t pre_bucket_idx = 0xffff; // not exist
   // 线程块内部共享内存
   bucket_acc_smem[tid_inner * 2 + 1].inf(); // 设置为inf
 
-  uint32_t offset = tid + (scalar_tuple_out_ptr[s] >> 1); // bucket_idx_ptr[s];
+  uint32_t offset = tid + (scalar_tuple_out_ptr[s] >> 1);
   bucket_idx_pre_offset_ptr[tid] = offset;
   uint32_t unique_num = 0;
 // 每个线程在每个窗口下处理的点
 // process [s, e)
-#pragma unroll 1
+#pragma unroll
   for (uint32_t i = s; i < e; i++)
   {
     uint16_t cur_bucket_idx =
@@ -201,13 +198,11 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
     // 第 bid/2 个窗口需要加 相应点的 多少次方到对应的窗口内
     bucket_acc_smem[tid_inner * 2] =
         pre_points[point_idx_out_ptr[i] + windows_pre_point_num * npoints];
+    // affine_t tmp = pre_points[point_idx_out_ptr[i] + windows_pre_point_num * npoints];
     // 根据scalar的符号判断是否需要进行取反
-    if (scalar_tuple_out_ptr[i] & 0x01)
-    {
-      bucket_acc_smem[tid_inner * 2].neg(true);
-    }
-    // affine_t tmp;
-    // bucket_acc_smem[tid_inner * 2].xyzz_to_affine_inf(tmp);
+    // tmp.neg((scalar_tuple_out_ptr[i] & 0x01) != 0);
+    bucket_acc_smem[tid_inner * 2].neg((scalar_tuple_out_ptr[i] & 0x01) != 0);
+
     // bucket_acc_smem[tid_inner * 2 + 1].add(tmp);
     bucket_acc_smem[tid_inner * 2 + 1].add(bucket_acc_smem[tid_inner * 2]);
   }
@@ -216,8 +211,6 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
   bucket_idx_pre_used_ptr[tid] = unique_num;
 }
 
-// v1.1 (2^{15} THREADS)
-// 利用二分搜索去找相应的buffer点进行聚合到相应桶里
 __global__ void bucket_acc_2(bucket_t *buckets_pre,
                              uint16_t *bucket_idx_pre_vector,
                              uint16_t *bucket_idx_pre_used,
@@ -240,7 +233,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
   int left = 0, right = upper_tnum - 1;
   bool not_inf = false;
   uint32_t start_pos = 0;
-#pragma unroll 1
+#pragma unroll
   while (left <= right)
   {
     int mid = left + ((right - left) >> 1);
@@ -271,7 +264,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
       }
       else
       {
-#pragma unroll 1
+#pragma unroll
         for (uint32_t i = vector_ptr + 1; i < vector_ptr + vector_used; i++)
         {
           if (bucket_idx_pre_vector_ptr[i] == (tid + 1))
@@ -292,7 +285,7 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
     // 找到对应的buffer了
     uint16_t vector_used = bucket_idx_pre_used_ptr[start_pos];
     uint32_t vector_ptr = bucket_idx_pre_offset_ptr[start_pos];
-#pragma unroll 1
+#pragma unroll
     for (uint32_t i = vector_ptr; i < vector_ptr + vector_used; i++)
     {
       if (bucket_idx_pre_vector_ptr[i] == (tid + 1))
@@ -328,7 +321,7 @@ __global__ void bucket_agg_1(bucket_t *buckets)
                                            : (NWINS / FREQUENCY);
 
   bucket_t *buckets_ptr = buckets + (1 << (WBITS - 1)) * bid;
-#pragma unroll 1
+#pragma unroll
   for (uint32_t i = tid; i < bucket_num; i += tnum)
   {
     for (int j = 1; j <= wins; j++)
@@ -370,8 +363,7 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos)
   {
     return;
   }
-  if (e >= (bucket_num))
-    e = bucket_num;
+  e = e >= bucket_num ? bucket_num : e;
 #pragma unroll 1
   for (int32_t i = e - 1; i >= s; i--)
   {
@@ -383,7 +375,6 @@ __global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos)
   // 最后结果写到 sos中
   sos_my[tid] = sos_tmp;
   __syncthreads();
-
   // 将块内求和结果写回全局内存中
   if (tid == 0)
   {
@@ -813,15 +804,15 @@ public:
 
     CUDA_OK(cudaSetDevice(device));
     //  accumulate parts of the buckets into static buffers.
-    launch_coop(bucket_acc, dim3(NWINS, config.N), NTHREADS, stream,
-                d_scalar_tuple_out, /*d_bucket_idx,*/ d_point_idx_out,
-                d_points, d_buckets_pre, d_bucket_idx_pre_vector,
-                d_bucket_idx_pre_used, d_bucket_idx_pre_offset, config.npoints);
-    // bucket_acc<<<dim3(NWINS, config.N), NTHREADS, 0, stream>>>(
-    //     d_scalar_tuple_out, /*d_bucket_idx,*/ d_point_idx_out,
-    //     d_points, d_buckets_pre,
-    //     d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
-    //     d_bucket_idx_pre_offset, config.npoints);
+    // launch_coop(bucket_acc, dim3(NWINS, config.N), NTHREADS, stream,
+    //             d_scalar_tuple_out, /*d_bucket_idx,*/ d_point_idx_out,
+    //             d_points, d_buckets_pre, d_bucket_idx_pre_vector,
+    //             d_bucket_idx_pre_used, d_bucket_idx_pre_offset, config.npoints);
+    bucket_acc<<<dim3(NWINS, config.N), NTHREADS, 0, stream>>>(
+        d_scalar_tuple_out, /*d_bucket_idx,*/ d_point_idx_out,
+        d_points, d_buckets_pre,
+        d_bucket_idx_pre_vector, d_bucket_idx_pre_used,
+        d_bucket_idx_pre_offset, config.npoints);
     //  aggregate the buffered points into the buckets.
     bucket_acc_2<<<dim3(NWINS, (1 << (WBITS - 1)) / NTHREADS), NTHREADS, 0,
                    stream>>>(d_buckets_pre, d_bucket_idx_pre_vector,
@@ -871,7 +862,7 @@ public:
 #pragma unroll 1
     for (int32_t k = FREQUENCY - 1; k >= 0; k--)
     {
-      for (int32_t i = 0; i < WBITS; i++)
+      for (uint32_t i = 0; i < WBITS; i++)
       {
         out.dbl();
       }

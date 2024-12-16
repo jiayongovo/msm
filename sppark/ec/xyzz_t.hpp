@@ -13,7 +13,7 @@
 #undef __noinline__
 #define __noinline__
 #endif
-#include<util/log.h>
+#include <util/log.h>
 template <class field_t>
 class xyzz_t
 {
@@ -36,6 +36,17 @@ public:
         {
             inf[0] = 1;
         }
+        // inline __device__ void neg(bool subtract = false)
+        // {
+        //     LOG(INFO, "affine_inf neg");
+        //     this->Y.cneg(subtract);
+        // }
+        // inline __device__ affine_inf_t &operator=(const affine_inf_t &a)
+        // {
+        //     X = a.X;
+        //     Y = a.Y;
+        //     return *this;
+        // }
     };
     inline __device__ xyzz_t &operator=(const affine_inf_t &a)
     {
@@ -63,7 +74,28 @@ public:
         {
             return inf;
         }
-    };
+    //     inline __device__ bool is_inf() const
+    //     {
+    //         return inf;
+    //     }
+    //     inline __device__ void affine_inf_set_inf()
+    //     {
+    //         inf = true;
+    //     }
+    //     inline __device__ void neg(bool subtract = false)
+    //     {
+    //         LOG(INFO, "affine_inf neg");
+    //         this->Y.cneg(subtract);
+    //     }
+    //     inline __device__ affine_inf_t &operator=(const affine_inf_t &a)
+    //     {
+    //         X = a.X;
+    //         Y = a.Y;
+    //         inf = a.inf;
+    //         return *this;
+    //     }
+    // };
+};
 #endif
 
     class affine_t
@@ -183,6 +215,7 @@ public:
      */
     __device__ void add(const xyzz_t &p2)
     {
+        // printf("xyzz plus xyzz\n");
         // LOG(INFO,"xyzz plus xyzz");
         if (p2.is_inf())
         {
@@ -197,7 +230,7 @@ public:
 #ifdef __CUDA_ARCH__
         xyzz_t p31 = *this;
 #else
-        xyzz_t &p31 = *this;
+    xyzz_t &p31 = *this;
 #endif
         // p31.X = p31.X * p2.ZZ;  /* U1 = X1*ZZ2 */
         // p31.Y = p31.Y * p2.ZZZ; /* S1 = Y1*ZZZ2 */
@@ -313,7 +346,7 @@ public:
 #ifdef __CUDA_ARCH__
         xyzz_t p31 = *this;
 #else
-        xyzz_t &p31 = *this;
+    xyzz_t &p31 = *this;
 #endif
         if (p2.is_inf())
         {
@@ -345,7 +378,7 @@ public:
 #ifdef __CUDA_ARCH__
         xyzz_t p31 = *this;
 #else
-        xyzz_t &p31 = *this;
+    xyzz_t &p31 = *this;
 #endif
         field_t M; /* double |p1| */
         field_t U, V, W, S;
@@ -393,11 +426,11 @@ public:
     template <class affine_t>
     __device__ void add(const affine_t &p2, bool subtract = false)
     {
-        LOG(INFO,"xyzz plus affine");
+        // printf("xyzz plus affine\n");
 #ifdef __CUDA_ARCH__
         xyzz_t p31 = *this;
 #else
-        xyzz_t &p31 = *this;
+    xyzz_t &p31 = *this;
 #endif
         if (p2.is_inf())
         {
