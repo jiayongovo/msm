@@ -58,31 +58,16 @@ typedef pippenger_t<bucket_t, point_t, affine_t, scalar_t> pipp_t;
 template <class bucket_t, class affine_t, class scalar_t>
 struct Context
 {
-  // pippenger
   pipp_t pipp;
-  // MSMConfig
   typename pipp_t::MSMConfig config;
-  // 仿射点大小
   size_t ffi_affine_sz;
-  // 预计算 point 包括 原始 point
-  // p1 p2 p3 ... pn   2^2c p1  2^2c p2  ...  2^2c pn ....
   size_t d_pre_points_sn;
-  // 批次数
   size_t d_scalars_sn[NUM_BATCH_THREADS];
-  // 桶索引
   size_t d_buckets_sn;
-  // 标量数组索引
-  // k1,1 k2,1,...,kn,1   k1,2,k2,2 ,...kn,2  ...  k1,lambda/c...kn,lambda/c
   size_t d_scalar_tuples_sn;
-  // 标量对应点索引
-  // p1,p2,p3,..,...pn   p1,p2,...,pn     ...      p1,p2,...,pn
   size_t d_point_idx_sn;
-  // 排序标量索引
-  // 对每个窗口进行排序后的值
   size_t d_scalar_tuples_out_sn;
-  // 与之相对应的 point 索引
   size_t d_point_idx_out_sn;
-  // 用于负载平衡的 buffer
   // buffer
   size_t d_buckets_pre_sn;
   // buffer index
@@ -91,13 +76,9 @@ struct Context
   size_t d_bucket_idx_pre_used_sn;
   // buffer offest
   size_t d_bucket_idx_pre_offset_sn;
-  // res
   size_t d_res_sn;
-
   size_t d_sost_sn;
-  // cub
   size_t d_cub_sort_idx;
-  // host scalars
   scalar_t *h_scalars;
 
   typename pipp_t::result_container_t_faster fres0;
@@ -221,14 +202,12 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
       batch_pool.spawn([&]()
                        {
         CUDA_OK(cudaStreamSynchronize(aux_stream));
-        // 进行标量变换，{2^c}k_{i,j} => {2^{c-1}}k_{i,j} | sign 获得对应
-        // point_idx k1,1|sign k2,1|sign ...kn,1|sign , ... , k1,[lambda/c]|sign
-        // k2,[lambda/c]|sign ... kn,[lambda/c]|sign p1,p2,.. pn    p1,p2,pn
-        // p1,p2,pn ...
         LOG(INFO, "Launch process scalars");
+        nvtxRangePushA("process_scalars");
         ctx->pipp.launch_process_scalars(ctx->config, d_scalars_compute,
                                         ctx->d_scalar_tuples_sn,
                                         ctx->d_point_idx_sn);
+        nvtxRangePop();
         // scalar point
         uint32_t *d_scalar_tuple =
             ctx->pipp.d_scalar_tuple_ptrs[ctx->d_scalar_tuples_sn];
@@ -239,7 +218,6 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         uint32_t *d_point_idx_out =
             ctx->pipp.d_point_idx_ptrs[ctx->d_point_idx_out_sn];
         uint32_t nscalars = npoints;
-        // 主要是为了获取空间大小
         void *d_temp = NULL;
         size_t temp_sort_size = 0;
         // 暂时先将最低1位到最高31位获取sij
@@ -259,15 +237,23 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
 
         // accumulate parts of the buckets into static buffers.
         LOG(INFO, "Launch bucket acc");
+        nvtxRangePushA("bucket_acc");
         ctx->pipp.launch_bucket_acc(
             ctx->config, ctx->d_scalar_tuples_out_sn,
             ctx->d_point_idx_out_sn, ctx->d_pre_points_sn, ctx->d_buckets_sn,
             ctx->d_buckets_pre_sn, ctx->d_bucket_idx_pre_vector_sn,
             ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn);
+        nvtxRangePop();
         LOG(INFO, "Launch bucket agg");
+        nvtxRangePushA("bucket_agg_1");
+
         ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn);
+        nvtxRangePop();
+        nvtxRangePushA("bucket_agg_2");
+
         ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,
                                       ctx->d_res_sn, ctx->d_sost_sn);
+        nvtxRangePop();
         LOG(INFO, "Transfer res to host");
         ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn);
         ctx->pipp.synchronize_stream();

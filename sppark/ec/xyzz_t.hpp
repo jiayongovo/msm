@@ -36,17 +36,16 @@ public:
         {
             inf[0] = 1;
         }
-        // inline __device__ void neg(bool subtract = false)
-        // {
-        //     LOG(INFO, "affine_inf neg");
-        //     this->Y.cneg(subtract);
-        // }
-        // inline __device__ affine_inf_t &operator=(const affine_inf_t &a)
-        // {
-        //     X = a.X;
-        //     Y = a.Y;
-        //     return *this;
-        // }
+        inline __device__ void neg(bool subtract = false)
+        {
+            this->Y.cneg(subtract);
+        }
+        inline __device__ affine_inf_t &operator=(const affine_inf_t &a)
+        {
+            X = a.X;
+            Y = a.Y;
+            return *this;
+        }
     };
     inline __device__ xyzz_t &operator=(const affine_inf_t &a)
     {
@@ -74,27 +73,26 @@ public:
         {
             return inf;
         }
-    //     inline __device__ bool is_inf() const
-    //     {
-    //         return inf;
-    //     }
-    //     inline __device__ void affine_inf_set_inf()
-    //     {
-    //         inf = true;
-    //     }
-    //     inline __device__ void neg(bool subtract = false)
-    //     {
-    //         LOG(INFO, "affine_inf neg");
-    //         this->Y.cneg(subtract);
-    //     }
-    //     inline __device__ affine_inf_t &operator=(const affine_inf_t &a)
-    //     {
-    //         X = a.X;
-    //         Y = a.Y;
-    //         inf = a.inf;
-    //         return *this;
-    //     }
-    // };
+        inline __device__ bool is_inf() const
+        {
+            return inf;
+        }
+        inline __device__ void affine_inf_set_inf()
+        {
+            inf = true;
+        }
+        inline __device__ void neg(bool subtract = false)
+        {
+            this->Y.cneg(subtract);
+        }
+        inline __device__ affine_inf_t &operator=(const affine_inf_t &a)
+        {
+            X = a.X;
+            Y = a.Y;
+            inf = a.inf;
+            return *this;
+        }
+    };
 };
 #endif
 
@@ -214,9 +212,7 @@ public:
      * while conditional doubling - 4M+6M+3S.
      */
     __device__ void add(const xyzz_t &p2)
-    {
-        // printf("xyzz plus xyzz\n");
-        // LOG(INFO,"xyzz plus xyzz");
+    {   
         if (p2.is_inf())
         {
             return;
@@ -426,7 +422,6 @@ public:
     template <class affine_t>
     __device__ void add(const affine_t &p2, bool subtract = false)
     {
-        // printf("xyzz plus affine\n");
 #ifdef __CUDA_ARCH__
         xyzz_t p31 = *this;
 #else

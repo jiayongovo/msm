@@ -196,15 +196,10 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
     pre_bucket_idx = cur_bucket_idx;
     uint32_t windows_pre_point_num = bid / FREQUENCY;
     // 第 bid/2 个窗口需要加 相应点的 多少次方到对应的窗口内
-    bucket_acc_smem[tid_inner * 2] =
-        pre_points[point_idx_out_ptr[i] + windows_pre_point_num * npoints];
-    // affine_t tmp = pre_points[point_idx_out_ptr[i] + windows_pre_point_num * npoints];
+    affine_t tmp = pre_points[point_idx_out_ptr[i] + windows_pre_point_num * npoints];
     // 根据scalar的符号判断是否需要进行取反
-    // tmp.neg((scalar_tuple_out_ptr[i] & 0x01) != 0);
-    bucket_acc_smem[tid_inner * 2].neg((scalar_tuple_out_ptr[i] & 0x01) != 0);
-
-    // bucket_acc_smem[tid_inner * 2 + 1].add(tmp);
-    bucket_acc_smem[tid_inner * 2 + 1].add(bucket_acc_smem[tid_inner * 2]);
+    tmp.neg((scalar_tuple_out_ptr[i] & 0x01) != 0);
+    bucket_acc_smem[tid_inner * 2 + 1].add(tmp);
   }
   buckets_pre_ptr[offset + unique_num - 1] = bucket_acc_smem[tid_inner * 2 + 1];
   bucket_idx_pre_vector_ptr[offset + unique_num - 1] = pre_bucket_idx;
@@ -291,10 +286,6 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
       if (bucket_idx_pre_vector_ptr[i] == (tid + 1))
       {
         not_inf = true;
-        // 把找到的点累加起来
-        // affine_t tmp;
-        // buckets_pre_ptr[i * 2].xyzz_to_affine_inf(tmp);
-        // bucket_acc_smem[tid_inner].add(tmp);
         bucket_acc_smem[tid_inner].add(buckets_pre_ptr[i]);
         break;
       }
@@ -304,7 +295,6 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
   }
   // 最后存到相应的全局内存里
   buckets_ptr[tid] = bucket_acc_smem[tid_inner]; // can omit kerner `bucket_inf`
-                                                 // nvtxRangePop();
 }
 
 // 完成窗口(0,FREQUENCY)聚合
@@ -315,8 +305,6 @@ __global__ void bucket_agg_1(bucket_t *buckets)
   const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
   const uint32_t bid = blockIdx.x;
   const uint32_t bucket_num = 1 << (WBITS - 1);
-  // uint32_t wins = NWINS % 2 == 0 ? (NWINS - 2) / 2 : (bid == 0 ? (NWINS - 1)
-  // / 2 : ((NWINS - 1) / 2 - 1));
   uint32_t wins = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY - 1))
                                            : (NWINS / FREQUENCY);
 
@@ -331,9 +319,6 @@ __global__ void bucket_agg_1(bucket_t *buckets)
         break;
       bucket_t *buckets_ptr_add =
           buckets_ptr + (1 << (WBITS - 1)) * win_add_idx;
-      // affine_t tmp;
-      // buckets_ptr_add[i].xyzz_to_affine_inf(tmp);
-      // buckets_ptr[i].add(tmp);
       buckets_ptr[i].add(buckets_ptr_add[i]);
     }
   }

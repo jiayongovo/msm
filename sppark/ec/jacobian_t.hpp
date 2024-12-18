@@ -62,10 +62,10 @@ public:
     inline __device__ bool is_inf() const { return (bool)(Z.is_zero()); }
     inline __device__ void inf() { Z.zero(); }
 
-    // inline __device__ void neg(bool subtract = false)
-    // {
-    //     Y.cneg(subtract);
-    // }
+    inline __device__ void neg(bool subtract = false)
+    {
+        Y.cneg(subtract);
+    }
 
     /*
      * Addition that can handle doubling [as well as points at infinity,
