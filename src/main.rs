@@ -4,9 +4,9 @@
 
 use ark_bls12_381::G1Affine;
 use ark_ff::BigInteger256;
+use correctness_test::correctness_test;
 use mmsm::*;
 use std::str::FromStr;
-use correctness_test::correctness_test;
 fn main() {
     let test_npow = std::env::var("MAIN_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&test_npow).unwrap();
@@ -26,5 +26,5 @@ fn main() {
     let msm_results = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
         std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
     });
-    // correctness_test(points, scalars, batches, msm_results);
+    correctness_test(points, scalars, batches, msm_results);
 }

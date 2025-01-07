@@ -22,14 +22,14 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
 
 __global__ void bucket_agg_1(bucket_t *buckets);
 
-__global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos);
+__global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res);
 
 #ifdef __CUDA_ARCH__
 
 static __shared__ bucket_t bucket_acc_smem[NTHREADS * 2];
 
 template <class scalar_t>
-static __device__ uint32_t get_wval(const scalar_t *d, uint32_t off, uint32_t bits)
+static __forceinline__ __device__ uint32_t get_wval(const scalar_t *d, uint32_t off, uint32_t bits)
 {
   uint32_t *scalar = (uint32_t *)d;
   uint32_t top = off + bits - 1;
@@ -37,34 +37,32 @@ static __device__ uint32_t get_wval(const scalar_t *d, uint32_t off, uint32_t bi
   return (uint32_t)(ret >> (off % 32)) & ((1 << bits) - 1);
 }
 
-static __device__ uint32_t max_bits(uint32_t scalar)
+static __forceinline__ __device__ uint32_t max_bits(uint32_t scalar)
 {
   uint32_t max = 32;
   return max;
 }
 
-static __device__ bool test_bit(uint32_t scalar, uint32_t bitno)
+static __forceinline__ __device__ bool test_bit(uint32_t scalar, uint32_t bitno)
 {
   if (bitno >= 32)
     return false;
   return ((scalar >> bitno) & 0x1);
 }
 
-template <class bucket_t>
-static __device__ void mul(bucket_t &res, const bucket_t &base,
+template <class bucket_t, class affine_t>
+static __device__ void mul(bucket_t &res, const affine_t &base,
                            uint32_t scalar)
 {
   res.inf();
 
   bool found_one = false;
   uint32_t mb = max_bits(scalar);
-  for (int32_t i = mb - 1; i >= 0; --i)
+#pragma unroll
+  for (int32_t i = mb - 1; i >= 0; i--)
   {
     if (found_one)
-    {
-      res.add(res);
-    }
-
+      res.dbl();
     if (test_bit(scalar, i))
     {
       found_one = true;
@@ -72,7 +70,6 @@ static __device__ void mul(bucket_t &res, const bucket_t &base,
     }
   }
 }
-
 // mmsm 点预计算 小优化
 __global__ void pre_compute(affine_t *pre_points, size_t npoints)
 {
@@ -82,7 +79,6 @@ __global__ void pre_compute(affine_t *pre_points, size_t npoints)
   const uint32_t num = (NWINS % FREQUENCY == 0) ? ((NWINS / FREQUENCY - 1))
                                                 : (NWINS / FREQUENCY);
   bucket_t Pi_xyzz;
-#pragma unroll
   for (uint32_t i = tid; i < npoints; i += tnum)
   {
     affine_t *Pi = pre_points + i;
@@ -91,6 +87,7 @@ __global__ void pre_compute(affine_t *pre_points, size_t npoints)
       Pi_xyzz = *(pre_points + i + j * npoints);
       uint32_t pow = FREQUENCY * WBITS;
       Pi = Pi + npoints;
+#pragma unroll
       for (uint32_t k = 0; k < pow; k++)
         Pi_xyzz.dbl();
       Pi_xyzz.xyzz_to_affine_inf(*Pi);
@@ -228,7 +225,6 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
   int left = 0, right = upper_tnum - 1;
   bool not_inf = false;
   uint32_t start_pos = 0;
-#pragma unroll
   while (left <= right)
   {
     int mid = left + ((right - left) >> 1);
@@ -312,6 +308,7 @@ __global__ void bucket_agg_1(bucket_t *buckets)
 #pragma unroll
   for (uint32_t i = tid; i < bucket_num; i += tnum)
   {
+#pragma unroll
     for (int j = 1; j <= wins; j++)
     {
       uint32_t win_add_idx = FREQUENCY * j;
@@ -324,48 +321,69 @@ __global__ void bucket_agg_1(bucket_t *buckets)
   }
 }
 
-__global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res, bucket_t *sos)
+__global__ void bucket_agg_2(bucket_t *buckets, bucket_t *res)
 {
   const uint32_t tnum = blockDim.x * gridDim.y;
   const uint32_t tid = blockIdx.y * blockDim.x + threadIdx.x;
   const uint32_t bid = blockIdx.x;
-
-  bucket_t *buckets_ptr = buckets + (1 << (WBITS - 1)) * bid;
   const uint32_t bucket_num = 1 << (WBITS - 1);
-  bucket_t *sos_my = sos + bid * tnum;
-  bucket_t tmp;
-  bucket_t st_tmp;
-  bucket_t sos_tmp;
 
-  sos_my[tid].inf();
-  st_tmp.inf();
-  sos_tmp.inf();
-  tmp.inf();
-  const uint32_t step_len = (bucket_num + tnum - 1) / tnum;
-  int32_t s = step_len * tid;
-  int32_t e = s + step_len;
-  if (s > bucket_num)
+  // Use shared memory for intermediate results
+  __shared__ bucket_t shared_sos[NTHREADS];
+
+  // Initialize shared memory
+  shared_sos[threadIdx.x].inf();
+
+  if (tid < tnum)
   {
-    return;
-  }
-  e = e >= bucket_num ? bucket_num : e;
+    bucket_t *buckets_ptr = buckets + bucket_num * bid;
+
+    // Calculate work distribution
+    const uint32_t items_per_thread = (bucket_num + tnum - 1) / tnum;
+    const uint32_t start = tid * items_per_thread;
+    const uint32_t end = min(start + items_per_thread, bucket_num);
+
+    if (start < bucket_num)
+    {
+      bucket_t running_sum, total_sum;
+      running_sum.inf();
+      total_sum.inf();
+
+// Process buckets from high to low
 #pragma unroll 1
-  for (int32_t i = e - 1; i >= s; i--)
-  {
-    st_tmp.add(buckets_ptr[i]);
-    sos_tmp.add(st_tmp);
+      for (int32_t i = end - 1; i >= (int32_t)start; i--)
+      {
+        running_sum.add(buckets_ptr[i]);
+        total_sum.add(running_sum);
+      }
+
+      // Compute offset contribution
+      if (start > 0)
+      {
+        bucket_t offset;
+        mul(offset, running_sum, start);
+        total_sum.add(offset);
+      }
+
+      shared_sos[threadIdx.x] = total_sum;
+    }
   }
-  mul(tmp, st_tmp, tid * step_len);
-  sos_tmp.add(tmp);
-  // 最后结果写到 sos中
-  sos_my[tid] = sos_tmp;
+
   __syncthreads();
-  // 将块内求和结果写回全局内存中
-  if (tid == 0)
+
+  // Parallel reduction in shared memory - only thread 0 in each block
+  if (threadIdx.x == 0 && bid < gridDim.x)
   {
-    res[bid].inf();
-    for (int i = 0; i < tnum; i++)
-      res[bid].add(sos_my[i]);
+    bucket_t final_sum;
+    final_sum.inf();
+
+#pragma unroll 1
+    for (uint32_t i = 0; i < blockDim.x; i++)
+    {
+      final_sum.add(shared_sos[i]);
+    }
+
+    res[bid] = final_sum;
   }
 }
 
@@ -477,7 +495,6 @@ private:
   device_ptr_list_t<uint32_t> d_bucket_idx_pre2_ptrs; // v1.2
 
   device_ptr_list_t<bucket_t> d_res_ptrs;
-  device_ptr_list_t<bucket_t> d_st_ptrs;
 
   // GPU device number
   int device;
@@ -656,12 +673,6 @@ public:
     return d_bucket_idx_pre2_ptrs.allocate(
         get_size_bucket_idx_pre_offset(config));
   }
-
-  size_t allocate_d_sost(MSMConfig &config)
-  {
-    return d_st_ptrs.allocate(FREQUENCY * NTHREADS * config.N *
-                              sizeof(bucket_t));
-  }
   size_t allocate_d_res() { return d_res_ptrs.allocate(get_size_res()); }
 
   size_t allocate_d_scalar_tuple(MSMConfig &config)
@@ -821,21 +832,20 @@ public:
   }
 
   void launch_bucket_agg_2(MSMConfig &config, size_t d_buckets_sn,
-                           size_t d_res_sn, size_t d_sost_sn,
+                           size_t d_res_sn,
                            cudaStream_t s = nullptr)
   {
 
     cudaStream_t stream = (s == nullptr) ? default_stream : s;
     bucket_t *d_buckets = d_bucket_ptrs[d_buckets_sn];
     bucket_t *d_res = d_res_ptrs[d_res_sn];
-    bucket_t *sost = d_st_ptrs[d_sost_sn];
     size_t tnum = config.N * NWINS;
     size_t y_tnum = (tnum / FREQUENCY + config.N - 1) / config.N;
     CUDA_OK(cudaSetDevice(device));
     // launch_coop(bucket_agg_2, dim3(FREQUENCY, config.N), NTHREADS, stream,
-    // d_buckets, d_res, st, sost);
+    // d_buckets, d_res);
     bucket_agg_2<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_buckets,
-                                                                   d_res, sost);
+                                                                   d_res);
     // bucket_agg<<<dim3(FREQUENCY, y_tnum), NTHREADS, 0, stream>>>(d_res, d_res);
   }
 

@@ -121,7 +121,6 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
     ctx->d_bucket_idx_pre_offset_sn =
         ctx->pipp.allocate_d_bucket_idx_pre_offset(ctx->config);
 
-    ctx->d_sost_sn = ctx->pipp.allocate_d_sost(ctx->config);
     ctx->d_res_sn = ctx->pipp.allocate_d_res();
     ctx->d_scalar_tuples_sn =
         ctx->pipp.allocate_d_scalar_tuple(ctx->config);
@@ -252,7 +251,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         nvtxRangePushA("bucket_agg_2");
 
         ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,
-                                      ctx->d_res_sn, ctx->d_sost_sn);
+                                      ctx->d_res_sn);
         nvtxRangePop();
         LOG(INFO, "Transfer res to host");
         ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn);
