@@ -10,7 +10,7 @@ const int NBITS = 255;
 extern const size_t WBITS = 16;
 extern const size_t NWINS = 16;
 extern const size_t FREQUENCY = 16;
-extern const size_t WARP_SZ = 32;
+// extern const size_t WARP_SZ = 32;
 extern const size_t NTHREADS = 128;
 static_assert(NTHREADS >= 32 && (NTHREADS & (NTHREADS - 1)) == 0, "bad NTHREADS value");
 static_assert(WARP_SZ >= 32 && (WARP_SZ & (WARP_SZ - 1)) == 0, "bad WARP_SZ value");

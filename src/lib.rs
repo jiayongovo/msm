@@ -20,6 +20,11 @@ pub struct MultiScalarMultContext {
     context: *mut c_void,
 }
 
+#[repr(C)]
+pub struct MmsmMultiScalarMultContext {
+    context: *mut c_void,
+}
+
 #[cfg_attr(feature = "quiet", allow(improper_ctypes))]
 extern "C" {
     fn mult_pippenger_faster_init(
@@ -38,6 +43,24 @@ extern "C" {
         scalars: *const Fr,
         ffi_affine_sz: usize,
     ) -> cuda::Error;
+
+    fn mmsm_mult_pippenger_faster_init(
+        context: *mut MmsmMultiScalarMultContext,
+        points_with_infinity: *const G1Affine,
+        npoints: usize,
+        ffi_affine_sz: usize,
+    ) -> cuda::Error;
+
+    fn mmsm_mult_pippenger_faster_inf(
+        context: *mut MmsmMultiScalarMultContext,
+        out: *mut u64,
+        points_with_infinity: *const G1Affine,
+        npoints: usize,
+        batch_size: usize,
+        scalars: *const Fr,
+        ffi_affine_sz: usize,
+    ) -> cuda::Error;
+
 }
 
 pub fn multi_scalar_mult_init<G: AffineCurve>(points: &[G]) -> MultiScalarMultContext {
@@ -78,6 +101,60 @@ pub fn multi_scalar_mult<G: AffineCurve>(
         let result_ptr = &mut *(&mut ret as *mut Vec<G::Projective> as *mut Vec<u64>);
 
         mult_pippenger_faster_inf(
+            context,
+            result_ptr.as_mut_ptr(),
+            points as *const _ as *const G1Affine,
+            npoints,
+            batch_size,
+            scalars as *const _ as *const Fr,
+            std::mem::size_of::<G1Affine>(),
+        )
+    };
+    if err.code != 0 {
+        panic!("{}", String::from(err));
+    }
+
+    ret
+}
+
+pub fn mmsm_multi_scalar_mult_init<G: AffineCurve>(points: &[G]) -> MmsmMultiScalarMultContext {
+    let mut ret = MmsmMultiScalarMultContext {
+        context: std::ptr::null_mut(),
+    };
+
+    let err = unsafe {
+        mmsm_mult_pippenger_faster_init(
+            &mut ret,
+            points as *const _ as *const G1Affine,
+            points.len(),
+            std::mem::size_of::<G1Affine>(),
+        )
+    };
+    if err.code != 0 {
+        panic!("{}", String::from(err));
+    }
+
+    ret
+}
+
+pub fn mmsm_multi_scalar_mult<G: AffineCurve>(
+    context: &mut MmsmMultiScalarMultContext,
+    points: &[G],
+    scalars: &[<G::ScalarField as PrimeField>::BigInt],
+) -> Vec<G::Projective> {
+    let npoints = points.len();
+    if scalars.len() % npoints != 0 {
+        panic!("length mismatch")
+    }
+
+    //let mut context = multi_scalar_mult_init(points);
+
+    let batch_size = scalars.len() / npoints;
+    let mut ret = vec![G::Projective::zero(); batch_size];
+    let err = unsafe {
+        let result_ptr = &mut *(&mut ret as *mut Vec<G::Projective> as *mut Vec<u64>);
+
+        mmsm_mult_pippenger_faster_inf(
             context,
             result_ptr.as_mut_ptr(),
             points as *const _ as *const G1Affine,

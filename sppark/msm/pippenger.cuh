@@ -407,19 +407,19 @@ inline void launch_coop(void (*f)(Types...), dim3 gridDim, dim3 blockDim,
                                       va_args, 0, stream));
 }
 
-class stream_t
-{
-  cudaStream_t stream;
+// class stream_t
+// {
+//   cudaStream_t stream;
 
-public:
-  stream_t(int device)
-  {
-    CUDA_OK(cudaSetDevice(device));
-    cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking);
-  }
-  ~stream_t() { cudaStreamDestroy(stream); }
-  inline operator decltype(stream)() { return stream; }
-};
+// public:
+//   stream_t(int device)
+//   {
+//     CUDA_OK(cudaSetDevice(device));
+//     cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking);
+//   }
+//   ~stream_t() { cudaStreamDestroy(stream); }
+//   inline operator decltype(stream)() { return stream; }
+// };
 
 template <class bucket_t>
 class result_t_faster

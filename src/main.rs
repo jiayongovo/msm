@@ -22,8 +22,8 @@ fn main() {
         _ => unimplemented!(),
     };
 
-    let mut context = multi_scalar_mult_init(points.as_slice());
-    let msm_results = multi_scalar_mult(&mut context, points.as_slice(), unsafe {
+    let mut context = mmsm_multi_scalar_mult_init(points.as_slice());
+    let msm_results = mmsm_multi_scalar_mult(&mut context, points.as_slice(), unsafe {
         std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
     });
     correctness_test(points, scalars, batches, msm_results);

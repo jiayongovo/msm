@@ -9,6 +9,7 @@
 #include <ec/xyzz_t.hpp>
 #include <ec/xyzt_t.hpp>
 #include <util/log.h>
+#include <util/all_gpus.cpp>
 #include <ff/bls12-381.hpp>
 
 // #if defined(FEATURE_BLS12_381)
@@ -83,12 +84,30 @@ struct Context
 
   typename pipp_t::result_container_t_faster fres0;
   typename pipp_t::result_container_t_faster fres1;
+  point_t *out;
 };
 
 template <class bucket_t, class affine_t, class scalar_t>
 struct RustContext
 {
   Context<bucket_t, affine_t, scalar_t> *context;
+};
+
+template <class bucket_t, class affine_t, class scalar_t>
+struct MmsmContext
+{
+  // 识别多块GPU的类型，将原始的points进行分割划分
+  std::vector<RustContext<bucket_t, affine_t, scalar_t> *> contexts;
+  size_t npoints;
+  size_t ffi_affine_sz;
+  size_t batches;
+  gpus_t gpus;
+};
+
+template <class bucket_t, class affine_t, class scalar_t>
+struct RustMmsmContext
+{
+  MmsmContext<bucket_t, affine_t, scalar_t> *context;
 };
 
 // Initialization function
@@ -105,6 +124,7 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
   try
   {
     ctx->config = ctx->pipp.init_msm_faster(npoints);
+    cudaStream_t stream = ctx->pipp.default_stream;
     LOG(INFO, "Molloc MSM memory");
     ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
     //
@@ -137,12 +157,14 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
     LOG(INFO, "Transfer bases to device");
 
     ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn,
-                                       points, ffi_affine_sz);
+                                       points, ffi_affine_sz, stream);
     LOG(INFO, "Launch kernel pre compute init");
-    ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn);
+    ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn, stream);
 
     ctx->fres0 = ctx->pipp.get_result_container_faster();
     ctx->fres1 = ctx->pipp.get_result_container_faster();
+    ctx->out = new point_t();
+    ctx->out->inf();
   }
   catch (const cuda_error &e)
   {
@@ -287,6 +309,113 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
     LOG(INFO, "Accumulate final result");
     ctx->pipp.accumulate_faster(out[batches - 1], *accum_res);
   }
+  catch (const cuda_error &e)
+  {
+#ifdef TAKE_RESPONSIBILITY_FOR_ERROR_MESSAGE
+    return RustError{e.code(), e.what()};
+#else
+    return RustError { e.code() }
+#endif
+  }
+
+  return RustError{cudaSuccess};
+}
+
+extern "C" RustError
+mmsm_mult_pippenger_faster_init(RustMmsmContext<bucket_t, affine_t, scalar_t> *context,
+                                const affine_t points[], size_t npoints,
+                                size_t ffi_affine_sz)
+{
+  context->context = new MmsmContext<bucket_t, affine_t, scalar_t>();
+  MmsmContext<bucket_t, affine_t, scalar_t> *ctx = context->context;
+  ctx->gpus = gpus_t();
+  try
+  {
+    size_t num_gpus = ngpus();
+    ctx->ffi_affine_sz = ffi_affine_sz;
+    // 根据识别到的设备和points进行划分，根据设备能力进行划分
+    size_t chunk_size = (npoints + num_gpus - 1) / num_gpus;
+    size_t offset = 0;
+    for (size_t i = 0; i < num_gpus; i++)
+    {
+      auto gpu = ctx->gpus.all()[i];
+      select_gpu(gpu->cid());
+      RustContext<bucket_t, affine_t, scalar_t> *rust_ctx =
+          new RustContext<bucket_t, affine_t, scalar_t>();
+      ctx->contexts.push_back(rust_ctx);
+
+      // 当前块GPU实际拿到的点数
+      size_t size_for_this_gpu = std::min(chunk_size, npoints - offset);
+      if (size_for_this_gpu == 0)
+        break;
+
+      // 传入某段 points
+      mult_pippenger_faster_init(rust_ctx, points + offset,
+                                 size_for_this_gpu, ffi_affine_sz);
+
+      offset += size_for_this_gpu;
+    }
+  }
+
+  catch (const cuda_error &e)
+  {
+#ifdef TAKE_RESPONSIBILITY_FOR_ERROR_MESSAGE
+    return RustError{e.code(), e.what()};
+#else
+    return RustError { e.code() }
+#endif
+  }
+  return RustError{cudaSuccess};
+}
+
+extern "C" RustError
+mmsm_mult_pippenger_faster_inf(RustMmsmContext<bucket_t, affine_t, scalar_t> *context,
+                               point_t *out, const affine_t points[], size_t npoints,
+                               size_t batches, const scalar_t scalars[],
+                               size_t ffi_affine_sz)
+{
+  (void)points; // Silence unused param warning
+
+  MmsmContext<bucket_t, affine_t, scalar_t> *ctx = context->context;
+  // try
+  // {
+  //   for (auto gpu : ctx->gpus.all())
+  //   {
+  //     select_gpu(gpu->cid());
+  //     RustContext<bucket_t, affine_t, scalar_t> *rust_ctx = ctx->contexts[gpu->cid()];
+  //     mult_pippenger_faster_inf(rust_ctx, out, points, npoints, batches, scalars, ffi_affine_sz);
+  //   }
+  // }
+  try
+  {
+    size_t num_gpus = ngpus();
+    ctx->ffi_affine_sz = ffi_affine_sz;
+    // 根据识别到的设备和points进行划分，根据设备能力进行划分
+    size_t chunk_size = (npoints + num_gpus - 1) / num_gpus;
+    size_t offset = 0;
+    for (size_t i = 0; i < num_gpus; i++)
+    {
+      auto gpu = ctx->gpus.all()[i];
+      select_gpu(gpu->cid());
+      RustContext<bucket_t, affine_t, scalar_t> *rust_ctx = ctx->contexts[gpu->cid()];
+
+      // 当前块GPU实际拿到的点数
+      size_t size_for_this_gpu = std::min(chunk_size, npoints - offset);
+      if (size_for_this_gpu == 0)
+        break;
+
+      mult_pippenger_faster_inf(rust_ctx, rust_ctx->context->out, points, size_for_this_gpu, batches, scalars + offset, ffi_affine_sz);
+
+      offset += size_for_this_gpu;
+    }
+    for (auto i = 0; i < num_gpus; i++)
+    {
+      auto gpu = ctx->gpus.all()[i];
+      RustContext<bucket_t, affine_t, scalar_t> *rust_ctx = ctx->contexts[gpu->cid()];
+      out->add(*rust_ctx->context->out);
+    }
+  }
+
   catch (const cuda_error &e)
   {
 #ifdef TAKE_RESPONSIBILITY_FOR_ERROR_MESSAGE
