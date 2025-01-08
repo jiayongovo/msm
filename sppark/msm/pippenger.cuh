@@ -524,7 +524,6 @@ public:
   };
 
   pippenger_t() : default_stream(0) { device = 0; }
-
   pippenger_t(int _device, thread_pool_t *pool = nullptr)
       : default_stream(_device)
   {
@@ -537,7 +536,10 @@ public:
   {
     if (!init_done)
     {
-      CUDA_OK(cudaSetDevice(device));
+      CUDA_OK(cudaGetDevice(&device));
+      default_stream = stream_t(device);
+      LOG(INFO, "Initializing GPU device %d", device);
+      // CUDA_OK(cudaSetDevice(device));
       cudaDeviceProp prop;
       if (cudaGetDeviceProperties(&prop, 0) != cudaSuccess || prop.major < 7)
         CUDA_OK(cudaErrorInvalidDevice);

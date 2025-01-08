@@ -4,7 +4,7 @@
 #define ERROR 3
 
 // 定义是否启用日志（0为禁用，非0为启用）
-#define ENABLE_LOGGING 0
+#define ENABLE_LOGGING 1
 
 // 获取日志级别字符串
 #define LOG_LEVEL_STRING(level) \

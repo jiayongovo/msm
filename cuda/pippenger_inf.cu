@@ -84,7 +84,6 @@ struct Context
 
   typename pipp_t::result_container_t_faster fres0;
   typename pipp_t::result_container_t_faster fres1;
-  point_t *out;
 };
 
 template <class bucket_t, class affine_t, class scalar_t>
@@ -125,7 +124,7 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
   {
     ctx->config = ctx->pipp.init_msm_faster(npoints);
     cudaStream_t stream = ctx->pipp.default_stream;
-    LOG(INFO, "Molloc MSM memory");
+    LOG(INFO, "Molloc MSM memory %d", ctx->pipp.get_device());
     ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
     //
     for (size_t i = 0; i < NUM_BATCH_THREADS; i++)
@@ -160,11 +159,10 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
                                        points, ffi_affine_sz, stream);
     LOG(INFO, "Launch kernel pre compute init");
     ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn, stream);
-
+    LOG(INFO, "Get result container faster");
     ctx->fres0 = ctx->pipp.get_result_container_faster();
     ctx->fres1 = ctx->pipp.get_result_container_faster();
-    ctx->out = new point_t();
-    ctx->out->inf();
+    LOG(INFO, "MSM init done");
   }
   catch (const cuda_error &e)
   {
@@ -192,7 +190,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
   assert(batches > 0);
 
   cudaStream_t stream = ctx->pipp.default_stream;
-  stream_t aux_stream(ctx->pipp.get_device());
+  // stream_t aux_stream(ctx->pipp.get_device());
 
   try
   {
@@ -214,21 +212,19 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
     LOG(INFO, "Transfer scalars to device");
     memcpy(ctx->h_scalars, &scalars[work * npoints], scalars_sz);
     ctx->pipp.transfer_scalars_to_device(ctx->config, d_scalars_compute,
-                                         ctx->h_scalars, aux_stream);
-    CUDA_OK(cudaStreamSynchronize(aux_stream));
+                                         ctx->h_scalars, stream);
+    CUDA_OK(cudaStreamSynchronize(stream));
 
     for (; work < (int)batches; work++)
     {
       // Launch the GPU kernel, transfer the results back
       batch_pool.spawn([&]()
                        {
-        CUDA_OK(cudaStreamSynchronize(aux_stream));
+        CUDA_OK(cudaStreamSynchronize(stream));
         LOG(INFO, "Launch process scalars");
-        nvtxRangePushA("process_scalars");
         ctx->pipp.launch_process_scalars(ctx->config, d_scalars_compute,
                                         ctx->d_scalar_tuples_sn,
                                         ctx->d_point_idx_sn);
-        nvtxRangePop();
         // scalar point
         uint32_t *d_scalar_tuple =
             ctx->pipp.d_scalar_tuple_ptrs[ctx->d_scalar_tuples_sn];
@@ -258,23 +254,17 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
 
         // accumulate parts of the buckets into static buffers.
         LOG(INFO, "Launch bucket acc");
-        nvtxRangePushA("bucket_acc");
         ctx->pipp.launch_bucket_acc(
             ctx->config, ctx->d_scalar_tuples_out_sn,
             ctx->d_point_idx_out_sn, ctx->d_pre_points_sn, ctx->d_buckets_sn,
             ctx->d_buckets_pre_sn, ctx->d_bucket_idx_pre_vector_sn,
             ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn);
-        nvtxRangePop();
         LOG(INFO, "Launch bucket agg");
-        nvtxRangePushA("bucket_agg_1");
 
         ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn);
-        nvtxRangePop();
-        nvtxRangePushA("bucket_agg_2");
 
         ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,
                                       ctx->d_res_sn);
-        nvtxRangePop();
         LOG(INFO, "Transfer res to host");
         ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn);
         ctx->pipp.synchronize_stream();
@@ -291,7 +281,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
           memcpy(ctx->h_scalars, &scalars[(work + 1) * npoints], scalars_sz);
 
           ctx->pipp.transfer_scalars_to_device(ctx->config, d_scalars_xfer,
-                                               ctx->h_scalars, aux_stream);
+                                               ctx->h_scalars, stream);
         }
         // Accumulate the previous result
         if (work - 1 >= 0) {
@@ -328,6 +318,7 @@ mmsm_mult_pippenger_faster_init(RustMmsmContext<bucket_t, affine_t, scalar_t> *c
 {
   context->context = new MmsmContext<bucket_t, affine_t, scalar_t>();
   MmsmContext<bucket_t, affine_t, scalar_t> *ctx = context->context;
+  LOG(INFO, "Init MSM with %d points", npoints);
   ctx->gpus = gpus_t();
   try
   {
@@ -350,10 +341,16 @@ mmsm_mult_pippenger_faster_init(RustMmsmContext<bucket_t, affine_t, scalar_t> *c
         break;
 
       // 传入某段 points
-      mult_pippenger_faster_init(rust_ctx, points + offset,
+      mult_pippenger_faster_init(rust_ctx, points,
                                  size_for_this_gpu, ffi_affine_sz);
 
       offset += size_for_this_gpu;
+    }
+
+    for (size_t i = 0; i < num_gpus; i++)
+    {
+      auto gpu = ctx->gpus.all()[i];
+      select_gpu(gpu->cid());
     }
   }
 
@@ -377,51 +374,50 @@ mmsm_mult_pippenger_faster_inf(RustMmsmContext<bucket_t, affine_t, scalar_t> *co
   (void)points; // Silence unused param warning
 
   MmsmContext<bucket_t, affine_t, scalar_t> *ctx = context->context;
-  // try
-  // {
-  //   for (auto gpu : ctx->gpus.all())
-  //   {
-  //     select_gpu(gpu->cid());
-  //     RustContext<bucket_t, affine_t, scalar_t> *rust_ctx = ctx->contexts[gpu->cid()];
-  //     mult_pippenger_faster_inf(rust_ctx, out, points, npoints, batches, scalars, ffi_affine_sz);
-  //   }
-  // }
   try
   {
     size_t num_gpus = ngpus();
-    ctx->ffi_affine_sz = ffi_affine_sz;
-    // 根据识别到的设备和points进行划分，根据设备能力进行划分
+
     size_t chunk_size = (npoints + num_gpus - 1) / num_gpus;
     size_t offset = 0;
+    point_t *host_results = new point_t[num_gpus];
     for (size_t i = 0; i < num_gpus; i++)
     {
       auto gpu = ctx->gpus.all()[i];
       select_gpu(gpu->cid());
-      RustContext<bucket_t, affine_t, scalar_t> *rust_ctx = ctx->contexts[gpu->cid()];
+      RustContext<bucket_t, affine_t, scalar_t> *rust_ctx = ctx->contexts[i];
 
-      // 当前块GPU实际拿到的点数
       size_t size_for_this_gpu = std::min(chunk_size, npoints - offset);
       if (size_for_this_gpu == 0)
         break;
 
-      mult_pippenger_faster_inf(rust_ctx, rust_ctx->context->out, points, size_for_this_gpu, batches, scalars + offset, ffi_affine_sz);
+      host_results[i].inf();
+      mult_pippenger_faster_inf(rust_ctx, &host_results[i], points + offset, size_for_this_gpu, batches, scalars + offset, ffi_affine_sz);
 
       offset += size_for_this_gpu;
     }
-    for (auto i = 0; i < num_gpus; i++)
-    {
-      auto gpu = ctx->gpus.all()[i];
-      RustContext<bucket_t, affine_t, scalar_t> *rust_ctx = ctx->contexts[gpu->cid()];
-      out->add(*rust_ctx->context->out);
-    }
-  }
 
+    // for (size_t i = 0; i < num_gpus; i++)
+    // {
+    //   auto gpu = ctx->gpus.all()[i];
+    //   select_gpu(gpu->cid());
+    //   cudaDeviceSynchronize();
+    // }
+
+    // 在CPU上累加结果
+    for (size_t i = 0; i < num_gpus; i++)
+    {
+      out->add(host_results[i]);
+    }
+
+    delete[] host_results;
+  }
   catch (const cuda_error &e)
   {
 #ifdef TAKE_RESPONSIBILITY_FOR_ERROR_MESSAGE
     return RustError{e.code(), e.what()};
 #else
-    return RustError { e.code() }
+    return RustError{e.code()};
 #endif
   }
 
