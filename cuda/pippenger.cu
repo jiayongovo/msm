@@ -6,11 +6,9 @@
 #include <ff/bls12-381.hpp>
 #include <ec/jacobian_t.hpp>
 #include <ec/xyzz_t.hpp>
-#include <ec/xyzt_t.hpp>
 
 typedef jacobian_t<fp_t> point_t;
 typedef xyzz_t<fp_t> bucket_t;
-// typedef xyzt_t<fp_t> bucket_t;
 typedef bucket_t::affine_inf_t affine_t;
 typedef fr_t scalar_t;
 

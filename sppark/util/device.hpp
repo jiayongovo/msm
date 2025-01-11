@@ -3,13 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-// Class to represent GPU resources
-// class devices_t {
-// }
-
 template<class T>
 class device_ptr_list_t {
-    vector<T*> d_ptrs;
+    std::vector<T*> d_ptrs;
 public:
     device_ptr_list_t() {}
     ~device_ptr_list_t() {

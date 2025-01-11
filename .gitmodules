@@ -1,0 +1,7 @@
+[submodule "sppark"]
+    path = exper/sppark
+    url = https://github.com/ingonyama-zk/sppark
+
+[submodule "wlc_msm"]
+    path = exper/wlc_msm
+    url = https://github.com/dunkirkturbo/wlc_msm

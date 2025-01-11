@@ -15,7 +15,7 @@ fn msm_correctness() {
     let npoints_npow = i32::from_str(&test_npow).unwrap();
     let batches_str = std::env::var("BENCHES").unwrap_or("1".to_string());
     let batches = usize::from_str(&batches_str).unwrap();
-    let random_test = std::env::var("RANDOM_TEST").unwrap_or("clusted".to_string());
+    let random_test = std::env::var("RANDOM_TEST").unwrap_or("random".to_string());
     let (points, scalars) = match random_test.as_str() {
         "random" => util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
         "clusted" => {

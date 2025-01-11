@@ -7,22 +7,12 @@
 #include <sys/mman.h>
 #include <ec/jacobian_t.hpp>
 #include <ec/xyzz_t.hpp>
-#include <ec/xyzt_t.hpp>
 #include <util/log.h>
 #include <util/all_gpus.cpp>
 #include <ff/bls12-381.hpp>
 
-// #if defined(FEATURE_BLS12_381)
-// #include <ff/bls12-381.hpp>
-// #elif defined(FEATURE_BLS12_377)
-// #include <ff/bls12-377.hpp>
-// #else
-// #error "Unknown curve"
-// #endif
-
 typedef jacobian_t<fp_t> point_t;
 typedef xyzz_t<fp_t> bucket_t;
-// typedef xyzt_t<fp_t> bucket_t;
 typedef bucket_t::affine_inf_t affine_t;
 typedef fr_t scalar_t;
 
@@ -148,11 +138,9 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
         ctx->pipp.allocate_d_scalar_tuple_out(ctx->config);
     ctx->d_point_idx_out_sn = ctx->pipp.allocate_d_point_idx(ctx->config);
     ctx->d_cub_sort_idx = ctx->pipp.allocate_d_cub_sort_faster(ctx->config);
-
     // Allocate pinned memory on host
     CUDA_OK(cudaMallocHost(&ctx->h_scalars,
                            ctx->pipp.get_size_scalars(ctx->config)));
-
     LOG(INFO, "Transfer bases to device");
 
     ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn,
@@ -196,7 +184,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
   {
     for (size_t i = 0; i < batches; i++)
     {
-      out[i].inf();
+      out[i].set_inf();
     }
 
     typename pipp_t::result_container_t_faster *kernel_res = &ctx->fres0;
@@ -225,32 +213,14 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         ctx->pipp.launch_process_scalars(ctx->config, d_scalars_compute,
                                         ctx->d_scalar_tuples_sn,
                                         ctx->d_point_idx_sn);
-        // scalar point
-        uint32_t *d_scalar_tuple =
-            ctx->pipp.d_scalar_tuple_ptrs[ctx->d_scalar_tuples_sn];
-        uint32_t *d_scalar_tuple_out =
-            ctx->pipp.d_scalar_tuple_ptrs[ctx->d_scalar_tuples_out_sn];
-        uint32_t *d_point_idx =
-            ctx->pipp.d_point_idx_ptrs[ctx->d_point_idx_sn];
-        uint32_t *d_point_idx_out =
-            ctx->pipp.d_point_idx_ptrs[ctx->d_point_idx_out_sn];
-        uint32_t nscalars = npoints;
-        void *d_temp = NULL;
-        size_t temp_sort_size = 0;
-        // 暂时先将最低1位到最高31位获取sij
-        cub::DeviceRadixSort::SortPairs(
-            d_temp, temp_sort_size, d_scalar_tuple, d_scalar_tuple_out,
-            d_point_idx, d_point_idx_out, nscalars, 0, 31, stream);
-        void *d_cub_sort = (void *)ctx->pipp.d_cub_ptrs[ctx->d_cub_sort_idx];
-        // 在每个窗口内进行排序
+
+
         LOG(INFO, "Launch sort");
-        for (size_t k = 0; k < NWINS; k++) {
-          size_t ptr = k * nscalars;
-          cub::DeviceRadixSort::SortPairs(
-              d_cub_sort, temp_sort_size, d_scalar_tuple + ptr,
-              d_scalar_tuple_out + ptr, d_point_idx + ptr,
-              d_point_idx_out + ptr, nscalars, 0, 31, stream);
-        }
+        
+        ctx->pipp.launch_sort(ctx->config, ctx->d_scalar_tuples_sn,
+                            ctx->d_scalar_tuples_out_sn, ctx->d_point_idx_sn,
+                            ctx->d_point_idx_out_sn,
+                            ctx->d_cub_sort_idx);
 
         // accumulate parts of the buckets into static buffers.
         LOG(INFO, "Launch bucket acc");
@@ -391,7 +361,7 @@ mmsm_mult_pippenger_faster_inf(RustMmsmContext<bucket_t, affine_t, scalar_t> *co
       if (size_for_this_gpu == 0)
         break;
 
-      host_results[i].inf();
+      host_results[i].set_inf();
       mult_pippenger_faster_inf(rust_ctx, &host_results[i], points + offset, size_for_this_gpu, batches, scalars + offset, ffi_affine_sz);
 
       offset += size_for_this_gpu;

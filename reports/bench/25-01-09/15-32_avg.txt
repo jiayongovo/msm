@@ -1,0 +1,19 @@
+mmsm 18 22.78
+mmsm 19 33.10
+mmsm 20 49.64
+mmsm 21 86.19
+mmsm 22 167.31
+mmsm 23 321.33
+wlc_msm_con 18 19.63
+wlc_msm_con 19 29.36
+wlc_msm_con 20 50.34
+wlc_msm_con 21 91.37
+wlc_msm_con 22 39.39
+wlc_msm_con 23 68.65
+
+wlc_msm_bal 18 126.32
+wlc_msm_bal 19 244.45
+wlc_msm_bal 20 488.21
+wlc_msm_bal 21 
+wlc_msm_bal 22 
+wlc_msm_bal 23 
