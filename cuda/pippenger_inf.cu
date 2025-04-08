@@ -7,7 +7,6 @@
 #include <sys/mman.h>
 #include <ec/jacobian_t.hpp>
 #include <ec/xyzz_t.hpp>
-#include <ec/xyzt_t.hpp>
 #include <util/log.h>
 #include <util/all_gpus.cpp>
 #include <ff/bls12-381.hpp>
@@ -81,9 +80,20 @@ struct Context
   size_t d_sost_sn;
   size_t d_cub_sort_idx;
   scalar_t *h_scalars;
+  cudaStream_t custom_stream;
 
   typename pipp_t::result_container_t_faster fres0;
   typename pipp_t::result_container_t_faster fres1;
+
+  Context()
+  {
+    cudaStreamCreate(&custom_stream);
+  }
+
+  ~Context()
+  {
+    cudaStreamDestroy(custom_stream);
+  }
 };
 
 template <class bucket_t, class affine_t, class scalar_t>
@@ -101,6 +111,8 @@ struct MmsmContext
   size_t ffi_affine_sz;
   size_t batches;
   gpus_t gpus;
+  std::vector<size_t> sizes;
+  std::vector<size_t> offsets;
 };
 
 template <class bucket_t, class affine_t, class scalar_t>
@@ -123,7 +135,7 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
   try
   {
     ctx->config = ctx->pipp.init_msm_faster(npoints);
-    cudaStream_t stream = ctx->pipp.default_stream;
+    cudaStream_t stream = ctx->custom_stream;
     LOG(INFO, "Molloc MSM memory %d", ctx->pipp.get_device());
     ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
     //
@@ -189,7 +201,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
   assert(ctx->ffi_affine_sz == ffi_affine_sz);
   assert(batches > 0);
 
-  cudaStream_t stream = ctx->pipp.default_stream;
+  cudaStream_t stream = ctx->custom_stream;
   // stream_t aux_stream(ctx->pipp.get_device());
 
   try
@@ -224,7 +236,7 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         LOG(INFO, "Launch process scalars");
         ctx->pipp.launch_process_scalars(ctx->config, d_scalars_compute,
                                         ctx->d_scalar_tuples_sn,
-                                        ctx->d_point_idx_sn);
+                                        ctx->d_point_idx_sn,stream);
         // scalar point
         uint32_t *d_scalar_tuple =
             ctx->pipp.d_scalar_tuple_ptrs[ctx->d_scalar_tuples_sn];
@@ -258,15 +270,15 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
             ctx->config, ctx->d_scalar_tuples_out_sn,
             ctx->d_point_idx_out_sn, ctx->d_pre_points_sn, ctx->d_buckets_sn,
             ctx->d_buckets_pre_sn, ctx->d_bucket_idx_pre_vector_sn,
-            ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn);
+            ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn,stream);
         LOG(INFO, "Launch bucket agg");
 
-        ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn);
+        ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn,stream);
 
         ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,
-                                      ctx->d_res_sn);
+                                      ctx->d_res_sn,stream);
         LOG(INFO, "Transfer res to host");
-        ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn);
+        ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn,stream);
         ctx->pipp.synchronize_stream();
 
         ch.send(work); });
@@ -316,14 +328,17 @@ mmsm_mult_pippenger_faster_init(RustMmsmContext<bucket_t, affine_t, scalar_t> *c
                                 const affine_t points[], size_t npoints,
                                 size_t ffi_affine_sz)
 {
-  context->context = new MmsmContext<bucket_t, affine_t, scalar_t>();
-  MmsmContext<bucket_t, affine_t, scalar_t> *ctx = context->context;
-  LOG(INFO, "Init MSM with %d points", npoints);
-  ctx->gpus = gpus_t();
+
   try
   {
-    size_t num_gpus = ngpus();
+    context->context = new MmsmContext<bucket_t, affine_t, scalar_t>();
+    MmsmContext<bucket_t, affine_t, scalar_t> *ctx = context->context;
+    ctx->gpus = gpus_t();
     ctx->ffi_affine_sz = ffi_affine_sz;
+    ctx->npoints = npoints;
+    size_t num_gpus = ngpus();
+
+    LOG(INFO, "Init MSM with %d points", npoints);
     // 根据识别到的设备和points进行划分，根据设备能力进行划分
     size_t chunk_size = (npoints + num_gpus - 1) / num_gpus;
     size_t offset = 0;
@@ -339,18 +354,14 @@ mmsm_mult_pippenger_faster_init(RustMmsmContext<bucket_t, affine_t, scalar_t> *c
       size_t size_for_this_gpu = std::min(chunk_size, npoints - offset);
       if (size_for_this_gpu == 0)
         break;
+      ctx->sizes.push_back(size_for_this_gpu);
+      ctx->offsets.push_back(offset);
 
       // 传入某段 points
       mult_pippenger_faster_init(rust_ctx, points,
                                  size_for_this_gpu, ffi_affine_sz);
 
       offset += size_for_this_gpu;
-    }
-
-    for (size_t i = 0; i < num_gpus; i++)
-    {
-      auto gpu = ctx->gpus.all()[i];
-      select_gpu(gpu->cid());
     }
   }
 
@@ -377,10 +388,20 @@ mmsm_mult_pippenger_faster_inf(RustMmsmContext<bucket_t, affine_t, scalar_t> *co
   try
   {
     size_t num_gpus = ngpus();
-
     size_t chunk_size = (npoints + num_gpus - 1) / num_gpus;
     size_t offset = 0;
     point_t *host_results = new point_t[num_gpus];
+
+    for (size_t i = 0; i < num_gpus && i < ctx->contexts.size(); i++)
+    {
+      size_t size_for_this_gpu = std::min(chunk_size, npoints - offset);
+      if (size_for_this_gpu == 0)
+        break;
+      host_results[i].inf();
+      offset += size_for_this_gpu;
+    }
+
+    offset = 0;
     for (size_t i = 0; i < num_gpus; i++)
     {
       auto gpu = ctx->gpus.all()[i];
@@ -388,28 +409,30 @@ mmsm_mult_pippenger_faster_inf(RustMmsmContext<bucket_t, affine_t, scalar_t> *co
       RustContext<bucket_t, affine_t, scalar_t> *rust_ctx = ctx->contexts[i];
 
       size_t size_for_this_gpu = std::min(chunk_size, npoints - offset);
-      if (size_for_this_gpu == 0)
-        break;
 
-      host_results[i].inf();
-      mult_pippenger_faster_inf(rust_ctx, &host_results[i], points + offset, size_for_this_gpu, batches, scalars + offset, ffi_affine_sz);
+      // 启动MSM计算，不等待
+      mult_pippenger_faster_inf(
+          rust_ctx,
+          &host_results[i],
+          points,
+          size_for_this_gpu,
+          batches,
+          scalars + offset,
+          ffi_affine_sz);
 
       offset += size_for_this_gpu;
     }
 
-    // for (size_t i = 0; i < num_gpus; i++)
-    // {
-    //   auto gpu = ctx->gpus.all()[i];
-    //   select_gpu(gpu->cid());
-    //   cudaDeviceSynchronize();
-    // }
+    for (size_t i = 0; i < num_gpus; i++)
+    {
+      select_gpu(ctx->gpus.all()[i]->cid());
+    }
 
-    // 在CPU上累加结果
+    out->inf();
     for (size_t i = 0; i < num_gpus; i++)
     {
       out->add(host_results[i]);
     }
-
     delete[] host_results;
   }
   catch (const cuda_error &e)

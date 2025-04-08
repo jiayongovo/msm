@@ -7,7 +7,7 @@
 
 # include <cstddef>
 # include <cstdint>
-
+# include "ff_sppark.cuh"
 # define inline __device__ __forceinline__
 # ifdef __GNUC__
 #  define asm __asm__ __volatile__
@@ -58,6 +58,13 @@ private:
         // return carry flag
     }
 public:
+    static __attribute__((device)) size_t get_N() { return N; }
+    static __attribute__((device)) const uint32_t *get_MOD() { return MOD; }
+    static __attribute__((device)) uint32_t get_M0() { return M0; }
+    static __attribute__((device)) const uint32_t *get_RR() { return RR; }
+    static __attribute__((device)) const uint32_t *get_ONE() { return ONE; }
+    static __attribute__((device)) size_t get_n() { return n; }
+    
     class wide_t {
     private:
         uint32_t even[2*n];
@@ -626,3 +633,241 @@ private:
 # undef inline
 # undef asm
 #endif
+
+
+
+template <typename mont_t>
+__device__ static void batch_mult_tensor(
+    mont_t *a1, mont_t *a2, const mont_t *a3, const mont_t *a4,
+    const mont_t *b1, const mont_t *b2, mont_t *b3, mont_t *b4,
+    mont_t *result1, mont_t *result2, mont_t *result3, mont_t *result4)
+{
+    const size_t N = mont_t::get_N();
+    const uint32_t *MOD = mont_t::get_MOD();
+    const uint32_t *MODN = mont_t::get_MODN();
+    const uint32_t M0 = mont_t::get_M0();
+    static const size_t s = (255 + 31) / 32;
+
+    // 为4组数据分配连续的临时空间
+    uint32_t t[4 * 2 * s] = {0};  // 4组t数组连续存放
+    uint32_t m[4 * s] = {0};      // 4组m数组连续存放
+    uint32_t r[4 * 2 * s] = {0};  // 4组r数组连续存放
+    
+    // 指针别名，方便访问每组数据
+    uint32_t *t1 = &t[0], *t2 = &t[2*s], *t3 = &t[4*s], *t4 = &t[6*s];
+    uint32_t *m1 = &m[0], *m2 = &m[s], *m3 = &m[2*s], *m4 = &m[3*s];
+    uint32_t *r1 = &r[0], *r2 = &r[2*s], *r3 = &r[4*s], *r4 = &r[6*s];
+    
+    // 1. 计算 t = a * b (4对输入)
+    // 第一对: a1 * b1
+    for (size_t i = 0; i < s; i++) {
+        uint32_t C = 0;
+        for (size_t j = 0; j < s; j++) {
+            uint64_t temp = (uint64_t)t1[i + j] + (uint64_t)(*a1)[j] * (*b1)[i] + C;
+            t1[i + j] = (uint32_t)temp;
+            C = (uint32_t)(temp >> 32);
+        }
+        t1[i + s] = C;
+    }
+    
+    // 第二对: a2 * b2
+    for (size_t i = 0; i < s; i++) {
+        uint32_t C = 0;
+        for (size_t j = 0; j < s; j++) {
+            uint64_t temp = (uint64_t)t2[i + j] + (uint64_t)(*a2)[j] * (*b2)[i] + C;
+            t2[i + j] = (uint32_t)temp;
+            C = (uint32_t)(temp >> 32);
+        }
+        t2[i + s] = C;
+    }
+    
+    // 第三对: a3 * b3
+    for (size_t i = 0; i < s; i++) {
+        uint32_t C = 0;
+        for (size_t j = 0; j < s; j++) {
+            uint64_t temp = (uint64_t)t3[i + j] + (uint64_t)(*a3)[j] * (*b3)[i] + C;
+            t3[i + j] = (uint32_t)temp;
+            C = (uint32_t)(temp >> 32);
+        }
+        t3[i + s] = C;
+    }
+    
+    // 第四对: a4 * b4
+    for (size_t i = 0; i < s; i++) {
+        uint32_t C = 0;
+        for (size_t j = 0; j < s; j++) {
+            uint64_t temp = (uint64_t)t4[i + j] + (uint64_t)(*a4)[j] * (*b4)[i] + C;
+            t4[i + j] = (uint32_t)temp;
+            C = (uint32_t)(temp >> 32);
+        }
+        t4[i + s] = C;
+    }
+    
+    // 2. 批量计算 m = ((T % R) * N') % R
+    ff_sppark::ff_sppark_calc_kernel(
+        reinterpret_cast<uint32_t *>(t),
+        reinterpret_cast<uint32_t *>(const_cast<uint32_t *>(MODN)),
+        reinterpret_cast<uint32_t *>(m),
+        4);  // 处理4组数据
+    
+    // 3. 批量计算 r = m * MOD
+    ff_sppark::ff_sppark_calc_kernel(
+        reinterpret_cast<uint32_t *>(m),
+        reinterpret_cast<uint32_t *>(const_cast<uint32_t *>(MOD)),
+        reinterpret_cast<uint32_t *>(r),
+        4);  // 处理4组数据
+    
+    // 4. 计算 t = t + r 并处理进位 (4组数据)
+    // 第一组
+    for (size_t i = 0; i < s; i++) {
+        uint32_t C = 0;
+        for (size_t j = 0; j < s; j++) {
+            uint64_t temp = (uint64_t)t1[i + j] + (uint64_t)r1[i + j] + C;
+            t1[i + j] = (uint32_t)temp;
+            C = (uint32_t)(temp >> 32);
+        }
+        
+        uint64_t sum = (uint64_t)t1[i + s] + C;
+        t1[i + s] = (uint32_t)sum;
+        
+        if ((sum >> 32) && (i + s + 1 < 2 * s))
+            t1[i + s + 1] += (uint32_t)(sum >> 32);
+    }
+    
+    // 第二组
+    for (size_t i = 0; i < s; i++) {
+        uint32_t C = 0;
+        for (size_t j = 0; j < s; j++) {
+            uint64_t temp = (uint64_t)t2[i + j] + (uint64_t)r2[i + j] + C;
+            t2[i + j] = (uint32_t)temp;
+            C = (uint32_t)(temp >> 32);
+        }
+        
+        uint64_t sum = (uint64_t)t2[i + s] + C;
+        t2[i + s] = (uint32_t)sum;
+        
+        if ((sum >> 32) && (i + s + 1 < 2 * s))
+            t2[i + s + 1] += (uint32_t)(sum >> 32);
+    }
+    
+    // 第三组
+    for (size_t i = 0; i < s; i++) {
+        uint32_t C = 0;
+        for (size_t j = 0; j < s; j++) {
+            uint64_t temp = (uint64_t)t3[i + j] + (uint64_t)r3[i + j] + C;
+            t3[i + j] = (uint32_t)temp;
+            C = (uint32_t)(temp >> 32);
+        }
+        
+        uint64_t sum = (uint64_t)t3[i + s] + C;
+        t3[i + s] = (uint32_t)sum;
+        
+        if ((sum >> 32) && (i + s + 1 < 2 * s))
+            t3[i + s + 1] += (uint32_t)(sum >> 32);
+    }
+    
+    // 第四组
+    for (size_t i = 0; i < s; i++) {
+        uint32_t C = 0;
+        for (size_t j = 0; j < s; j++) {
+            uint64_t temp = (uint64_t)t4[i + j] + (uint64_t)r4[i + j] + C;
+            t4[i + j] = (uint32_t)temp;
+            C = (uint32_t)(temp >> 32);
+        }
+        
+        uint64_t sum = (uint64_t)t4[i + s] + C;
+        t4[i + s] = (uint32_t)sum;
+        
+        if ((sum >> 32) && (i + s + 1 < 2 * s))
+            t4[i + s + 1] += (uint32_t)(sum >> 32);
+    }
+    
+    // 5. 提取结果 = t/R（取高s位）并进行条件减法
+    for (size_t i = 0; i < s; i++) {
+        (*result1)[i] = t1[s + i];
+        (*result2)[i] = t2[s + i];
+        (*result3)[i] = t3[s + i];
+        (*result4)[i] = t4[s + i];
+    }
+    
+    // 6. 条件减法：如果结果 >= MOD，则减去MOD
+    // 批量检查每个结果是否需要减法
+    bool greater_or_equal[4] = {true, true, true, true};
+    
+    // 检查结果1
+    for (int i = s - 1; i >= 0; i--) {
+        if ((*result1)[i] < MOD[i]) {
+            greater_or_equal[0] = false;
+            break;
+        } else if ((*result1)[i] > MOD[i]) {
+            break;
+        }
+    }
+    
+    // 检查结果2
+    for (int i = s - 1; i >= 0; i--) {
+        if ((*result2)[i] < MOD[i]) {
+            greater_or_equal[1] = false;
+            break;
+        } else if ((*result2)[i] > MOD[i]) {
+            break;
+        }
+    }
+    
+    // 检查结果3
+    for (int i = s - 1; i >= 0; i--) {
+        if ((*result3)[i] < MOD[i]) {
+            greater_or_equal[2] = false;
+            break;
+        } else if ((*result3)[i] > MOD[i]) {
+            break;
+        }
+    }
+    
+    // 检查结果4
+    for (int i = s - 1; i >= 0; i--) {
+        if ((*result4)[i] < MOD[i]) {
+            greater_or_equal[3] = false;
+            break;
+        } else if ((*result4)[i] > MOD[i]) {
+            break;
+        }
+    }
+    
+    // 对需要的结果执行减法
+    if (greater_or_equal[0]) {
+        uint32_t borrow = 0;
+        for (size_t i = 0; i < s; i++) {
+            uint64_t diff = (uint64_t)(*result1)[i] - MOD[i] - borrow;
+            (*result1)[i] = (uint32_t)diff;
+            borrow = (diff >> 32) & 1;
+        }
+    }
+    
+    if (greater_or_equal[1]) {
+        uint32_t borrow = 0;
+        for (size_t i = 0; i < s; i++) {
+            uint64_t diff = (uint64_t)(*result2)[i] - MOD[i] - borrow;
+            (*result2)[i] = (uint32_t)diff;
+            borrow = (diff >> 32) & 1;
+        }
+    }
+    
+    if (greater_or_equal[2]) {
+        uint32_t borrow = 0;
+        for (size_t i = 0; i < s; i++) {
+            uint64_t diff = (uint64_t)(*result3)[i] - MOD[i] - borrow;
+            (*result3)[i] = (uint32_t)diff;
+            borrow = (diff >> 32) & 1;
+        }
+    }
+    
+    if (greater_or_equal[3]) {
+        uint32_t borrow = 0;
+        for (size_t i = 0; i < s; i++) {
+            uint64_t diff = (uint64_t)(*result4)[i] - MOD[i] - borrow;
+            (*result4)[i] = (uint32_t)diff;
+            borrow = (diff >> 32) & 1;
+        }
+    }
+}

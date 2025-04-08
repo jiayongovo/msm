@@ -40,3 +40,8 @@ rayon = "1.5"
 [[bench]]
 name = "msm"
 harness = false
+
+[package.metadata.scripts]
+build = "cargo build"
+release = "cargo build --release"
+bench = "cargo bench"

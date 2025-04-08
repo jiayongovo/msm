@@ -7,7 +7,7 @@ struct host_pinned_allocator_t
 {
     typedef T value_type;
     host_pinned_allocator_t() {}
-
+ 
     // A converting copy constructor:
     template <class U>
     host_pinned_allocator_t(const host_pinned_allocator_t<U> &) {}

@@ -1,10 +1,10 @@
 #!/bin/bash
-s=${1:-1}
-e=${2:-21}
-times=${3:-2}
+s=${1:-20}
+e=${2:-25}
+times=${3:-3}
 today=$(date +%y-%m-%d)
 current_time=$(date +%H-%M)
-output_dir="/home/jiayong/msm/reports/bench/$today"
+output_dir="reports/bench/$today"
 output_file="$output_dir/$current_time""_mmsm.txt"
 output_sys_file="$output_dir/$current_time""_mmsm_sys.txt"
 output_avg_file="$output_dir/$current_time""_mmsm_avg.txt"
