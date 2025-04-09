@@ -156,11 +156,6 @@ public:
             a.X *= X;       // X/Z^2
             a.Y *= Y;       // Y/Z^3
         }
-        // a.Y = ZZZ.inv();
-        // a.X = a.Y * ZZ;   // 1/Z
-        // a.X = a.X^2;        // 1/Z^2
-        // a.X *= X;       // X/Z^2
-        // a.Y *= Y;       // Y/Z^3
     }
 
     inline __device__ void xyzz_print()

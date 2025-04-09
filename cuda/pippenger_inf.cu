@@ -21,7 +21,6 @@
 
 typedef jacobian_t<fp_t> point_t;
 typedef xyzz_t<fp_t> bucket_t;
-// typedef xyzt_t<fp_t> bucket_t;
 typedef bucket_t::affine_inf_t affine_t;
 typedef fr_t scalar_t;
 
@@ -61,7 +60,7 @@ struct Context
   pipp_t pipp;
   typename pipp_t::MSMConfig config;
   size_t ffi_affine_sz;
-  size_t d_pre_points_sn;
+  size_t d_points_sn;
   size_t d_scalars_sn[NUM_BATCH_THREADS];
   size_t d_buckets_sn;
   size_t d_scalar_tuples_sn;
@@ -137,7 +136,7 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
     ctx->config = ctx->pipp.init_msm_faster(npoints);
     cudaStream_t stream = ctx->custom_stream;
     LOG(INFO, "Molloc MSM memory %d", ctx->pipp.get_device());
-    ctx->d_pre_points_sn = ctx->pipp.allocate_d_pre_points(ctx->config);
+    ctx->d_points_sn = ctx->pipp.allocate_d_points(ctx->config);
     //
     for (size_t i = 0; i < NUM_BATCH_THREADS; i++)
     {
@@ -167,10 +166,8 @@ mult_pippenger_faster_init(RustContext<bucket_t, affine_t, scalar_t> *context,
 
     LOG(INFO, "Transfer bases to device");
 
-    ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_pre_points_sn,
+    ctx->pipp.transfer_bases_to_device(ctx->config, ctx->d_points_sn,
                                        points, ffi_affine_sz, stream);
-    LOG(INFO, "Launch kernel pre compute init");
-    ctx->pipp.launch_kernel_pre_compute_init(ctx->config, ctx->d_pre_points_sn, stream);
     LOG(INFO, "Get result container faster");
     ctx->fres0 = ctx->pipp.get_result_container_faster();
     ctx->fres1 = ctx->pipp.get_result_container_faster();
@@ -202,7 +199,6 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
   assert(batches > 0);
 
   cudaStream_t stream = ctx->custom_stream;
-  // stream_t aux_stream(ctx->pipp.get_device());
 
   try
   {
@@ -268,14 +264,12 @@ mult_pippenger_faster_inf(RustContext<bucket_t, affine_t, scalar_t> *context,
         LOG(INFO, "Launch bucket acc");
         ctx->pipp.launch_bucket_acc(
             ctx->config, ctx->d_scalar_tuples_out_sn,
-            ctx->d_point_idx_out_sn, ctx->d_pre_points_sn, ctx->d_buckets_sn,
+            ctx->d_point_idx_out_sn, ctx->d_points_sn, ctx->d_buckets_sn,
             ctx->d_buckets_pre_sn, ctx->d_bucket_idx_pre_vector_sn,
             ctx->d_bucket_idx_pre_used_sn, ctx->d_bucket_idx_pre_offset_sn,stream);
         LOG(INFO, "Launch bucket agg");
 
-        ctx->pipp.launch_bucket_agg_1(ctx->config, ctx->d_buckets_sn,stream);
-
-        ctx->pipp.launch_bucket_agg_2(ctx->config, ctx->d_buckets_sn,
+        ctx->pipp.launch_bucket_agg(ctx->config, ctx->d_buckets_sn,
                                       ctx->d_res_sn,stream);
         LOG(INFO, "Transfer res to host");
         ctx->pipp.transfer_res_to_host_faster(*kernel_res, ctx->d_res_sn,stream);
@@ -410,7 +404,6 @@ mmsm_mult_pippenger_faster_inf(RustMmsmContext<bucket_t, affine_t, scalar_t> *co
 
       size_t size_for_this_gpu = std::min(chunk_size, npoints - offset);
 
-      // 启动MSM计算，不等待
       mult_pippenger_faster_inf(
           rust_ctx,
           &host_results[i],
