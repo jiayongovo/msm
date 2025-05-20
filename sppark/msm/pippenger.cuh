@@ -100,9 +100,8 @@ __global__ void process_scalars(scalar_t *scalar, uint32_t *scalar_tuple,
   }
 }
 
-// v1.1
 __global__ void bucket_acc(uint32_t *scalar_tuple_out,
-                           /*uint16_t *bucket_idx,*/ uint32_t *point_idx_out,
+                           uint32_t *point_idx_out,
                            affine_t *points, bucket_t *buckets_pre,
                            uint16_t *bucket_idx_pre_vector,
                            uint16_t *bucket_idx_pre_used,
@@ -113,50 +112,60 @@ __global__ void bucket_acc(uint32_t *scalar_tuple_out,
   const uint32_t tid = blockIdx.y * blockDim.x + tid_inner;
   const uint32_t bid = blockIdx.x;
   const uint32_t buffer_len = tnum + (1 << (WBITS - 1));
+  
   uint32_t *scalar_tuple_out_ptr = scalar_tuple_out + npoints * bid;
   uint32_t *point_idx_out_ptr = point_idx_out + npoints * bid;
   bucket_t *buckets_pre_ptr = buckets_pre + buffer_len * bid;
-  uint16_t *bucket_idx_pre_vector_ptr =
-      bucket_idx_pre_vector + buffer_len * bid;
+  uint16_t *bucket_idx_pre_vector_ptr = bucket_idx_pre_vector + buffer_len * bid;
   uint16_t *bucket_idx_pre_used_ptr = bucket_idx_pre_used + tnum * bid;
   uint32_t *bucket_idx_pre_offset_ptr = bucket_idx_pre_offset + tnum * bid;
 
   const uint32_t step_len = (npoints + tnum - 1) / tnum;
   uint32_t s = step_len * tid;
   uint32_t e = min(s + step_len, (uint32_t)npoints);
-  if (s >= npoints)
-  {
+  
+  if (s >= npoints) {
     bucket_idx_pre_used_ptr[tid] = 0;
     return;
   }
 
-  uint16_t pre_bucket_idx = 0xffff; // not exist
   bucket_acc_smem[tid_inner * 2 + 1].inf();
-
-  uint32_t offset = tid + (scalar_tuple_out_ptr[s] >> 1);
+  
+  const uint32_t scalar_tuple_val = scalar_tuple_out_ptr[s];
+  uint16_t pre_bucket_idx = scalar_tuple_val >> 1;
+  uint32_t offset = tid + pre_bucket_idx;
   bucket_idx_pre_offset_ptr[tid] = offset;
   uint32_t unique_num = 0;
-
-#pragma unroll
+  
   for (uint32_t i = s; i < e; i++)
   {
-    uint16_t cur_bucket_idx =
-        scalar_tuple_out_ptr[i] >> 1; // bucket_idx_ptr[i];
-    if (cur_bucket_idx != pre_bucket_idx && (unique_num++))
+    const uint32_t curr_scalar_tuple = scalar_tuple_out_ptr[i];
+    const uint16_t cur_bucket_idx = curr_scalar_tuple >> 1;
+    const uint32_t point_idx = point_idx_out_ptr[i];
+    
+    bool changed = (cur_bucket_idx != pre_bucket_idx);
+    if (changed && i > s) 
     {
-      buckets_pre_ptr[offset + unique_num - 2] =
-          bucket_acc_smem[tid_inner * 2 + 1];
-      bucket_idx_pre_vector_ptr[offset + unique_num - 2] = pre_bucket_idx;
+      buckets_pre_ptr[offset + unique_num] = bucket_acc_smem[tid_inner * 2 + 1];
+      bucket_idx_pre_vector_ptr[offset + unique_num] = pre_bucket_idx;
       bucket_acc_smem[tid_inner * 2 + 1].inf();
+      unique_num++;
     }
+    
     pre_bucket_idx = cur_bucket_idx;
-    affine_t tmp = points[point_idx_out_ptr[i]];
-    tmp.neg((scalar_tuple_out_ptr[i] & 0x01) != 0);
+    
+    affine_t tmp = points[point_idx];
+    tmp.neg((curr_scalar_tuple & 0x01) != 0);
     bucket_acc_smem[tid_inner * 2 + 1].add(tmp);
   }
-  buckets_pre_ptr[offset + unique_num - 1] = bucket_acc_smem[tid_inner * 2 + 1];
-  bucket_idx_pre_vector_ptr[offset + unique_num - 1] = pre_bucket_idx;
-  bucket_idx_pre_used_ptr[tid] = unique_num;
+  
+  if (s < e) { 
+    buckets_pre_ptr[offset + unique_num] = bucket_acc_smem[tid_inner * 2 + 1];
+    bucket_idx_pre_vector_ptr[offset + unique_num] = pre_bucket_idx;
+    bucket_idx_pre_used_ptr[tid] = unique_num + 1; 
+  } else {
+    bucket_idx_pre_used_ptr[tid] = 0;
+  }
 }
 
 __global__ void bucket_acc_2(bucket_t *buckets_pre,
@@ -169,52 +178,42 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
   const uint32_t tid = blockIdx.y * blockDim.x + tid_inner;
   const uint32_t bid = blockIdx.x;
   const uint32_t buffer_len = upper_tnum + (1 << (WBITS - 1));
+  
   bucket_t *buckets_pre_ptr = buckets_pre + buffer_len * bid;
-  uint16_t *bucket_idx_pre_vector_ptr =
-      bucket_idx_pre_vector + buffer_len * bid;
+  uint16_t *bucket_idx_pre_vector_ptr = bucket_idx_pre_vector + buffer_len * bid;
   uint16_t *bucket_idx_pre_used_ptr = bucket_idx_pre_used + upper_tnum * bid;
-  uint32_t *bucket_idx_pre_offset_ptr =
-      bucket_idx_pre_offset + upper_tnum * bid;
+  uint32_t *bucket_idx_pre_offset_ptr = bucket_idx_pre_offset + upper_tnum * bid;
   bucket_t *buckets_ptr = buckets + (1 << (WBITS - 1)) * bid;
 
+  const uint16_t target_idx = tid + 1;
+  
   int left = 0, right = upper_tnum - 1;
   bool not_inf = false;
   uint32_t start_pos = 0;
-  while (left <= right)
+  
+  while (left <= right) 
   {
     int mid = left + ((right - left) >> 1);
     uint16_t vector_used = bucket_idx_pre_used_ptr[mid];
-    if (!vector_used)
-    {
+    
+    if (!vector_used) {
       right = mid - 1;
-    }
-    else
-    {
+    } else {
       uint32_t vector_ptr = bucket_idx_pre_offset_ptr[mid];
       uint16_t min_idx = bucket_idx_pre_vector_ptr[vector_ptr];
-      uint16_t max_idx =
-          bucket_idx_pre_vector_ptr[vector_ptr + vector_used - 1];
-      if (min_idx == (tid + 1))
-      {
+      uint16_t max_idx = bucket_idx_pre_vector_ptr[vector_ptr + vector_used - 1];
+      
+      if (min_idx == target_idx) {
         start_pos = mid;
         not_inf = true;
+        right = mid - 1; 
+      } else if (min_idx > target_idx) {
         right = mid - 1;
-      }
-      else if (min_idx > (tid + 1))
-      {
-        right = mid - 1;
-      }
-      else if (max_idx < (tid + 1))
-      {
+      } else if (max_idx < target_idx) {
         left = mid + 1;
-      }
-      else
-      {
-#pragma unroll
-        for (uint32_t i = vector_ptr + 1; i < vector_ptr + vector_used; i++)
-        {
-          if (bucket_idx_pre_vector_ptr[i] == (tid + 1))
-          {
+      } else {
+        for (uint32_t i = 1; i < vector_used; i++) { 
+          if (bucket_idx_pre_vector_ptr[vector_ptr + i] == target_idx) {
             start_pos = mid;
             not_inf = true;
             break;
@@ -224,26 +223,31 @@ __global__ void bucket_acc_2(bucket_t *buckets_pre,
       }
     }
   }
+  
   bucket_acc_smem[tid_inner].inf();
-  while (not_inf && start_pos < upper_tnum)
-  {
-    not_inf = false;
+  
+  while (not_inf && start_pos < upper_tnum) {
+    not_inf = false; 
     uint16_t vector_used = bucket_idx_pre_used_ptr[start_pos];
+    if (vector_used == 0) {
+      start_pos++;
+      continue;
+    }
+    
     uint32_t vector_ptr = bucket_idx_pre_offset_ptr[start_pos];
-#pragma unroll
-    for (uint32_t i = vector_ptr; i < vector_ptr + vector_used; i++)
-    {
-      if (bucket_idx_pre_vector_ptr[i] == (tid + 1))
-      {
-        not_inf = true;
+    
+    for (uint32_t i = vector_ptr; i < vector_ptr + vector_used; i++) {
+      if (bucket_idx_pre_vector_ptr[i] == target_idx) {
         bucket_acc_smem[tid_inner].add(buckets_pre_ptr[i]);
+        not_inf = true;
         break;
       }
     }
-    // 然后往前找
-    start_pos++;
+    
+    start_pos++; 
   }
-  buckets_ptr[tid] = bucket_acc_smem[tid_inner]; // can omit kerner `bucket_inf`
+  
+  buckets_ptr[tid] = bucket_acc_smem[tid_inner];
 }
 
 __global__ void bucket_agg(bucket_t *buckets, bucket_t *res)
@@ -251,54 +255,54 @@ __global__ void bucket_agg(bucket_t *buckets, bucket_t *res)
   const uint32_t tid = threadIdx.x;
   const uint32_t bid = blockIdx.x;
   const uint32_t bucket_num = 1 << (WBITS - 1);
-
+  
   __shared__ bucket_t shared_sos[NTHREADS];
-
-  shared_sos[threadIdx.x].inf();
-
+  
+  shared_sos[tid].inf();
+  
   bucket_t *buckets_ptr = buckets + bucket_num * bid;
-
+  
   const uint32_t items_per_thread = (bucket_num + NTHREADS - 1) / NTHREADS;
   const uint32_t start = tid * items_per_thread;
   const uint32_t end = min(start + items_per_thread, bucket_num);
-
+  
   if (start < bucket_num)
   {
     bucket_t running_sum, total_sum;
     running_sum.inf();
     total_sum.inf();
-
-#pragma unroll 1
+    
+    #pragma unroll 4
     for (int32_t i = end - 1; i >= (int32_t)start; i--)
     {
       running_sum.add(buckets_ptr[i]);
       total_sum.add(running_sum);
     }
-
+    
     if (start > 0)
     {
       bucket_t offset;
       mul(offset, running_sum, start);
       total_sum.add(offset);
     }
-
-    shared_sos[threadIdx.x] = total_sum;
+    
+    shared_sos[tid] = total_sum;
   }
-
+  
   __syncthreads();
-
+  
+  for (uint32_t stride = NTHREADS / 2; stride > 0; stride >>= 1)
+  {
+    if (tid < stride)
+    {
+      shared_sos[tid].add(shared_sos[tid + stride]);
+    }
+    __syncthreads();
+  }
+  
   if (tid == 0)
   {
-    bucket_t final_sum;
-    final_sum.inf();
-
-#pragma unroll 1
-    for (uint32_t i = 0; i < blockDim.x; i++)
-    {
-      final_sum.add(shared_sos[i]);
-    }
-
-    res[bid] = final_sum;
+    res[bid] = shared_sos[0];
   }
 }
 

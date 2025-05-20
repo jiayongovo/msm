@@ -1,1 +1,1 @@
-### RcLboMSM : Load Balancing Optimization of Multi-Batch Multi-Scalar Multiplication in Resource-Constrained Environments with Multi-GPU Systems
+### RcLboMSM : Load Balancing Optimization of Multi-Batch Multi-Scalar Multiplication in Resource-Constrained Environments with Multi-GPU Systemscarg

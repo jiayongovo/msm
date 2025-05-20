@@ -11,11 +11,11 @@ use mmsm::*;
 use std::str::FromStr;
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("10".to_string());
+    let bench_npow = std::env::var("BENCH_NPOW").unwrap_or("20".to_string());
     let npoints_npow = i32::from_str(&bench_npow).unwrap();
     let batches_str = std::env::var("BENCHES").unwrap_or("1".to_string());
     let batches = usize::from_str(&batches_str).unwrap();
-    let random_bench = std::env::var("RANDOM_BENCH").unwrap_or("clustered".to_string());
+    let random_bench = std::env::var("RANDOM_BENCH").unwrap_or("random".to_string());
     let (points, scalars) = match random_bench.as_str() {
         "random" => util::generate_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
         "mixed" => util::generate_mixed_points_scalars::<G1Affine>(1usize << npoints_npow, batches),
@@ -25,7 +25,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         _ => unimplemented!(),
     };
 
-    let mut context = multi_scalar_mult_init(points.as_slice());
+    let mut context: MmsmMultiScalarMultContext = mmsm_multi_scalar_mult_init(points.as_slice());
 
     let mut group = c.benchmark_group("CUDA");
     group.sample_size(10);
@@ -34,12 +34,12 @@ fn criterion_benchmark(c: &mut Criterion) {
     group.bench_function(name, |b| {
         // let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());
         b.iter(|| {
-            msm_results = multi_scalar_mult(&mut context, &points.as_slice(), unsafe {
+            msm_results = mmsm_multi_scalar_mult(&mut context, &points.as_slice(), unsafe {
                 std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
             });
         })
     });
-    // correctness_test(points, scalars, batches, msm_results);
+    correctness_test(points, scalars, batches, msm_results);
     group.finish();
 }
 
