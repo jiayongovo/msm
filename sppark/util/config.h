@@ -7,7 +7,7 @@
 // #error "Unknown curve"
 // #endif
 const int NBITS = 255;
-extern const size_t WBITS = 8;
+extern const size_t WBITS = 16;
 extern const size_t NWINS = (NBITS + WBITS - 1)/ WBITS;
 // extern const size_t WARP_SZ = 32;
 extern const size_t NTHREADS = 128;

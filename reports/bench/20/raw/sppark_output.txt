@@ -1,0 +1,1302 @@
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+   Compiling msm-cuda v0.1.0 (/home/user/hpc/zk_msm/msm/exper/sppark/poc/msm-cuda)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 1.30s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**20
+Benchmarking CUDA/2**20: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 8.5s, enable flat sampling, or reduce sample count to 10.
+Benchmarking CUDA/2**20: Collecting 20 samples in estimated 8.5219 s (210 iterations)
+Benchmarking CUDA/2**20: Analyzing
+CUDA/2**20              time:   [32.804 ms 33.631 ms 34.884 ms]
+                        change: [-5.8839% -1.8530% +2.3972%] (p = 0.41 > 0.05)
+                        No change in performance detected.
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**20
+Benchmarking CUDA/2**20: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 8.4s, enable flat sampling, or reduce sample count to 10.
+Benchmarking CUDA/2**20: Collecting 20 samples in estimated 8.4343 s (210 iterations)
+Benchmarking CUDA/2**20: Analyzing
+CUDA/2**20              time:   [34.189 ms 35.365 ms 36.853 ms]
+                        change: [-4.0907% -0.0294% +4.1110%] (p = 0.99 > 0.05)
+                        No change in performance detected.
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**20
+Benchmarking CUDA/2**20: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 8.5s, enable flat sampling, or reduce sample count to 10.
+Benchmarking CUDA/2**20: Collecting 20 samples in estimated 8.5013 s (210 iterations)
+Benchmarking CUDA/2**20: Analyzing
+CUDA/2**20              time:   [34.371 ms 35.167 ms 36.530 ms]
+                        change: [-1.5315% +3.1094% +8.3721%] (p = 0.24 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high mild
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**21
+Benchmarking CUDA/2**21: Warming up for 3.0000 s
+Benchmarking CUDA/2**21: Collecting 20 samples in estimated 5.3003 s (80 iterations)
+Benchmarking CUDA/2**21: Analyzing
+CUDA/2**21              time:   [54.850 ms 56.469 ms 58.302 ms]
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high mild
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.08s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**21
+Benchmarking CUDA/2**21: Warming up for 3.0000 s
+Benchmarking CUDA/2**21: Collecting 20 samples in estimated 5.0086 s (80 iterations)
+Benchmarking CUDA/2**21: Analyzing
+CUDA/2**21              time:   [55.366 ms 58.013 ms 61.226 ms]
+                        change: [-2.7245% +2.7330% +9.7100%] (p = 0.41 > 0.05)
+                        No change in performance detected.
+Found 3 outliers among 20 measurements (15.00%)
+  2 (10.00%) high mild
+  1 (5.00%) high severe
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**21
+Benchmarking CUDA/2**21: Warming up for 3.0000 s
+Benchmarking CUDA/2**21: Collecting 20 samples in estimated 6.0869 s (100 iterations)
+Benchmarking CUDA/2**21: Analyzing
+CUDA/2**21              time:   [54.541 ms 57.787 ms 61.993 ms]
+                        change: [-7.9608% -0.3882% +8.7919%] (p = 0.93 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high severe
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**22
+Benchmarking CUDA/2**22: Warming up for 3.0000 s
+Benchmarking CUDA/2**22: Collecting 20 samples in estimated 6.7622 s (60 iterations)
+Benchmarking CUDA/2**22: Analyzing
+CUDA/2**22              time:   [92.554 ms 97.196 ms 102.51 ms]
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high mild
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**22
+Benchmarking CUDA/2**22: Warming up for 3.0000 s
+Benchmarking CUDA/2**22: Collecting 20 samples in estimated 7.1561 s (60 iterations)
+Benchmarking CUDA/2**22: Analyzing
+CUDA/2**22              time:   [93.512 ms 101.27 ms 109.99 ms]
+                        change: [-4.9815% +4.1886% +15.395%] (p = 0.45 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 20 measurements (10.00%)
+  1 (5.00%) high mild
+  1 (5.00%) high severe
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**22
+Benchmarking CUDA/2**22: Warming up for 3.0000 s
+Benchmarking CUDA/2**22: Collecting 20 samples in estimated 6.3311 s (60 iterations)
+Benchmarking CUDA/2**22: Analyzing
+CUDA/2**22              time:   [99.583 ms 105.04 ms 112.42 ms]
+                        change: [-6.1207% +3.7301% +15.332%] (p = 0.52 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 20 measurements (10.00%)
+  2 (10.00%) high severe
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**23
+Benchmarking CUDA/2**23: Warming up for 3.0000 s
+Benchmarking CUDA/2**23: Collecting 20 samples in estimated 9.2684 s (40 iterations)
+Benchmarking CUDA/2**23: Analyzing
+CUDA/2**23              time:   [169.18 ms 179.54 ms 190.86 ms]
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**23
+Benchmarking CUDA/2**23: Warming up for 3.0000 s
+Benchmarking CUDA/2**23: Collecting 20 samples in estimated 9.2480 s (40 iterations)
+Benchmarking CUDA/2**23: Analyzing
+CUDA/2**23              time:   [179.43 ms 193.46 ms 210.77 ms]
+                        change: [-2.1305% +7.7546% +17.889%] (p = 0.18 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 20 measurements (10.00%)
+  2 (10.00%) high severe
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**23
+Benchmarking CUDA/2**23: Warming up for 3.0000 s
+Benchmarking CUDA/2**23: Collecting 20 samples in estimated 9.0677 s (40 iterations)
+Benchmarking CUDA/2**23: Analyzing
+CUDA/2**23              time:   [176.60 ms 191.80 ms 209.28 ms]
+                        change: [-11.882% -0.8587% +11.932%] (p = 0.89 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 20 measurements (10.00%)
+  2 (10.00%) high severe
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**24
+Benchmarking CUDA/2**24: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 9.0s, or reduce sample count to 10.
+Benchmarking CUDA/2**24: Collecting 20 samples in estimated 9.0443 s (20 iterations)
+Benchmarking CUDA/2**24: Analyzing
+CUDA/2**24              time:   [339.45 ms 361.74 ms 387.84 ms]
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**24
+Benchmarking CUDA/2**24: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 10.2s, or reduce sample count to 10.
+Benchmarking CUDA/2**24: Collecting 20 samples in estimated 10.206 s (20 iterations)
+Benchmarking CUDA/2**24: Analyzing
+CUDA/2**24              time:   [372.43 ms 378.74 ms 386.48 ms]
+                        change: [-2.5290% +4.6998% +12.311%] (p = 0.21 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 20 measurements (10.00%)
+  2 (10.00%) high mild
+
+warning: sppark@0.1.11: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: msm-cuda@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:53:18
+   |
+53 |             out: *mut G1Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+   = note: `#[warn(improper_ctypes)]` on by default
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g1::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:54:35
+   |
+54 |             points_with_infinity: *const G1Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:56:22
+   |
+56 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupProjective<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:91:18
+   |
+91 |             out: *mut G2Projective,
+   |                  ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `ark_ec::short_weierstrass_jacobian::GroupAffine<ark_bls12_381::g2::Parameters>`, which is not FFI-safe
+  --> src/lib.rs:92:35
+   |
+92 |             points_with_infinity: *const G2Affine,
+   |                                   ^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `extern` block uses type `Fp256<FrParameters>`, which is not FFI-safe
+  --> src/lib.rs:94:22
+   |
+94 |             scalars: *const Fr,
+   |                      ^^^^^^^^^ not FFI-safe
+   |
+   = help: consider adding a `#[repr(C)]` or `#[repr(transparent)]` attribute to this struct
+   = note: this struct has unspecified layout
+
+warning: `msm-cuda` (lib) generated 6 warnings
+warning: `msm-cuda` (lib test) generated 6 warnings (6 duplicates)
+warning: unused import: `G2Affine`
+  --> benches/msm.rs:10:31
+   |
+10 | use ark_bls12_381::{G1Affine, G2Affine};
+   |                               ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: `msm-cuda` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/msm_cuda-529d2f070680b3a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-506654e431809aa3)
+Benchmarking CUDA/2**24
+Benchmarking CUDA/2**24: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 8.6s, or reduce sample count to 10.
+Benchmarking CUDA/2**24: Collecting 20 samples in estimated 8.6131 s (20 iterations)
+Benchmarking CUDA/2**24: Analyzing
+CUDA/2**24              time:   [331.99 ms 356.15 ms 380.84 ms]
+                        change: [-12.502% -5.9635% +1.0363%] (p = 0.10 > 0.05)
+                        No change in performance detected.
+

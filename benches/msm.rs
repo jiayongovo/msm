@@ -25,7 +25,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         _ => unimplemented!(),
     };
 
-    let mut context: MmsmMultiScalarMultContext = mmsm_multi_scalar_mult_init(points.as_slice());
+    let mut context  = multi_scalar_mult_init(points.as_slice());
 
     let mut group = c.benchmark_group("CUDA");
     group.sample_size(10);
@@ -34,7 +34,7 @@ fn criterion_benchmark(c: &mut Criterion) {
     group.bench_function(name, |b| {
         // let mut context: MultiScalarMultContext = multi_scalar_mult_init(points.as_slice());
         b.iter(|| {
-            msm_results = mmsm_multi_scalar_mult(&mut context, &points.as_slice(), unsafe {
+            msm_results = multi_scalar_mult(&mut context, &points.as_slice(), unsafe {
                 std::mem::transmute::<&[_], &[BigInteger256]>(scalars.as_slice())
             });
         })

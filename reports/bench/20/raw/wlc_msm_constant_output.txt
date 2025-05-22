@@ -1,0 +1,660 @@
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**20x1
+Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 6.0634 s (275 iterations)
+Benchmarking CUDA/2**20x1: Analyzing
+CUDA/2**20x1            time:   [18.888 ms 18.982 ms 19.184 ms]
+                        change: [-4.0316% -2.1597% -0.1051%] (p = 0.06 > 0.05)
+                        No change in performance detected.
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**20x1
+Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 6.0087 s (275 iterations)
+Benchmarking CUDA/2**20x1: Analyzing
+CUDA/2**20x1            time:   [19.991 ms 20.160 ms 20.362 ms]
+                        change: [+3.9803% +5.5877% +7.2138%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**20x1
+Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 5.9519 s (275 iterations)
+Benchmarking CUDA/2**20x1: Analyzing
+CUDA/2**20x1            time:   [19.673 ms 19.863 ms 20.067 ms]
+                        change: [-2.9978% -1.8362% -0.6221%] (p = 0.01 < 0.05)
+                        Change within noise threshold.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low severe
+  1 (10.00%) high severe
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**21x1
+Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 5.3959 s (110 iterations)
+Benchmarking CUDA/2**21x1: Analyzing
+CUDA/2**21x1            time:   [36.347 ms 36.791 ms 37.630 ms]
+                        change: [+3.0613% +4.9904% +6.8599%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**21x1
+Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 5.3396 s (110 iterations)
+Benchmarking CUDA/2**21x1: Analyzing
+CUDA/2**21x1            time:   [34.389 ms 34.681 ms 35.163 ms]
+                        change: [-8.0598% -6.5888% -5.2251%] (p = 0.00 < 0.05)
+                        Performance has improved.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**21x1
+Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 5.3904 s (110 iterations)
+Benchmarking CUDA/2**21x1: Analyzing
+CUDA/2**21x1            time:   [35.593 ms 36.222 ms 36.521 ms]
+                        change: [+1.3180% +2.8064% +4.4804%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**22x1
+Benchmarking CUDA/2**22x1: Warming up for 3.0000 s
+
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 6.6s or enable flat sampling.
+Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 6.5674 s (55 iterations)
+Benchmarking CUDA/2**22x1: Analyzing
+CUDA/2**22x1            time:   [66.079 ms 66.168 ms 66.337 ms]
+                        change: [-6.3467% -4.1641% -2.4321%] (p = 0.00 < 0.05)
+                        Performance has improved.
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**22x1
+Benchmarking CUDA/2**22x1: Warming up for 3.0000 s
+
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 6.6s or enable flat sampling.
+Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 6.5757 s (55 iterations)
+Benchmarking CUDA/2**22x1: Analyzing
+CUDA/2**22x1            time:   [65.661 ms 65.826 ms 65.980 ms]
+                        change: [-0.9659% -0.5830% -0.1751%] (p = 0.02 < 0.05)
+                        Change within noise threshold.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+Benchmarking CUDA/2**22x1
+Benchmarking CUDA/2**22x1: Warming up for 3.0000 s
+
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 6.6s or enable flat sampling.
+Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 6.5785 s (55 iterations)
+Benchmarking CUDA/2**22x1: Analyzing
+CUDA/2**22x1            time:   [67.260 ms 67.777 ms 68.466 ms]
+                        change: [+2.7979% +3.5035% +4.1279%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low severe
+  1 (10.00%) low mild
+
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+
+thread 'main' panicked at /home/user/hpc/zk_msm/msm/exper/wlc_msm/381_xyzz_constant/src/lib.rs:78:9:
+cudaMalloc(&d_ptr, bytes)@570 failed: out of memory
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: bench failed, to rerun pass `--bench msm`
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+
+thread 'main' panicked at /home/user/hpc/zk_msm/msm/exper/wlc_msm/381_xyzz_constant/src/lib.rs:78:9:
+cudaMalloc(&d_ptr, bytes)@570 failed: out of memory
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: bench failed, to rerun pass `--bench msm`
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+
+thread 'main' panicked at /home/user/hpc/zk_msm/msm/exper/wlc_msm/381_xyzz_constant/src/lib.rs:78:9:
+cudaMalloc(&d_ptr, bytes)@570 failed: out of memory
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: bench failed, to rerun pass `--bench msm`
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+
+thread 'main' panicked at /home/user/hpc/zk_msm/msm/exper/wlc_msm/381_xyzz_constant/src/lib.rs:78:9:
+cudaMalloc(&d_ptr, bytes)@570 failed: out of memory
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: bench failed, to rerun pass `--bench msm`
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+
+thread 'main' panicked at /home/user/hpc/zk_msm/msm/exper/wlc_msm/381_xyzz_constant/src/lib.rs:78:9:
+cudaMalloc(&d_ptr, bytes)@570 failed: out of memory
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: bench failed, to rerun pass `--bench msm`
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: blst-msm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:52:7
+   |
+52 | #[cfg(feature = "parallel")]
+   |       ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = help: consider adding `parallel` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `parallel`
+  --> src/util.rs:84:35
+   |
+84 |         let window_sums: Vec<_> = ark_std::cfg_into_iter!(window_starts)
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `bls12_381`, `default`, `force-adx`, `portable`, and `quiet`
+   = note: using a cfg inside a macro will use the cfgs from the destination crate and not the ones from the defining crate
+   = help: try referring to `ark_std::cfg_into_iter` crate for guidance on how handle this unexpected cfg
+   = help: the macro `ark_std::cfg_into_iter` may come from an old version of the `ark_std` crate, try updating your dependency with `cargo update -p ark_std`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: this warning originates in the macro `ark_std::cfg_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `blst-msm` (lib) generated 3 warnings (1 duplicate)
+warning: `blst-msm` (lib test) generated 3 warnings (3 duplicates)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/blst_msm-278724df34167ed6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-9199689df7d93669)
+
+thread 'main' panicked at /home/user/hpc/zk_msm/msm/exper/wlc_msm/381_xyzz_constant/src/lib.rs:78:9:
+cudaMalloc(&d_ptr, bytes)@570 failed: out of memory
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: bench failed, to rerun pass `--bench msm`

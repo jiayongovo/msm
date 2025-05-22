@@ -1,0 +1,736 @@
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**20x1
+Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 5.1492 s (275 iterations)
+Benchmarking CUDA/2**20x1: Analyzing
+CUDA/2**20x1            time:   [18.701 ms 18.705 ms 18.710 ms]
+                        change: [-0.2858% -0.2037% -0.1210%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) low mild
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**20x1
+Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 5.1676 s (275 iterations)
+Benchmarking CUDA/2**20x1: Analyzing
+CUDA/2**20x1            time:   [18.773 ms 18.779 ms 18.791 ms]
+                        change: [+0.3450% +0.5468% +0.9184%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low mild
+  1 (10.00%) high severe
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**20x1
+Benchmarking CUDA/2**20x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**20x1: Collecting 10 samples in estimated 5.1427 s (275 iterations)
+Benchmarking CUDA/2**20x1: Analyzing
+CUDA/2**20x1            time:   [18.712 ms 18.720 ms 18.731 ms]
+                        change: [-0.8013% -0.4694% -0.2642%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low mild
+  1 (10.00%) high mild
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**21x1
+Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 5.1418 s (165 iterations)
+Benchmarking CUDA/2**21x1: Analyzing
+CUDA/2**21x1            time:   [31.134 ms 31.169 ms 31.221 ms]
+                        change: [-0.9430% -0.2425% +0.2426%] (p = 0.56 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) low mild
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**21x1
+Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 5.1182 s (165 iterations)
+Benchmarking CUDA/2**21x1: Analyzing
+CUDA/2**21x1            time:   [31.088 ms 31.130 ms 31.163 ms]
+                        change: [-0.4344% -0.2097% +0.0145%] (p = 0.11 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) low mild
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**21x1
+Benchmarking CUDA/2**21x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**21x1: Collecting 10 samples in estimated 5.1261 s (165 iterations)
+Benchmarking CUDA/2**21x1: Analyzing
+CUDA/2**21x1            time:   [31.078 ms 31.106 ms 31.127 ms]
+                        change: [-0.1299% +0.0120% +0.1750%] (p = 0.88 > 0.05)
+                        No change in performance detected.
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**22x1
+Benchmarking CUDA/2**22x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 6.1375 s (110 iterations)
+Benchmarking CUDA/2**22x1: Analyzing
+CUDA/2**22x1            time:   [55.992 ms 56.204 ms 56.688 ms]
+                        change: [-0.0381% +0.5321% +1.5348%] (p = 0.24 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low mild
+  1 (10.00%) high severe
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**22x1
+Benchmarking CUDA/2**22x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 6.1391 s (110 iterations)
+Benchmarking CUDA/2**22x1: Analyzing
+CUDA/2**22x1            time:   [56.391 ms 56.445 ms 56.474 ms]
+                        change: [-0.8869% +0.0534% +0.6247%] (p = 0.93 > 0.05)
+                        No change in performance detected.
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**22x1
+Benchmarking CUDA/2**22x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**22x1: Collecting 10 samples in estimated 6.1232 s (110 iterations)
+Benchmarking CUDA/2**22x1: Analyzing
+CUDA/2**22x1            time:   [55.939 ms 56.003 ms 56.077 ms]
+                        change: [-0.6982% -0.4797% -0.2382%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**23x1
+Benchmarking CUDA/2**23x1: Warming up for 3.0000 s
+
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 5.9s or enable flat sampling.
+Benchmarking CUDA/2**23x1: Collecting 10 samples in estimated 5.9089 s (55 iterations)
+Benchmarking CUDA/2**23x1: Analyzing
+CUDA/2**23x1            time:   [109.96 ms 110.07 ms 110.15 ms]
+                        change: [-0.6266% -0.4648% -0.3094%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) low mild
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**23x1
+Benchmarking CUDA/2**23x1: Warming up for 3.0000 s
+
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 5.9s or enable flat sampling.
+Benchmarking CUDA/2**23x1: Collecting 10 samples in estimated 5.9165 s (55 iterations)
+Benchmarking CUDA/2**23x1: Analyzing
+CUDA/2**23x1            time:   [110.05 ms 110.13 ms 110.19 ms]
+                        change: [-0.2445% +0.0199% +0.2465%] (p = 0.90 > 0.05)
+                        No change in performance detected.
+Found 3 outliers among 10 measurements (30.00%)
+  1 (10.00%) low severe
+  1 (10.00%) low mild
+  1 (10.00%) high mild
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**23x1
+Benchmarking CUDA/2**23x1: Warming up for 3.0000 s
+
+Warning: Unable to complete 10 samples in 5.0s. You may wish to increase target time to 5.9s or enable flat sampling.
+Benchmarking CUDA/2**23x1: Collecting 10 samples in estimated 5.9480 s (55 iterations)
+Benchmarking CUDA/2**23x1: Analyzing
+CUDA/2**23x1            time:   [109.91 ms 109.99 ms 110.05 ms]
+                        change: [-0.4619% -0.1685% +0.1532%] (p = 0.35 > 0.05)
+                        No change in performance detected.
+Found 3 outliers among 10 measurements (30.00%)
+  1 (10.00%) low severe
+  1 (10.00%) low mild
+  1 (10.00%) high mild
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**24x1
+Benchmarking CUDA/2**24x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**24x1: Collecting 10 samples in estimated 6.1836 s (30 iterations)
+Benchmarking CUDA/2**24x1: Analyzing
+CUDA/2**24x1            time:   [215.81 ms 216.12 ms 216.40 ms]
+                        change: [+0.0536% +0.2308% +0.3999%] (p = 0.03 < 0.05)
+                        Change within noise threshold.
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**24x1
+Benchmarking CUDA/2**24x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**24x1: Collecting 10 samples in estimated 6.2900 s (30 iterations)
+Benchmarking CUDA/2**24x1: Analyzing
+CUDA/2**24x1            time:   [213.44 ms 213.72 ms 213.95 ms]
+                        change: [-1.2959% -1.1122% -0.9352%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh(259): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+warning: mmsm@0.1.0:     __attribute__((shared)) bucket_t shared_sos[NTHREADS];
+warning: mmsm@0.1.0:                                      ^
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: mmsm@0.1.0: 
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:710: warning: ignoring ‘#pragma unroll ’ [-Wunknown-pragmas]
+warning: mmsm@0.1.0:   710 |     for (int32_t k = NWINS - 1; k >= 0; k--)
+warning: mmsm@0.1.0:       |
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh: In instantiation of ‘void pippenger_t<bucket_t, point_t, affine_t, scalar_t>::launch_bucket_agg(MSMConfig&, size_t, size_t, cudaStream_t) [with bucket_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; point_t = jacobian_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >; affine_t = xyzz_t<blst_384_t<(& BLS12_381_P), 9940570264628428797, (& BLS12_381_RR), (& BLS12_381_ONE)> >::affine_inf_t; scalar_t = blst_256_t<(& BLS12_381_r), 18446744069414584319, (& BLS12_381_rRR), (& BLS12_381_rONE)>; size_t = long unsigned int; cudaStream_t = CUstream_st*]’:
+warning: mmsm@0.1.0: cuda/pippenger_inf.cu:272:32:   required from here
+warning: mmsm@0.1.0: /home/user/hpc/zk_msm/msm/sppark/msm/pippenger.cuh:691:35: warning: unused parameter ‘config’ [-Wunused-parameter]
+warning: mmsm@0.1.0:   691 |   void launch_bucket_agg(MSMConfig &config, size_t d_buckets_sn,
+warning: mmsm@0.1.0:       |                        ~~~~~~~~~~~^~~~~~
+warning: mmsm@0.1.0: nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+warning: unused import: `correctness_test::correctness_test`
+ --> benches/msm.rs:8:5
+  |
+8 | use correctness_test::correctness_test;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `mmsm` (bench "msm") generated 1 warning (run `cargo fix --bench "msm"` to apply 1 suggestion)
+    Finished `bench` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/mmsm-6f9ff2044b9334ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/mmsm-13e443b0b5706335)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running benches/msm.rs (target/release/deps/msm-6b156ad04220c28b)
+Benchmarking CUDA/2**24x1
+Benchmarking CUDA/2**24x1: Warming up for 3.0000 s
+Benchmarking CUDA/2**24x1: Collecting 10 samples in estimated 6.4460 s (30 iterations)
+Benchmarking CUDA/2**24x1: Analyzing
+CUDA/2**24x1            time:   [215.72 ms 215.92 ms 216.14 ms]
+                        change: [+0.8834% +1.0320% +1.1905%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+
